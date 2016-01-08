@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="">
+
+
+	<!-- note: all commands in library use same event class code -->
+
+	
+	<suite name="Modify" code="****">
+		
+		<command name="uppercase text" code="Txt:UppT" description="convert all alphabetical characters to uppercase">
+			<direct-parameter type="text"/>
+			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="lowercase text" code="Txt:LowT" description="convert all alphabetical letters to lowercase">
+			<direct-parameter type="text"/>
+			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="capitalize text" code="Txt:CapT" description="capitalize all words (though be aware that this command has only a rudimentary understanding of the complex capitalization rules used in natural languages so results may be inferior to human-capitalized text)">
+			<direct-parameter type="text"/>
+			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="slice text" code="Txt:SliT" description="get the section of text between the specified start and/or end indexes">
+			<direct-parameter type="text"/>
+			<parameter name="from" code="Idx1" type="integer" optional="yes" description="character index"/>
+			<parameter name="to" code="Idx2" type="integer" optional="yes" description="character index"/>
+			<result type="text"/>
+			<documentation>
+				<html><![CDATA[
+<p><code>slice text theText from i to j</code> is equivalent to <code>text i thru j of theText</code>, except that if a character index is out of range it uses the nearest existing character instead of throwing an error.</p>
+				]]></html>
+			</documentation>
+		</command>
+		
+		<command name="trim text" code="Txt:TrmT" description="trim white space characters (space, tab, return, etc.) from the start and/or end of text">
+			<direct-parameter type="text"/>
+			<parameter name="removing" code="From" type="TrFT" optional="yes" description="(default: leading and trailing white space)"/>
+			<result type="text"/>
+		</command>
+		
+		<enumeration name="TrFT" code="TrFT">
+			<enumerator name="leading white space only" code="TrFS"/>
+			<enumerator name="trailing white space only" code="TrFE"/>
+			<enumerator name="leading and trailing white space" code="TrSE"/>
+		</enumeration>
+		
+	</suite>
+	
+	
+	
+	
+	<suite name="Split and Join" code="****">
+	
+		<command name="split text" code="Txt:SplT" description="split text using the specified separator(s)">
+			<direct-parameter type="text"/>
+			<parameter name="at" code="Sepa" optional="yes" description="the separator(s) upon which to split (default: one or more white space characters)">
+				<type type="text"/>
+				<type type="text" list="yes"/>
+			</parameter>
+			<parameter name="using" code="Usin" type="SerE" optional="yes" description="search using AppleScript (considering/ignoring) text comparison or ICU (regular expression) pattern matching? (default: case insensitivity)"/>
+			<result>
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+		<command name="join text" code="Txt:JoiT" description="join list of text using the specified separator">
+			<direct-parameter>
+				<type type="text" list="yes"/>
+			</direct-parameter>
+			<parameter name="using" code="Sepa" type="text" optional="yes" description="the separator(s) upon which to split (default: &quot;&quot;)"/>
+			<result type="text"/>
+		</command>
+
+		<command name="split paragraphs" code="Txt:SplP" description="split text into a list of paragraphs">
+			<direct-parameter type="text"/>
+			<result>
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+
+		<command name="join paragraphs" code="Txt:JoiP" description="join list of paragraphs">
+			<direct-parameter>
+				<type type="text" list="yes"/>
+			</direct-parameter>
+			<parameter name="using" code="LiBr" type="LiBr" optional="yes" description="the line break format (default: OS X line breaks)"/>
+			<result type="text"/>
+		</command>
+		
+		<enumeration name="LiBr" code="LiBr">
+			<enumerator name="OS X line breaks" code="LiOX"/>
+			<enumerator name="Windows line breaks" code="LiWi"/>
+			<enumerator name="classic Mac line breaks" code="LiCM"/>
+		</enumeration>
+
+	</suite>
+	
+	
+	
+	
+	<suite name="Find and Replace" code="****">
+	
+		<command name="search text" code="Txt:Srch" description="search for the specified text or pattern">
+		
+			<direct-parameter type="text" description="the text to search"/>
+			<parameter name="for" code="For_" type="text" description="the text/pattern to find"/>
+			<parameter name="replacing with" code="Repl" type="text" optional="yes" description="the replacement text/template"/>
+			
+			<parameter name="using" code="Usin" type="SerE" optional="yes" description="search using AppleScript (considering/ignoring) text comparison or ICU (regular expression) pattern matching? (default: case insensitivity)"/>
+			
+			<parameter name="returning" code="Retu" type="RetE" optional="yes" description="if 'replacing with' parameter is omitted, the type(s) of description records to return (default: matching text)"/>
+			
+			<result description="The modified text if the 'replacing with' parameter is given, otherwise a list of 'unmatched text' and/or 'matched text' records.">
+					<type type="text"/>
+					<type type="record" list="yes"/>
+			</result>
+
+		</command>
+		
+		
+		<enumeration name="SerE" code="SerE">
+			<!-- caution: ListLib defines the same enums for use in its `text comparator` command -->
+			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
+			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `sort list` is called -->
+			<enumerator name="pattern matching" code="CmpP"/> <!-- use ICU regular expression pattern matching -->
+		</enumeration>
+
+		<enumeration name="RetE" code="RetE">
+			<enumerator name="matched text only" code="MatT"/>
+			<enumerator name="unmatched text only" code="UmaT"/>
+			<enumerator name="matched and unmatched text" code="AllT"/>
+		</enumeration>
+		
+		
+		<command name="escape pattern" code="Txt:EPat" description="when pattern matching, escape any special characters in 'search text' command's 'for' parameter so that they only match as literal characters">
+			<direct-parameter type="text"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="escape template" code="Txt:ETem" description="when pattern matching, escape any special characters in search text' command's 'replacing with' parameter so that they are not substituted">
+			<direct-parameter type="text"/>
+			<result type="text"/>
+		</command>
+		
+		
+		<!-- record structures returned by `search text` are defined here for documentation purposes
+		
+			note: only the record's type names are defined as keywords (Script Editor/OSAKit choke when displaying records that contain `class` properties whose value isn't a type class, e.g. `{property class:"foo"}`); other properties use standard AS identifiers so can be safely used anywhere, not just inside `tell script "TextLib"...` blocks (since the record's class property is really only included for informational purposes, e.g. when testing and debugging, it doesn't particularly matter if its corresponding keyword isn't always available) -->
+		
+		<record-type name="unmatched text" code="TxtU" description="record type used by the 'search text' command to describe an unmatched text range">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{class:unmatched text,
+ startIndex:<var>integer</var>,
+ endIndex:<var>integer</var>,
+ foundText:<var>text</var>}</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+		
+		<record-type name="matched text" code="TxtM" description="record type used by the 'search text' command to describe a matched text range">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{class:matched text,
+ startIndex:<var>integer</var>,
+ endIndex:<var>integer</var>,
+ foundText:<var>text</var>,
+ foundGroups:<var>list of record</var>}</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+		
+		<record-type name="matched group" code="TxtG" description="record type used by a 'matched text' record's 'foundGroups' property to describe the text matched by a parenthesized group within the matched pattern">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{class:matched group,
+ startIndex:<var>integer</var>,
+ endIndex:<var>integer</var>,
+ foundText:<var>text</var>}</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+		
+	</suite>
+	
+</dictionary>
+

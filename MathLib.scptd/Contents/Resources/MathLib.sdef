@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary>
+
+
+	
+	<suite name="General" code="****">
+		
+		<command name="abs" code="Mth:Abs_" description="get absolute (non-negative) value of a number">
+			<direct-parameter type="number"/>
+			<result type="number"/>
+			<documentation>
+				<html><![CDATA[
+<p>Examples:</p>
+<pre><code>abs 3.1 → 3.1
+
+abs -3.1 → 3.1</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		<command name="check number" code="Mth:ChkN" description="compare two real numbers, ignoring minor differences due to real numbers’ limited precision">
+			<direct-parameter type="real"/>
+			<parameter name="is less than" code="CmLT" type="real" optional="yes"/>
+			<parameter name="is less than or equal to" code="CmLE" type="real" optional="yes"/>
+			<parameter name="is" code="CmEq" type="real" optional="yes"/>
+			<parameter name="is not" code="CmNE" type="real" optional="yes"/>
+			<parameter name="is greater than" code="CmGT" type="real" optional="yes"/>
+			<parameter name="is greater than or equal to" code="CmGE" type="real" optional="yes"/>
+			<result type="boolean"/>
+			<documentation>
+				<html><![CDATA[
+<p>The allowed margin of error is  ±1.0e-9, sufficient to ignore rounding errors due to the limited precision of AppleScript’s real (floating point) numbers. For example:</p>
+
+<pre><code>(0.7 * 0.7) is 0.49 → false (!)
+
+check number (0.7 * 0.7) is 0.49 → true</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="convert degrees to radians" code="Mth:DeRa" description="convert an angle from degrees to radians">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="convert radians to degrees" code="Mth:RaDe" description="convert an angle from radians to degrees">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="max" code="Mth:MaxN" description="find the highest number in a list of numbers">
+			<direct-parameter>
+				<type type="number" list="yes"/>
+			</direct-parameter>
+			<result type="number"/>
+		</command>
+		
+		<command name="min" code="Mth:MinN" description="find the lowest number in a list of numbers">
+			<direct-parameter>
+				<type type="number" list="yes"/>
+			</direct-parameter>
+			<result type="number"/>
+		</command>
+		
+		
+		<command name="round number" code="Mth:RouN" description="round a number to the specified number of places">
+			<direct-parameter type="real"/>
+			<parameter name="rounding" code="Dire" type="olie" optional="yes" description="the rounding direction (default: ‘to nearest’). ‘to nearest’ rounds .5 cases to the nearest even integer in order to decrease cumulative errors. To always round .5 away from zero, use ‘as taught in school.’"/>
+			<parameter name="to places" code="Plac" type="integer" optional="yes" description="The maximum number of decimal places that can appear in the result (default: 0). If 0, the result is an integer; if >0 then the number's least significant digits are also rounded."/>
+			<result>
+				<type type="real"/>
+				<type type="integer"/>
+			</result>
+		</command>
+		
+		<!-- same as in StandardAdditions.sdef -->
+		<enumeration name="olie" code="olie">
+			<enumerator name="up" code="rndU" description="round up"/>
+			<enumerator name="down" code="rndD" description="round down"/>
+			<enumerator name="toward zero" code="rndZ" description="round toward zero"/>
+			<enumerator name="to nearest" code="rndN" description="round to nearest"/>
+			<enumerator name="as taught in school" code="rndS" description="round to nearest with .5 always rounding away from zero"/>
+		</enumeration>
+		
+	</suite>
+	
+	
+	
+	<suite name="Logarithms" code="****">
+		
+		<command name="logn" code="Mth:Logn" description="natural logarithm (inverse of ‘e ^ n’)">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="log10" code="Mth:Lo10" description="base-10 logarithm (inverse of ‘10 ^ n’)">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="logb" code="Mth:Logb" description="logarithm using the specified base (inverse of ‘base ^ n’)">
+			<direct-parameter type="real"/>
+			<parameter name="base" code="Base" type="real"/>
+			<result type="real"/>
+		</command>
+		
+	</suite>	
+	
+	
+	
+	<suite name="Trigonometry" code="****" description="(all angles are degrees)">
+		
+		<command name="sin" code="Mth:Sin_" description="sine">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="cos" code="Mth:Cos_" description="cosine">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="tan" code="Mth:Tan_" description="tangent">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		
+		<command name="asin" code="Mth:Sina" description="arc sine (inverse of sine)">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="acos" code="Mth:Cosa" description="arc cosine (inverse of cosine)">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="atan" code="Mth:Tana" description="arc tangent (inverse of tangent)">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		
+		<command name="asinh" code="Mth:Sinh" description="hyperbolic sine">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="acosh" code="Mth:Cosh" description="hyperbolic cosine">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+		<command name="atanh" code="Mth:Tanh" description="hyperbolic tangent">
+			<direct-parameter type="real"/>
+			<result type="real"/>
+		</command>
+		
+	</suite>
+	
+	
+	
+</dictionary>

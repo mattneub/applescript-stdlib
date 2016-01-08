@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="">
+	
+	<suite name="Date Manipulation" code="****">
+		
+		<command name="convert record to date" code="Dat:ReDa" description="given a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties, returns a new date object">
+		
+			<!-- TO DO: the record parameter's `time` property is currently redundant as `seconds` property can be used, as overflowing values for any property rollover automatically; OTOH, if bounds checking is implemented on properties (which it probably should be, at least as an option) then may want to keep it (simplifies using data directly from AS date objects, which only provide a `time` property) -->
+			
+			<direct-parameter type="record" optional="yes" description="If given, the ‘month’ property can be a month constant (‘January’, ‘February’, etc) or integer, while the ‘year’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties should be integers. A ‘time’ property (number of seconds since midnight) may be given instead of ‘hours’, ‘minutes’, and ‘seconds’. All properties are optional; if omitted, default values are used instead. (default: 2001-01-01 00:00:00)"/>
+			<result type="date"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>convert record to date {year:2016} 
+→ date "Friday, 1 January 2016 at 00:00:00"
+
+convert record to date {year:1990, month:June, day:15, hours:7, minutes:45}
+→ date "Friday, 15 June 1990 at 07:45:00"</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		<command name="datetime" code="Dat:MkDt" description="shorthand for ‘convert record to date’"> 
+			<direct-parameter type="record" optional="yes"/>
+			<result type="date"/>
+		</command>
+		
+		<command name="convert date to record" code="Dat:DaRe" description="given a date object, returns a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and ‘seconds’ properties">
+			<direct-parameter type="date" optional="yes" description="(default: 2001-01-01 00:00:00)"/>
+			<result type="record"/>
+		</command>
+		
+		
+		<command name="convert text to date" code="Dat:TeDa" description="create a date object from ISO8601-formatted text">
+			<direct-parameter type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
+			<result type="date"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>convert date to text (date "Thursday, 7 January 2016 at 01:41:34")
+→ "2016-01-07T01:41:34Z"</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+				
+		<command name="convert date to text" code="Dat:DaTe" description="create ISO8601-formatted text from a date object">
+			<direct-parameter type="date"/>
+			<parameter name="for timezone" code="TZon" optional="yes" description="">
+				<type type="integer"/>
+				<type type="text"/>
+			</parameter>
+			<result type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>convert text to date "2016-01-07T00:41:34-0800"
+→ date "Thursday, 7 January 2016 at 08:41:34"</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+				
+	</suite>
+	
+</dictionary>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary>
+
+
+	
+	<suite name="General Manipulation" code="****">
+		
+		<command name="insert into list" code="Lst:Inst" description="insert an item into the given list, returning a new list">
+			<direct-parameter type="list"/>
+			<parameter name="value" code="Valu" type="anything"/>
+			<parameter name="before item" code="Befo" type="integer" optional="yes"/>
+			<parameter name="after item" code="Afte" type="integer" optional="yes"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>insert into list {1, 2, 3} value 4 after item 2 → {1, 2, 4, 3}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		<command name="delete from list" code="Lst:Dele" description="delete an item from the given list, returning a new list">
+			<direct-parameter type="list"/>
+			<parameter name="item" code="Inde" type="integer" optional="yes" description="(default: -1)"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>remove from list {1, 2, 3} item 2 → {1, 3}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+	
+	<!-- TO DO: recompose list should take pad/chop/error flag for dealing with uneven-length lists; if padding arg is a script object then call its makeItem(rowIndex, columnIndex) handler, otherwise insert it as-is; this'll allow for use cases where different pads are needed, or padding needs to be a list/record/other mutable value that must not be shared -->
+	</suite>
+	
+	
+	
+	<suite name="Sort" code="****">
+		
+		<command name="sort list" code="Lst:Sort" description="sort a list of comparable items">
+			<direct-parameter type="list" description="the items to sort; if items cannot be directly compared against each other (e.g. if the list contains a mixture of text and numbers, or is a list of lists/records/scripts), the appropriate ‘using’ parameter must also be given"/>
+			<parameter name="using" code="Comp" type="script" optional="yes" description="a ‘Comparator’ script object that implements ‘makeKey’ and/or ‘isLessThan’ handlers, used to compare list items (default: default comparator)"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>sort list {2, 7, 4, 1} → {1, 2, 4, 7}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+	
+		<command name="default comparator" code="Lst:DeSo" description="returns a ‘DefaultComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list containing only numbers OR text OR dates">
+			<result type="script"/>
+		</command>
+	
+		<command name="date comparator" code="Lst:DaSo" description="returns a ‘DateComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of date items">
+			<result type="script"/>
+		</command>
+	
+		<command name="number comparator" code="Lst:NuSo" description="returns a ‘NumberComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of numbers (integers and/or reals) or values that can be coerced to numbers">
+			<result type="script"/>
+		</command>
+	
+		<command name="text comparator" code="Lst:TeSo" description="returns a ‘TextComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of text items, or values that can be coerced to text">
+			<parameter name="using" code="Cons" type="SrtE" optional="yes" description="(default: case insensitive text)"/>
+			<result type="script"/>
+			<documentation>
+				<html><![CDATA[
+<p>This command returns an object that controls how the ‘sort list’ command sorts a list of text values. This object performs two operations when ‘sort list’ is called:</p>
+<ol>
+<li>It coerces each item in the list to <code>text</code>. If any item cannot be coerced to text, the `sort list` command will report a coercion error (-1700). This value is only used to determine sorting order; it will not appear in the final list.</li>
+<li>It compares a pair of text keys to determine which item should come first, and rearranges the items in the original list as needed.</li>
+</ol>
+
+<p>This command can produce three different types of text comparators:</p>
+<ul>
+<li><code>case insensitivity</code> – Case and diacriticals are ignored, while all other settings, including <code>numeric strings</code> are considered.</li>
+<li><code>case sensitivity</code> – Only diacriticals are ignored, while all other settings, including <code>case</code> and <code>numeric strings</code> are considered. (Be aware that AppleScript orders characters according to Unicode – not ASCII – rules, so "a" comes before "A", and "A" comes before "b", and so on.)</li>
+<li><code>current considerations</code> – Text is sorted using whatever considering/ignoring settings are currently applied when <code>sort list</code> is called. (By default, AppleScript ignores case and numeric strings, and considers diacriticals, hyphens, punctuation, and white space. To alter these settings – or to guarantee predictable sorting at all times – wrap your <code>sort list</code> command in the appropriate <code>considering</code> and/or <code>ignoring</code> block.)</li>
+</ul>
+
+<p>For example:</p>
+
+<pre><code>sort list {"foo", "Foo", "bar"} using (text comparator using case sensitivity)</code></pre>
+
+<!-- TO DO: update/extend this info if/when TextLib gets ability to construct arbitrary text comparator objects from scratch (by combining multiple script objects in a delegation chain, each applying a single considering/ignoring block to the next, which is necessary due to the inability to parameterize `considering/ignoring` statements at runtime) -->
+<!-- TO DO: what about a `pattern matching` option? -->
+				]]></html>
+			</documentation>
+
+		</command>
+		
+			
+		<command name="list comparator" code="Lst:LiSo" description="returns a ‘ListComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of lists">
+			<parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of form {{index, comparator},...} for comparing specific items in each list (default: default comparator)">
+				<type type="script"/>
+				<type type="list" list="yes"/>
+			</parameter>
+			<result type="script"/>
+		</command>
+		
+		
+		<enumeration name="SrtE" code="SrtE">
+			<!-- caution: TextLib defines the same enums for use in its `search text` command -->
+			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
+			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `sort list` is called -->
+		</enumeration>
+		
+	
+		<command name="unsort list" code="Lst:LiUS" description="randomly rearrange the items in a list, returning a new list as result">
+			<direct-parameter type="list"/>
+			<result type="list"/>
+		</command>
+		
+	</suite>
+	
+	
+	
+	<suite name="Map Filter Reduce" code="****">
+		
+		<command name="map list" code="Lst:Map_" description="convert each item in the given list, returning a new list containing the converted values">
+			<direct-parameter type="list"/>
+			<parameter name="using" code="Usin" type="script"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>convertItem</code> that takes a value as its input and returns a new value as its output.</p>
+
+<pre><code>script DoubleNumber
+    to convertItem(theValue)
+    	return theValue * 2
+    end convertItem
+end script
+
+map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="filter list" code="Lst:Filt" description="chck each item in the given list, returning a new list containing only those items that pass the test">
+			<direct-parameter type="list"/>
+			<parameter name="using" code="Usin" type="script"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>checkItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
+
+<pre><code>script Over18
+    to checkItem(theValue)
+    	return theValue > 18
+    end checkItem
+end script
+
+filter list {12, 42, 16, 21} using Over18 → {42, 21}</code></pre>
+
+<p>Note that AppleScript specifiers can also be used to filter lists by item type, for example:</p>
+
+<pre><code>every number of {true, -1, 2.5, "42", {99}, 1.0E+6} → {-1, 2.5, 1.0E+6}</code></pre>
+
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="reduce list" code="Lst:Redu" description="convert each item in the given list, returning a new list containing the converted values">
+			<direct-parameter type="list"/>
+			<parameter name="using" code="Usin" type="script"/>
+			<result type="list"/>
+			<documentation>
+				<html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>combineItems</code> that takes two values as its input and returns a new value as its output.</p>
+
+<pre><code>script SumNumbers
+    to combineItem(partialResult, theValue)
+    	return partialResult + theValue
+    end convertItem
+end script
+
+reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+	</suite>
+	
+	
+	
+</dictionary>

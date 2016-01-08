@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary>
+
+
+	
+	<suite name="Path Manipulation" code="****">
+		
+		<!--
+		<command name="" code="" description="">
+			<direct-parameter type=""/>
+			<result type=""/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+			
+		</command>
+		-->
+	</suite>
+	
+	
+	<suite name="Read/Write File" code="****">
+	
+	</suite>
+	
+	
+</dictionary>
