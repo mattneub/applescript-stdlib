@@ -30,7 +30,36 @@
 			</documentation>
 		</command>
 	
-	<!-- TO DO: recompose list should take pad/chop/error flag for dealing with uneven-length lists; if padding arg is a script object then call its makeItem(rowIndex, columnIndex) handler, otherwise insert it as-is; this'll allow for use cases where different pads are needed, or padding needs to be a list/record/other mutable value that must not be shared -->
+	<!-- TO DO: if padding arg is a script object then call its makeItem(rowIndex, columnIndex) handler, otherwise insert it as-is; this'll allow for use cases where different pads are needed, or padding needs to be a list/record/other mutable value that must not be shared -->
+	
+		<command name="transpose list" code="Lst:Tran" description="rearrange a list of lists, returning a new list as result">
+			<direct-parameter>
+				<type type="list" list="yes"/>
+			</direct-parameter>
+			<parameter name="while" code="Whil" type="LTrh" optional="yes" description="if lists are uneven lengths, pad the shorter lists, trim the longer lists, or treat as error? (default: treat as error)"/>
+			<parameter name="padding with" code="PadI" type="anything" optional="yes" description="when ‘padding uneven lists’, the pad value to use (default: missing value)"/>
+			<result>
+				<type type="list" list="yes"/>
+			</result>
+			<documentation>
+				<html><![CDATA[
+<pre><code>transpose list {{1, 2, 3}, {4, 5, 6}} → {{1, 4}, {2, 5}, {3, 6}}</code></pre>
+
+<p>To obtain a list of {name, album, artist} sublists for each track in iTunes:</p>
+
+<pre><code>tell application "iTunes" to set trackInfos to {name, album, artist} of every track
+transpose list trackInfos</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<enumeration name="LTrh" code="LTrh">
+			<enumerator name="padding uneven lists" code="LTrP"/>
+			<enumerator name="trimming uneven lists" code="LTrT"/>
+			<enumerator name="rejecting uneven lists" code="LTrR"/>
+		</enumeration>
+		
 	</suite>
 	
 	
