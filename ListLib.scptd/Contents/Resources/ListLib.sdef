@@ -19,6 +19,7 @@
 			</documentation>
 		</command>
 		
+		
 		<command name="delete from list" code="Lst:Dele" description="delete an item from the given list, returning a new list">
 			<direct-parameter type="list"/>
 			<parameter name="item" code="Inde" type="integer" optional="yes" description="(default: -1)"/>
@@ -29,9 +30,26 @@
 				]]></html>
 			</documentation>
 		</command>
+		
+		
+		<command name="find in list" code="Lst:Find" description="return the index(es) of the specified item in a list">
+			<direct-parameter type="list"/>
+			<parameter name="item" code="Valu" type="anything"/>
+			<!-- TO DO: also allow a comparator object to be used instead of item? -->
+			<parameter name="returning" code="Retu" type="LFWh" optional="yes" description=""/>
+			<result>
+				<type type="integer" list="yes"/>
+			</result>
+			<documentation>
+				<html><![CDATA[
+<pre><code>find list {"a", "b", "c"} item "b" → {2}</code></pre>
+
+<p>When searching for text values, be aware that text is compared for equality using AppleScript's current considering/ignoring settings, so wrap the <code>find in list</code> command in <code>considering</code> and/or <code>ignoring</code> block as necessary.</p>
+				]]></html>
+			</documentation>
+		</command>
 	
-	<!-- TO DO: if padding arg is a script object then call its makeItem(rowIndex, columnIndex) handler, otherwise insert it as-is; this'll allow for use cases where different pads are needed, or padding needs to be a list/record/other mutable value that must not be shared -->
-	
+		
 		<command name="transpose list" code="Lst:Tran" description="rearrange a list of lists, returning a new list as result">
 			<direct-parameter>
 				<type type="list" list="yes"/>
@@ -60,6 +78,12 @@ transpose list trackInfos</code></pre>
 			<enumerator name="rejecting uneven lists" code="LTrR"/>
 		</enumeration>
 		
+		<enumeration name="LFWh" code="LFWh">
+			<enumerator name="first occurrence" code="LFWF"/>
+			<enumerator name="last occurrence" code="LFWL"/>
+			<enumerator name="all occurrences" code="LFWA"/>
+		</enumeration>
+		
 	</suite>
 	
 	
@@ -68,7 +92,7 @@ transpose list trackInfos</code></pre>
 		
 		<command name="sort list" code="Lst:Sort" description="sort a list of comparable items">
 			<direct-parameter type="list" description="the items to sort; if items cannot be directly compared against each other (e.g. if the list contains a mixture of text and numbers, or is a list of lists/records/scripts), the appropriate ‘using’ parameter must also be given"/>
-			<parameter name="using" code="Comp" type="script" optional="yes" description="a ‘Comparator’ script object that implements ‘makeKey’ and/or ‘isLessThan’ handlers, used to compare list items (default: default comparator)"/>
+			<parameter name="using" code="Comp" type="script" optional="yes" description="a ‘Comparator’ script object that implements ‘makeKey’ and/or ‘compareKeys’ handlers, used to compare list items (default: default comparator)"/>
 			<result type="list"/>
 			<documentation>
 				<html><![CDATA[
