@@ -6,23 +6,204 @@
 	
 	<suite name="Path Manipulation" code="****">
 		
-		<!--
-		<command name="" code="" description="">
-			<direct-parameter type=""/>
-			<result type=""/>
+		<command name="convert path" code="Fil:ConP" description="convert file paths and objects">
+			<direct-parameter>
+				<type type="text"/>
+				<type type="file"/>
+			</direct-parameter>
+			<parameter name="from" code="From" type="FLCF" optional="yes" description="the direct parameter’s path format (default: POSIX file format); ignored when direct parameter is an alias/file object"/>
+			<parameter name="to" code="To__" type="FLCT" optional="yes" description="the result's path format or type (default: POSIX file format)"/>
+			<result>
+				<type type="text"/>
+				<type type="file"/>
+			</result>
+			
+			<documentation>
+				<html><![CDATA[
+<p>Examples:</p>
+<pre><code>convert path "/Users/jsmith/User Guide.txt" to HFS path format
+→ "Macintosh HD:Users:jsmith:User Guide.txt"
+
+convert path "Macintosh HD:Users:jsmith:User Guide.txt" from HFS path format
+→ "/Users/jsmith/User Guide.txt"
+
+set fileObject to POSIX file "/Users/jsmith/User Guide.txt"
+convert path fileObject to file URL format
+→ "file:///Users/jsmith/User%20Guide.txt"
+
+convert path "/Users/jsmith/User Guide.txt" to alias file object
+→ alias "Macintosh HD:Users:jsmith:User Guide.txt"</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<enumeration name="FLCF" code="FLCF">
+			<enumerator name="POSIX path format" code="FLCP"/>
+			<enumerator name="HFS path format" code="FLCH"/>
+			<enumerator name="Windows path format" code="FLCW"/>
+			<enumerator name="file URL format" code="FLCU"/>
+		</enumeration>
+		
+		<enumeration name="FLCT" code="FLCT">
+			<enumerator name="POSIX path format" code="FLCP"/>
+			<enumerator name="HFS path format" code="FLCH"/>
+			<enumerator name="Windows path format" code="FLCW"/>
+			<enumerator name="file URL format" code="FLCU"/>
+			<enumerator name="alias file object" code="FLCA"/>
+			<enumerator name="POSIX file object" code="FLCX"/>
+			<enumerator name="file specifier object" code="FLCS"/>
+		</enumeration>
+		
+
+		<command name="normalize path" code="Fil:NorP" description="">
+			<direct-parameter>
+				<type type="text"/>
+			</direct-parameter>
+			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>A new path is made by performing the following operations:</p>
+
+<ul>
+<li>Expanding an initial tilde expression.</li>
+
+<li>Removing an initial component of “/private/var/automount”, “/var/automount”, or “/private” from the path, if the result still indicates an existing file or directory (checked by consulting the file system).</li>
+
+<li>Reducing empty components and references to the current directory (that is, the sequences “//” and “/./”) to single path separators.</li>
+
+<li>Removing a trailing slash from the last component.</li>
+
+<li>For absolute paths only, resolving references to the parent directory (that is, the component “..”) to the real parent directory if possible. For relative paths, references to the parent directory are left in place.</li>
+</ul>
+
+<p>Examples:</p>
+<pre><code>normalize path "~/Documents/../Movies/"
+→ "/Users/jsmith/Movies</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="join path" code="Fil:JoiP" description="given a list of path components (and/or a file name extension), joins them together to form a path">
+			<direct-parameter>
+				<type type="text" list="yes"/>
+			</direct-parameter>
+			<parameter name="using file extension" code="Exte" type="text" optional="yes" description="(default: missing value)"/>
+			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>Examples:</p>
+<pre><code>join path {"/", "Users", "jsmith", "Desktop"} 
+→ "/Users/jsmith/Desktop"
+
+join path {"Documents", "ReadMe"} using file extension "txt" 
+→ "Documents/ReadMe.txt"
+
+join path {POSIX file "/Users/jsmith", "Documents/ReadMe.txt"} 
+→ "/Users/jsmith/ReadMe.txt" </code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="split path" code="Fil:SplP" description="">
+			<direct-parameter type="text"/>
+			<parameter name="at" code="Upon" type="FLSP" optional="yes" description="(default: last component)"/>
+			<result>
+				<type type="text" list="yes"/>
+			</result>
+			<documentation>
+				<html><![CDATA[
+<p>Examples:</p>
+<pre><code>set {folderPath, fileName} to split path "/Users/jsmith/Documents/ReadMe.txt"
+→ {"/Users/jsmith/Documents", "ReadMe.txt"}
+
+split path (POSIX path "/Users/jsmith/Documents/ReadMe.txt") at all components 
+→ {"/", "Users", "jsmith", "Documents", "ReadMe.txt"}
+
+split path "/Users/jsmith/Documents/ReadMe.txt" at file extension 
+→ {"/Users/jsmith/Documents/ReadMe", "txt"}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<enumeration name="FLSP" code="FLSP">
+			<enumerator name="file extension" code="FLSE"/>
+			<enumerator name="last component" code="FLSL"/>
+			<enumerator name="all components" code="FLSA"/>
+		</enumeration>
+		
+	</suite>
+	
+	
+	<suite name="Read/Write File" code="****">
+	
+		<command name="read file" code="Fil:Read" description="">
+			<direct-parameter type="file"/>
+			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
+			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when reading a plain text file, the encoding to use (default: UTF8 encoding)"/>
+			<result type="anything"/>
 			
 			<documentation>
 				<html><![CDATA[
 <pre><code></code></pre>
 				]]></html>
 			</documentation>
-			
 		</command>
-		-->
-	</suite>
 	
-	
-	<suite name="Read/Write File" code="****">
+		<command name="write file" code="Fil:Writ" description="">
+			<direct-parameter type="file"/>
+			<parameter name="data" code="Data" type="anything"/>
+			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
+			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when writing a plain text file, the encoding to use (default: UTF8 encoding)"/>
+			<result type="anything"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		
+		<enumeration name="FEnc" code="FEnc">
+			<!-- TO DO: option to determine UTF encoding from BOM, if found? -->
+			
+			<!-- Unicode encodings -->
+			<enumerator name="UTF8 encoding" code="FE01"/>
+			
+			<enumerator name="UTF16 encoding" code="FE02"/>
+			<enumerator name="UTF16BE encoding" code="FE03"/>
+			<enumerator name="UTF16LE encoding" code="FE04"/>
+			
+			<enumerator name="UTF32 encoding" code="FE05"/>
+			<enumerator name="UTF32BE encoding" code="FE06"/>
+			<enumerator name="UTF32LE encoding" code="FE07"/>
+			
+			<!-- legacy encodings -->
+			<enumerator name="ASCII encoding" code="FE11"/>
+			<enumerator name="ISO2022JP encoding" code="FE12"/>
+			<enumerator name="ISOLatin1 encoding" code="FE13"/>
+			<enumerator name="ISOLatin2 encoding" code="FE14"/>
+			<enumerator name="JapaneseEUC encoding" code="FE15"/>
+			<enumerator name="MacOSRoman encoding" code="FE16"/>
+			<enumerator name="NonLossyASCII encoding" code="FE17"/>
+			<enumerator name="ShiftJIS encoding" code="FE18"/>
+			<enumerator name="Symbol encoding" code="FE19"/>
+			
+			<enumerator name="WindowsCP1250 encoding" code="FE50"/>
+			<enumerator name="WindowsCP1251 encoding" code="FE51"/>
+			<enumerator name="WindowsCP1252 encoding" code="FE52"/>
+			<enumerator name="WindowsCP1253 encoding" code="FE53"/>
+			<enumerator name="WindowsCP1254 encoding" code="FE54"/>
+			
+			<enumerator name="primary encoding" code="FEPE"/>
+		</enumeration>
 	
 	</suite>
 	
