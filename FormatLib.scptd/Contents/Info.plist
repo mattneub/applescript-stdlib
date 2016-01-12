@@ -7,13 +7,15 @@
 	<key>CFBundleName</key>
 	<string>FormatLib</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>0.1.0</string>
+	<key>OSAScriptingDefinition</key>
+	<string>FormatLib.sdef</string>
 	<key>WindowState</key>
 	<dict>
 		<key>bundleDividerCollapsed</key>
-		<true/>
+		<false/>
 		<key>bundlePositionOfDivider</key>
-		<real>0.0</real>
+		<real>605</real>
 		<key>dividerCollapsed</key>
 		<false/>
 		<key>eventLogLevel</key>
@@ -23,7 +25,7 @@
 		<key>positionOfDivider</key>
 		<real>577</real>
 		<key>savedFrame</key>
-		<string>385 33 700 744 0 0 1280 777 </string>
+		<string>32 33 904 744 0 0 1280 777 </string>
 		<key>selectedTab</key>
 		<string>result</string>
 	</dict>

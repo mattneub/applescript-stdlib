@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary>
+
+	
+	
+	<suite name="Converting Objects to Text" code="****">
+		
+		<command name="format number" code="Fmt:FNum" description="format a number as text">
+			<direct-parameter type="number"/>
+			<parameter name="in" code="Styl" type="FNSt" optional="yes" description="(default: canonical style)"/>
+			<parameter name="for" code="Loca" type="text" optional="yes" description="(default: current locale)"/>
+			<result type="text"/>
+		</command>
+		
+		<enumeration name="FNSt" code="FNSt">
+			<enumerator name="canonical style" code="FNS0"/>
+			<enumerator name="decimal style" code="FNS1"/>
+			<enumerator name="currency style" code="FNS2"/>
+			<enumerator name="percent style" code="FNS3"/>
+			<enumerator name="scientific style" code="FNS4"/>
+			<enumerator name="spell out style" code="FNS5"/>
+		</enumeration>
+		
+	</suite>
+	
+	<suite name="Converting Text to Objects" code="****">
+		
+		<command name="parse number" code="Fmt:PNum" description="parse text as a number">
+			<direct-parameter type="number"/>
+			<parameter name="in" code="Styl" type="FNSt" optional="yes" description="(default: canonical style)"/>
+			<parameter name="for" code="Loca" type="text" optional="yes" description="(default: current locale)"/>
+			<result type="text"/>
+		</command>
+		
+	</suite>
+
+	
+	<suite name="Localization Support" code="****">
+		
+		<command name="available locales" code="Fmt:LLoc" description="list the available locale identifiers">
+			<result>
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+	</suite>
+	
+</dictionary>
