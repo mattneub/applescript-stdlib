@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.apple.ScriptEditor.id.library.MathLib</string>
+	<string>com.apple.ScriptEditor.id.MathLib</string>
 	<key>CFBundleName</key>
 	<string>MathLib</string>
 	<key>CFBundleShortVersionString</key>
@@ -15,7 +15,7 @@
 		<key>bundleDividerCollapsed</key>
 		<false/>
 		<key>bundlePositionOfDivider</key>
-		<real>594</real>
+		<real>644</real>
 		<key>dividerCollapsed</key>
 		<false/>
 		<key>eventLogLevel</key>
@@ -25,7 +25,7 @@
 		<key>positionOfDivider</key>
 		<real>521</real>
 		<key>savedFrame</key>
-		<string>328 51 888 726 0 0 1280 777 </string>
+		<string>314 51 938 726 0 0 1280 777 </string>
 		<key>selectedTab</key>
 		<string>log</string>
 	</dict>

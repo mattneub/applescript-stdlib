@@ -3,42 +3,101 @@
 <dictionary>
 
 	
-	
-	<suite name="Converting Objects to Text" code="****">
+	<suite name="Numbers" code="****">
+		
+		<command name="parse number" code="Fmt:PNum" description="parse text as a number">
+			<direct-parameter type="text"/>
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<result type="number"/>
+		</command>
 		
 		<command name="format number" code="Fmt:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
-			<parameter name="in" code="Styl" type="FNSt" optional="yes" description="(default: canonical style)"/>
-			<parameter name="for" code="Loca" type="text" optional="yes" description="(default: current locale)"/>
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
 			<result type="text"/>
 		</command>
 		
 		<enumeration name="FNSt" code="FNSt">
-			<enumerator name="canonical style" code="FNS0"/>
-			<enumerator name="decimal style" code="FNS1"/>
-			<enumerator name="currency style" code="FNS2"/>
-			<enumerator name="percent style" code="FNS3"/>
-			<enumerator name="scientific style" code="FNS4"/>
-			<enumerator name="spell out style" code="FNS5"/>
+			<enumerator name="plain format" code="FNS0"/>
+			<enumerator name="decimal format" code="FNS1"/>
+			<enumerator name="currency format" code="FNS2"/>
+			<enumerator name="percent format" code="FNS3"/>
+			<enumerator name="scientific format" code="FNS4"/>
+			<enumerator name="word format" code="FNS5"/>
+		</enumeration>
+		
+		
+	</suite>
+	
+	
+	<suite name="Dates" code="****">
+		
+		<command name="parse date" code="Fmt:PDat" description="parse text as a date">
+			<direct-parameter type="text"/>
+			<parameter name="using" code="Usin" optional="yes" description="the template text or predefined date and/or time formats to use (default: short date format)">
+				<type type="text"/>
+				<type type="FDSt" list="yes"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<result type="date"/>
+		</command>
+		
+		<command name="format date" code="Fmt:FDat" description="format a date as text">
+			<direct-parameter type="date"/>
+			<parameter name="using" code="Usin" optional="yes" description="the template text or predefined date and/or time formats to use (default: short date format)">
+				<type type="text"/>
+				<type type="FDSt"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<result type="text"/>
+		</command>
+		
+		<enumeration name="FDSt" code="FDSt">
+			<enumerator name="omit date format" code="FDS0"/>
+			<enumerator name="short date format" code="FDS1"/>
+			<enumerator name="medium date format" code="FDS2"/>
+			<enumerator name="long date format" code="FDS3"/>
+			<enumerator name="full date format" code="FDS4"/>
+			<enumerator name="omit time format" code="FDS5"/>
+			<enumerator name="short time format" code="FDS6"/>
+			<enumerator name="medium time format" code="FDS7"/>
+			<enumerator name="long time format" code="FDS8"/>
+			<enumerator name="full time format" code="FDS9"/>
 		</enumeration>
 		
 	</suite>
 	
-	<suite name="Converting Text to Objects" code="****">
+	
+	<suite name="JSON" code="****">
+	
+	<!-- TO DO: `convert to JSON`/`convert from JSON` -->
+	
+	</suite>
+	
+	
+	<suite name="General" code="****">
 		
-		<command name="parse number" code="Fmt:PNum" description="parse text as a number">
-			<direct-parameter type="number"/>
-			<parameter name="in" code="Styl" type="FNSt" optional="yes" description="(default: canonical style)"/>
-			<parameter name="for" code="Loca" type="text" optional="yes" description="(default: current locale)"/>
+		<!-- TO DO: debate wisdom/practicality of adding 'convert from text' command (for safety/security, this would need to parse data structures only (c.f. JSON); no commands allowed; keywords would need to be severely restricted, if not forbidden); optionally take `to TYPE` parameter (trouble with that is that AS sucks at describing complex data structures; could just about work around that by passing list or record of type class, e.g. `{text}` to indicate 'list of text', although getting records into consumable form will be a pain; there's also the problem of how to specify unions, e.g. 'text or missing value') -->
+		
+		<command name="convert to text" code="Fmt:FObj" description="format a value (or list of values) as text">
+			<parameter name="from" code="From">
+				<type type="any"/>
+				<type type="any" list="yes"/>
+			</parameter>
+			<parameter name="using" code="Usin" text="" optional="yes" description="the template into which to insert each item of the list; if omitted, the value is rendered as-is"/>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<parameter name="source code syntax" code="Code" type="boolean" optional="yes" description="if true, renders the value as AppleScript source code; if false, renders the value in human-readable form"/>
 			<result type="text"/>
 		</command>
 		
 	</suite>
 
 	
-	<suite name="Localization Support" code="****">
+	<suite name="Localization" code="****">
 		
-		<command name="available locales" code="Fmt:LLoc" description="list the available locale identifiers">
+		<command name="available locales" code="Fmt:LLoc" description="lists the available locale identifiers">
 			<result>
 				<type type="text" list="yes"/>
 			</result>

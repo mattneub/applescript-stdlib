@@ -6,14 +6,14 @@
 	
 	<suite name="Path Manipulation" code="****">
 		
-		<command name="convert path" code="Fil:ConP" description="convert file paths and objects">
-			<direct-parameter>
+		<command name="convert path" code="Fil:ConP" description="convert file identifiers between various path formats and object types">
+			<direct-parameter documentation="the file path or object to convert">
 				<type type="text"/>
 				<type type="file"/>
 			</direct-parameter>
 			<parameter name="from" code="From" type="FLCF" optional="yes" description="the direct parameter’s path format (default: POSIX file format); ignored when direct parameter is an alias/file object"/>
 			<parameter name="to" code="To__" type="FLCT" optional="yes" description="the result's path format or type (default: POSIX file format)"/>
-			<result>
+			<result documentation="the new file identifier">
 				<type type="text"/>
 				<type type="file"/>
 			</result>
