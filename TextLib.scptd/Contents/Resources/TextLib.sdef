@@ -6,25 +6,39 @@
 	<!-- note: all commands in library use same event class code -->
 
 	
-	<suite name="Modify" code="****">
+	<suite name="Modify Text" code="****">
 		
 		<command name="uppercase text" code="Txt:UppT" description="convert all alphabetical characters to uppercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
 			<result type="text"/>
 		</command>
 		
 		<command name="lowercase text" code="Txt:LowT" description="convert all alphabetical letters to lowercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
 			<result type="text"/>
 		</command>
 		
 		<command name="capitalize text" code="Txt:CapT" description="capitalize all words (though be aware that this command has only a rudimentary understanding of the complex capitalization rules used in natural languages so results may be inferior to human-capitalized text)">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="script" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
 			<result type="text"/>
 		</command>
+		
+		<command name="pad text" code="Txt:PadT" description="pad the text to a minimum length">
+			<direct-parameter type="text"/>
+			<parameter name="to places" code="toPl" type="integer"/>
+			<parameter name="using" code="Char" type="text" optional="yes" description="(default: space)"/>
+			<parameter name="adding" code="From" type="LeTr" optional="yes" description="(default: leading characters only)"/>
+			<result type="text"/>
+		</command>
+		
+		<enumeration name="LeTr" code="LeTr">
+			<enumerator name="leading characters only" code="LCha"/>
+			<enumerator name="trailing characters only" code="TCha"/>
+			<enumerator name="leading and trailing characters" code="BCha"/>
+		</enumeration>
 		
 		<command name="slice text" code="Txt:SliT" description="get the section of text between the specified start and/or end indexes">
 			<direct-parameter type="text"/>
@@ -40,15 +54,9 @@
 		
 		<command name="trim text" code="Txt:TrmT" description="trim white space characters (space, tab, return, etc.) from the start and/or end of text">
 			<direct-parameter type="text"/>
-			<parameter name="removing" code="From" type="TrFT" optional="yes" description="(default: leading and trailing white space)"/>
+			<parameter name="removing" code="From" type="LeTr" optional="yes" description="(default: leading and trailing characters)"/>
 			<result type="text"/>
 		</command>
-		
-		<enumeration name="TrFT" code="TrFT">
-			<enumerator name="leading white space only" code="TrFS"/>
-			<enumerator name="trailing white space only" code="TrFE"/>
-			<enumerator name="leading and trailing white space" code="TrSE"/>
-		</enumeration>
 		
 	</suite>
 	

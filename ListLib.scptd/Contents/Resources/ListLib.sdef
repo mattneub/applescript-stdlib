@@ -114,7 +114,7 @@ transpose list trackInfos</code></pre>
 		</command>
 	
 		<command name="text comparator" code="Lst:TeSo" description="returns a ‘TextComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of text items, or values that can be coerced to text">
-			<parameter name="using" code="Cons" type="SrtE" optional="yes" description="(default: case insensitive text)"/>
+			<parameter name="using" code="Cons" type="SrtE" optional="yes" description="(default: case insensitivity)"/>
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[

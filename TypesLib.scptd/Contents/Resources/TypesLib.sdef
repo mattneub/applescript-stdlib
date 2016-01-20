@@ -3,7 +3,7 @@
 <dictionary title="">
 
 	
-	<suite name="Type Information" code="****">
+	<suite name="General Commands" code="****">
 
 		<command name="native type" code="Typ:NaTy" description="get an AppleScript object's true type">
 			<parameter name="for" code="Valu" type="any"/>
@@ -36,9 +36,18 @@ check type for (document 1 of application "TextEdit") is list  → false (it's a
 check type for {class:document, name:"ReadMe.txt"} is record → true
 check type for (document 1  of application "TextEdit") is specifier → true
 check type for 3.14 is {number, text, date} → true</code></pre>
+
+<p>(Tip: To check for an AppleScript-ObjC specifier in particular, use <code>«class ocid»</code>.)</p>
 				]]></html>
 			</documentation>
 		</command>
+
+
+		<command name="convert to Cocoa" code="Typ:OCID" description="convert an AppleScript value to its Cocoa equivalent">
+			<parameter name="from" code="From" type="any"/>
+			<result type="specifier" description="an AppleScript-ObjC object specifier, ‘«class ocid» id «data optr...»’"/>
+		</command>
+
 
 	</suite>
 	

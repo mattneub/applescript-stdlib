@@ -27,12 +27,12 @@
 convert path "Macintosh HD:Users:jsmith:User Guide.txt" from HFS path format
 → "/Users/jsmith/User Guide.txt"
 
-set fileObject to POSIX file "/Users/jsmith/User Guide.txt"
-convert path fileObject to file URL format
-→ "file:///Users/jsmith/User%20Guide.txt"
-
 convert path "/Users/jsmith/User Guide.txt" to alias file object
-→ alias "Macintosh HD:Users:jsmith:User Guide.txt"</code></pre>
+→ alias "Macintosh HD:Users:jsmith:User Guide.txt"
+
+set theFile to POSIX file "/Users/jsmith/User Guide.txt"
+convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't needed here)</i>
+→ "file:///Users/jsmith/User%20Guide.txt"</code></pre>
 				]]></html>
 			</documentation>
 		</command>

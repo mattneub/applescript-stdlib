@@ -2,7 +2,9 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary title="">
 	
-	<suite name="Date Manipulation" code="****">
+	<suite name="Date Conversion" code="****">
+		
+		<!-- TO DO: rename `compose date`/`decompose date`? or `join date`/`split date`? -->
 		
 		<command name="convert record to date" code="Dat:ReDa" description="given a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties, returns a new date object">
 		
@@ -21,24 +23,27 @@ convert record to date {year:1990, month:June, day:15, hours:7, minutes:45}
 			</documentation>
 		</command>
 		
-		<command name="datetime" code="Dat:MkDt" description="shorthand for ‘convert record to date’"> 
-			<direct-parameter type="record" optional="yes"/>
-			<result type="date"/>
-		</command>
-		
 		<command name="convert date to record" code="Dat:DaRe" description="given a date object, returns a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and ‘seconds’ properties">
 			<direct-parameter type="date" optional="yes" description="(default: 2001-01-01 00:00:00)"/>
 			<result type="record"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>convert date to record (date "Friday, 15 June 1990 at 07:45:00")
+→ {year:1990, month:June, day:15, hours:7, minutes:45}</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
+		
+		<!-- TO DO: if moving date string parsing/formatting from FormatLib to here, merge into the following, renaming `parse date`/`format date`-->
 		
 		<command name="convert text to date" code="Dat:TeDa" description="create a date object from ISO8601-formatted text">
 			<direct-parameter type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
 			<result type="date"/>
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert date to text (date "Thursday, 7 January 2016 at 01:41:34")
-→ "2016-01-07T01:41:34Z"</code></pre>
+<pre><code>convert text to date "2016-01-07T00:41:34-0800"
+→ date "Thursday, 7 January 2016 at 08:41:34"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -52,12 +57,30 @@ convert record to date {year:1990, month:June, day:15, hours:7, minutes:45}
 			<result type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert text to date "2016-01-07T00:41:34-0800"
-→ date "Thursday, 7 January 2016 at 08:41:34"</code></pre>
+<pre><code>convert date to text (date "Thursday, 7 January 2016 at 01:41:34")
+→ "2016-01-07T01:41:34Z"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 				
 	</suite>
+	
+	<suite name="Miscellaneous" code="****">
+			
+		<command name="month names" code="Dat:Mths">
+			<result>
+				<type type="type" list="yes"/>
+			</result>
+		</command>
+		
+		<command name="weekday names" code="Dat:Wkds">
+			<result>
+				<type type="type" list="yes"/>
+			</result>
+		</command>
+			
+	</suite>
+	
+	<!-- TO DO: Timezone Support? -->
 	
 </dictionary>

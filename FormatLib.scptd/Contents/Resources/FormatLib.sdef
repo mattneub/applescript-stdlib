@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
-
+	
+	
+	<suite name="General" code="****">
+		
+		<command name="format text" code="Fmt:FTxt" description="insert a list of values into a text template">
+			<direct-parameter type="text" description="the template into which to insert each item of the list"/>
+			<parameter name="using" code="Usin" description="a list of values">
+				<type type="any" list="yes"/>
+			</parameter>
+			<result type="text"/>
+		</command>
+		
+		<command name="literal representation" code="Fmt:FLit" description="convert an AppleScript object to its source code representation">
+			<parameter name="for" code="For_" type="any"/>
+			<result type="text"/>
+		</command>
+		
+	</suite>
+	
+	
 	
 	<suite name="Numbers" code="****">
 		
@@ -28,8 +47,8 @@
 			<enumerator name="word format" code="FNS5"/>
 		</enumeration>
 		
-		
 	</suite>
+	
 	
 	
 	<suite name="Dates" code="****">
@@ -55,12 +74,10 @@
 		</command>
 		
 		<enumeration name="FDSt" code="FDSt">
-			<enumerator name="omit date format" code="FDS0"/>
 			<enumerator name="short date format" code="FDS1"/>
 			<enumerator name="medium date format" code="FDS2"/>
 			<enumerator name="long date format" code="FDS3"/>
 			<enumerator name="full date format" code="FDS4"/>
-			<enumerator name="omit time format" code="FDS5"/>
 			<enumerator name="short time format" code="FDS6"/>
 			<enumerator name="medium time format" code="FDS7"/>
 			<enumerator name="long time format" code="FDS8"/>
@@ -70,30 +87,24 @@
 	</suite>
 	
 	
+	
 	<suite name="JSON" code="****">
-	
-	<!-- TO DO: `convert to JSON`/`convert from JSON` -->
-	
-	</suite>
-	
-	
-	<suite name="General" code="****">
 		
-		<!-- TO DO: debate wisdom/practicality of adding 'convert from text' command (for safety/security, this would need to parse data structures only (c.f. JSON); no commands allowed; keywords would need to be severely restricted, if not forbidden); optionally take `to TYPE` parameter (trouble with that is that AS sucks at describing complex data structures; could just about work around that by passing list or record of type class, e.g. `{text}` to indicate 'list of text', although getting records into consumable form will be a pain; there's also the problem of how to specify unions, e.g. 'text or missing value') -->
+		<command name="parse JSON" code="Fmt:PJSN" description="parse JSON text as an AppleScript value">
+			<direct-parameter type="text"/>
+			<parameter name="fragments allowed" code="Frag" type="boolean" optional="yes" description="(default: false)"/>
+			<result type="any"/>
+		</command>
 		
-		<command name="convert to text" code="Fmt:FObj" description="format a value (or list of values) as text">
-			<parameter name="from" code="From">
-				<type type="any"/>
-				<type type="any" list="yes"/>
-			</parameter>
-			<parameter name="using" code="Usin" text="" optional="yes" description="the template into which to insert each item of the list; if omitted, the value is rendered as-is"/>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
-			<parameter name="source code syntax" code="Code" type="boolean" optional="yes" description="if true, renders the value as AppleScript source code; if false, renders the value in human-readable form"/>
+		<command name="format JSON" code="Fmt:FJSN" description="format an AppleScript value as JSON text">
+			<direct-parameter type="any"/>
+			<parameter name="extra white space" code="PrPr" type="boolean" optional="yes" description="(default: true)"/>
 			<result type="text"/>
 		</command>
 		
 	</suite>
-
+	
+	
 	
 	<suite name="Localization" code="****">
 		
