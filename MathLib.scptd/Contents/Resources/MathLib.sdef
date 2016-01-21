@@ -111,21 +111,25 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 		
 		<command name="round number" code="Mth:RouN" description="round a number to the specified number of places">
 			<direct-parameter type="real"/>
-			<parameter name="rounding" code="Dire" type="olie" optional="yes" description="the rounding direction (default: ‘to nearest’). ‘to nearest’ rounds .5 cases to the nearest even integer in order to decrease cumulative errors. To always round .5 away from zero, use ‘as taught in school.’"/>
-			<parameter name="to places" code="Plac" type="integer" optional="yes" description="The maximum number of decimal places that can appear in the result (default: 0). If 0, the result is an integer; if >0 then the number's least significant digits are also rounded."/>
+			<parameter name="to places" code="Plac" type="integer" optional="yes" description="The maximum number of decimal places that can appear in the result (default: 0). If 0, the result is an integer; if greater than 0, the number's least significant digits are also rounded."/>
+			<parameter name="by" code="Dire" type="MRnd" optional="yes" description="the rounding direction (default: ‘rounding halves to even’)"/>
 			<result>
 				<type type="real"/>
 				<type type="integer"/>
 			</result>
+			<!-- TO DO: need documentation to fully explain each rounding behavior -->
 		</command>
 		
+		
 		<!-- same as in StandardAdditions.sdef -->
-		<enumeration name="olie" code="olie">
-			<enumerator name="up" code="rndU" description="round up"/>
-			<enumerator name="down" code="rndD" description="round down"/>
-			<enumerator name="toward zero" code="rndZ" description="round toward zero"/>
-			<enumerator name="to nearest" code="rndN" description="round to nearest"/>
-			<enumerator name="as taught in school" code="rndS" description="round to nearest with .5 always rounding away from zero"/>
+		<enumeration name="MRnd" code="MRnd">
+			<enumerator name="rounding up" code="RN_U"/>
+			<enumerator name="rounding down" code="RN_D"/>
+			<enumerator name="rounding toward zero" code="RN_T"/>
+			<enumerator name="rounding away from zero" code="RN_F"/>
+			<enumerator name="rounding halves toward zero" code="RNhT"/>
+			<enumerator name="rounding halves away from zero" code="RNhF"/>
+			<enumerator name="rounding halves to even" code="RNhE"/>
 		</enumeration>
 		
 	</suite>

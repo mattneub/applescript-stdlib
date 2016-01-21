@@ -1,0 +1,38 @@
+#!/usr/bin/osascript
+
+(* Compare two compiled AppleScript (.scpt) files for differences.
+
+Usage:  asdiff  FILE1  FILE2
+
+Diff tools typically operate on plain text files only, so this shell script uses `osadecompile` to convert .scpt files to temporary .applescript files before comparing them. (Other file types are not affected.)
+
+Be aware that `osadecompile` may not have access to all the required terminology (e.g. script library SDEFs) when decompiling code, in which case raw chevron syntax will be used in place of unknown keywords. This is a limitation of AppleScript.
+
+Uses TextWrangler's `twdiff` tool to display scripts in TextWrangler <http://www.barebones.com/products/textwrangler/>. You can modify _difftool property to use a different tool, e.g. `opendiff`, if preferred.
+
+For basic .applescript code coloring, BBEdit/TextWrangler codeless language module:
+
+	https://github.com/ewancarr/BBEdit/blob/master/Language%20Modules/AppleScript.plist
+*)
+
+property _difftool : "/usr/local/bin/twdiff"
+
+use script "FileLib"
+use scripting additions
+
+on run {arg1, arg2}
+	if arg1 ends with ".scpt" and arg2 ends with ".scpt" then
+		set tempFolder to do shell script "mktemp -dt CTFD"
+		set arg1 to exportAppleScript(arg1, ".1", tempFolder)
+		set arg2 to exportAppleScript(arg2, ".2", tempFolder)
+	end if
+	do shell script  quoted form of _difftool & " " & quoted form of arg1 & space & quoted form of arg2 & " &>/dev/null &"
+end run
+
+to exportAppleScript(scptFilePath, aLabel, tempFolder)
+	set scptFilePath to normalize path scptFilePath with full expansion
+	set tempFilePath to join path {tempFolder, last item of (split path scptFilePath) & aLabel & ".applescript"}
+	do shell script "osadecompile " & quoted form of scptFilePath & " >" & quoted form of tempFilePath
+	return tempFilePath
+end exportAppleScript
+

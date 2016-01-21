@@ -27,14 +27,20 @@
 		<command name="parse number" code="Fmt:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
 			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="number"/>
 		</command>
 		
 		<command name="format number" code="Fmt:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
 			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="text"/>
 		</command>
 		
@@ -59,7 +65,10 @@
 				<type type="text"/>
 				<type type="FDSt" list="yes"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="date"/>
 		</command>
 		
@@ -69,7 +78,10 @@
 				<type type="text"/>
 				<type type="FDSt"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US” (default: current locale)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="text"/>
 		</command>
 		
@@ -98,7 +110,7 @@
 		
 		<command name="format JSON" code="Fmt:FJSN" description="format an AppleScript value as JSON text">
 			<direct-parameter type="any"/>
-			<parameter name="extra white space" code="PrPr" type="boolean" optional="yes" description="(default: true)"/>
+			<parameter name="extra white space" code="PrPr" type="boolean" optional="yes" description="(default: false)"/>
 			<result type="text"/>
 		</command>
 		
@@ -109,9 +121,13 @@
 	<suite name="Localization" code="****">
 		
 		<command name="available locales" code="Fmt:LLoc" description="lists the available locale identifiers">
-			<result>
+			<result description="e.g. {&quot;af&quot;, &quot;af_NA&quot;, &quot;af_ZA&quot;, &quot;agq&quot;, …, &quot;zu_ZA&quot;}">
 				<type type="text" list="yes"/>
 			</result>
+		</command>
+		
+		<command name="current locale" code="Fmt:CLoc" description="returns the locale identifier for the host machine's current locale">
+			<result type="text" description="e.g. &quot;en_US&quot;"/>
 		</command>
 		
 	</suite>

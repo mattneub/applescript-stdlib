@@ -60,6 +60,7 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 			<direct-parameter>
 				<type type="text"/>
 			</direct-parameter>
+			<parameter name="full expansion" code="ExpR" type="boolean" optional="yes" description="if true, relative paths will also be expanded to absolute paths within the current folder (default: false)"/>
 			<result type="text"/>
 			
 			<documentation>
@@ -81,6 +82,8 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 <p>Examples:</p>
 <pre><code>normalize path "~/Documents/../Movies/"
 → "/Users/jsmith/Movies</code></pre>
+
+<p>Raises error number -1728 <code>full expansion</code> is true and the user's current folder is unknown.</p> 
 				]]></html>
 			</documentation>
 		</command>
@@ -162,11 +165,6 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when writing a plain text file, the encoding to use (default: UTF8 encoding)"/>
 			<result type="anything"/>
 			
-			<documentation>
-				<html><![CDATA[
-<pre><code></code></pre>
-				]]></html>
-			</documentation>
 		</command>
 		
 		
@@ -208,4 +206,32 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 	</suite>
 	
 	
+	<suite name="Information" code="****">
+
+		<command name="current folder" code="Fil:CurF" description="Returns the current working folder">
+			<result type="file" description="the current working folder; if unknown, raises error number -1728 instead"/>
+			<documentation>
+				<html><![CDATA[
+<p>Useful in <code>osascript</code> based shell scripts to obtain the shell's current folder (i.e. current working directory). For example,  the following shell script optionally accepts a list of file paths to process; if no paths are given, it processes the user's current folder instead:</p>
+
+<pre><code>#!/usr/bin/osascript
+
+use script "FileLib"
+
+to run pathsToProcess
+    if pathsToProcess is {} then
+        set pathsToProcess to {POSIX path of (current folder)}
+    end if
+    repeat with pathRef in pathsToProcess
+        -- process each path in turn…
+    end repeat
+end run
+</code></pre>
+				]]></html>
+			</documentation>
+
+		</command>
+	
+	</suite>
+			
 </dictionary>

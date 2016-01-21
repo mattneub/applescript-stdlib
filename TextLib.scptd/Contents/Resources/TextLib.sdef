@@ -10,19 +10,28 @@
 		
 		<command name="uppercase text" code="Txt:UppT" description="convert all alphabetical characters to uppercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="text"/>
 		</command>
 		
 		<command name="lowercase text" code="Txt:LowT" description="convert all alphabetical letters to lowercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="text"/>
 		</command>
 		
 		<command name="capitalize text" code="Txt:CapT" description="capitalize all words (though be aware that this command has only a rudimentary understanding of the complex capitalization rules used in natural languages so results may be inferior to human-capitalized text)">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="fLoc" type="text" optional="yes" description="(default: missing value)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="text"/>
 		</command>
 		
