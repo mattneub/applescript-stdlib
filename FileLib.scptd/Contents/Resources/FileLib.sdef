@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
-
-	<!-- TO DO: `check path exists`, `check file exists`, `check folder exists` (use NSFileManager's defaultManager()'s fileExistsAtPath:filePath isDirectory:(specifier)); suspect these should be a single command, but what to use as enum/bool options? `check path PATH is {...}`; take list of constants, which could include file, folder, any, readable, writeable, deletable -->
 	
 	<suite name="Path Manipulation" code="****">
 		
@@ -272,6 +270,7 @@ end run
 				<type type="command line argument definition" list="yes"/>
 			</parameter>
 			<result type="record" description="a custom record containing all of the properties specified by the ‘options’ and ‘arguments’ parameters"/>
+			<parameter name="default options" code="DefO" type="boolean" optional="yes" description="if true, default ‘-h’ (‘--help’) and ‘-v’ (‘--version’) options will be added automatically if not already defined (default: true)"/>
 			<documentation>
 				<html><![CDATA[
 <p>An AppleScript-based shell script is saved as an uncompiled text file and has the following general form:</p>
@@ -299,18 +298,17 @@ property _description : ""
 on run argv
   set parameterRecord to (parse command line arguments argv ¬
       options _optionDefinitions arguments _argumentDefinitions)
-  if parameterRecord's help then -- display help and exit immediately
-    log (format command line help <!--name _name -->options _optionDefinitions ¬
-        arguments _argumentDefinitions summary _summary description _description)
-    return
-  else if parameterRecord's |version| then -- return version and exit immediately
+  if parameterRecord's help then -- return help and exit
+    return format command line help options _optionDefinitions ¬
+        arguments _argumentDefinitions summary _summary description _description
+  else if parameterRecord's |version| then -- return version and exit
     return _version
   else -- do stuff (if a value is returned, it is written to stdout)
-    return doShellCommand for parameterRecord
+    return doShellCommand(parameterRecord)
   end if
 end run
 
-to doShellCommand for {} -- a record of form {propertyName:localVariable,...}
+to doShellCommand(params)
   <em>-- your code goes here…</em>
 end doShellCommand</code></pre>
 
@@ -335,6 +333,7 @@ end doShellCommand</code></pre>
 			</parameter>
 			<parameter name="description" code="Docu" type="text" optional="yes" description="any additional documentation to be displayed (default: &quot;&quot;)"/>
 			<parameter name="terminal styles" code="VFmt" type="boolean" optional="yes" description="if true, the returned text will include special formatting codes (bold, underline) to improve presentation in Terminal.app and other VT100 emulators; use false if you intend to use this text elsewhere (default: true)"/>
+			<parameter name="default options" code="DefO" type="boolean" optional="yes" description="if true, default ‘-h’ (‘--help’) and ‘-v’ (‘--version’) options will be added automatically if not already defined (default: true)"/>
 			<result type="text"/>
 		</command>
 		
