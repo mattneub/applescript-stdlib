@@ -8,6 +8,8 @@
 	<string>TestLib</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>OSAScriptingDefinition</key>
+	<string>TestLib.sdef</string>
 	<key>WindowState</key>
 	<dict>
 		<key>bundleDividerCollapsed</key>
@@ -17,15 +19,15 @@
 		<key>dividerCollapsed</key>
 		<false/>
 		<key>eventLogLevel</key>
-		<integer>2</integer>
+		<integer>0</integer>
 		<key>name</key>
 		<string>ScriptWindowState</string>
 		<key>positionOfDivider</key>
-		<real>421</real>
+		<real>572</real>
 		<key>savedFrame</key>
-		<string>395 105 700 672 0 0 1280 777 </string>
+		<string>163 33 923 744 0 0 1280 777 </string>
 		<key>selectedTab</key>
-		<string>description</string>
+		<string>log</string>
 	</dict>
 </dict>
 </plist>

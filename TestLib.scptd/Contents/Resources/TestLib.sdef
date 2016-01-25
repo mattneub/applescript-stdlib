@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary title="">
+
+
+	<suite name="General Tools" code="****">
+		
+		<command name="timer object" code="#@[:MTmr" description="returns a new TimerObject">
+			<direct-parameter type="text" optional="yes" description="an optional name, for reference (default: &quot;&quot;)"/>
+			<result type="script"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p><code>TimerObject</code> script objects define the following handlers:</p>
+
+<dl>
+<dt><code>timerName()</code></dt>
+<dd><p>the timer name, if given</p>
+<ul>
+	<li>Result: <tt>text</tt></i>
+</ul>
+</dd>
+
+<dt><code>startTimer()</code></dt>
+<dd><p>[re]start the timer (this does nothing if the timer is currently running)</p>
+<ul>
+	<li>Result: <tt>script</tt> – for convenience, TimerObject returns itself</i>
+</ul>
+</dd>
+
+<dt><code>stopTimer()</code></dt>
+<dd><p>stop the timer (this does nothing if the timer is already stopped)</p>
+<ul>
+	<li>Result: <tt>real</tt> – the number of seconds elapsed since timer was last started</i>
+</ul>
+</dd>
+
+<dl>
+<dt><code>elapsedTime()</code></dt>
+<dd><p>returns the number of seconds since running timer was last started</p>
+<ul>
+	<li>Result: <tt>real</tt></i>
+</ul>
+</dd>
+
+<dl>
+<dt><code>totalTime()</code></dt>
+<dd><p>returns the total number of seconds the timer has been running</p>
+<ul>
+	<li>Result: <tt>real</tt></i>
+</ul>
+</dd>
+</dl>
+				]]></html>
+			</documentation>
+		</command>
+		
+	</suite>
+	
+	
+	
+	<suite name="Unit Testing" code="****">
+		
+		<!-- TO DO: need to check non-ASCII codes work ok -->
+		
+		<command name="do unit test" code="#@[:>>!!" description="used by test runner to call a single test_NAME handler (i.e. run a single test)">
+			<direct-parameter type="script" description="the test suite object"/>
+			<parameter name="suite name" code="SuNa" type="text" description="test suite name, for reporting use"/>
+			<parameter name="handler name" code="HaNa" type="text" description="name of the test suite handler to call"/>
+			<parameter name="all handler names" code="AHaN" description="list of all handler names in this test suite">
+				<type type="text" list="yes"/>
+			</parameter>
+			<parameter name="terminal styles" code="VFmt" type="boolean" description="if true, the returned report will include special formatting codes (bold, underline) to improve presentation in Terminal.app and other VT100 emulators; use false if you intend to use this text elsewhere"/>
+			<result type="script" description="test result"/>
+		</command>
+		
+		<command name="assert result" code="#@[:AsRe" description="">
+			<parameter name="for" code="Valu" type="any" description="the result to check"/>
+			<parameter name="is" code="Equa" type="any" description="the expected result"/>
+			<parameter name="summary" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+			<parameter name="real comparison" code="FCmp" type="boolean" description="when comparing two real numbers, allow for very slight differences due to limited floating point precision (default: false)"/>
+		</command>
+	
+		<command name="assert error" code="#@[:AsEr" description="">
+			<parameter name="for" code="Hand" type="text" description="the name of the ‘trap_NAME’ handler to invoke"/><!--TO DO: should be able to use default name based on `test_NAME`-->
+			<parameter name="using" code="Args" optional="yes" description="a list of zero or more positional parameters to pass to the ‘trap_NAME’ handler (default: {}). The number of positional parameters in the ‘trap_NAME’ handler must match the number of items in this list or else the test will fail."><!-- TO DO: if this catches user out, make trap_NAME arity 1 and accept any type here -->
+				<type type="any" list="yes"/>
+			</parameter>
+			<parameter name="is" code="Equa" type="error record" description="the expected error"/>
+			<parameter name="summary" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+		</command>
+		
+		
+		<record-type name="error record" code="#@[E" description="record type used by the ‘assert error’ command to describe the expected error information">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{
+ errorText:<var>text</var>,
+ errorNumber:<var>integer</var>,
+ errorValue:<var>any</var>,
+ expectedType:<var>type</var>,
+ partialResult:<var>any</var>
+}</code></pre>
+
+<p>The <var>errorNumber</var> is required; other properties are recommended where appropriate.</p>
+				]]></html>
+			</documentation>
+		</record-type>
+	
+	</suite>
+	
+</dictionary>
+
