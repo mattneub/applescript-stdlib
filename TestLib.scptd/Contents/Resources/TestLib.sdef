@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary title="">
-
+	
+	<!-- note: this SDEF uses four-char codes containing "high-ASCII" chars (i.e. bytes in range 128-255 represented as characters originally found in MacOSRoman charset) to reduce the likelihood of keyword collisions with the code being tested; TO DO: check how these raw codes appear in AS when host system uses different primary encodings -->
 
 	<suite name="General Tools" code="****">
 		
-		<command name="timer object" code="#@[:MTmr" description="returns a new TimerObject">
+		<command name="timer object" code="Ü†ë:MTmr" description="returns a new TimerObject">
 			<direct-parameter type="text" optional="yes" description="an optional name, for reference (default: &quot;&quot;)"/>
 			<result type="script"/>
 			
@@ -24,7 +25,7 @@
 <dt><code>startTimer()</code></dt>
 <dd><p>[re]start the timer (this does nothing if the timer is currently running)</p>
 <ul>
-	<li>Result: <tt>script</tt> – for convenience, TimerObject returns itself</i>
+	<li>Result: <tt>script</tt> – the TimerObject returns itself, allowing timer creation and start commands to be chained for convenience, e.g. <code>(timer object)'s startTimer()</code></i>
 </ul>
 </dd>
 
@@ -60,38 +61,53 @@
 	
 	
 	<suite name="Unit Testing" code="****">
-		
-		<!-- TO DO: need to check non-ASCII codes work ok -->
-		
-		<command name="do unit test" code="#@[:>>!!" description="used by test runner to call a single test_NAME handler (i.e. run a single test)">
-			<direct-parameter type="script" description="the test suite object"/>
-			<parameter name="suite name" code="SuNa" type="text" description="test suite name, for reporting use"/>
-			<parameter name="handler name" code="HaNa" type="text" description="name of the test suite handler to call"/>
-			<parameter name="all handler names" code="AHaN" description="list of all handler names in this test suite">
-				<type type="text" list="yes"/>
-			</parameter>
-			<parameter name="terminal styles" code="VFmt" type="boolean" description="if true, the returned report will include special formatting codes (bold, underline) to improve presentation in Terminal.app and other VT100 emulators; use false if you intend to use this text elsewhere"/>
-			<result type="script" description="test result"/>
-		</command>
-		
-		<command name="assert result" code="#@[:AsRe" description="">
+				
+		<command name="assert test result" code="Ü†ë:AsRe" description="">
 			<parameter name="for" code="Valu" type="any" description="the result to check"/>
-			<parameter name="is" code="Equa" type="any" description="the expected result"/>
-			<parameter name="summary" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+			<!-- TO DO: provide optional `in` and `using` parameters as alternative to ``, as in `assert test error`? (this might provide more flexibility, plus tests can include notes even on failure, but it also makes API more complex and potentially confusing to users) -->
+			<parameter name="is" code="Equa" type="any" optional="yes" description="the expected result"/>
+			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
 			<parameter name="real comparison" code="FCmp" type="boolean" description="when comparing two real numbers, allow for very slight differences due to limited floating point precision (default: false)"/>
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>to test_uppercaseText
+    assert test result for (uppercase text "foøbår") is "FOØBÅR"
+    ...
+end test_uppercaseText</code></pre>
+
+<p>If the <code>note</code> parameter is given, its text is included in the generate test report. For example, an <code>assert test result</code> command could use this parameter to describe the type of bugs that particular test is designed to detect.</p>
+				]]></html>
+			</documentation>
+
 		</command>
 	
-		<command name="assert error" code="#@[:AsEr" description="">
-			<parameter name="for" code="Hand" type="text" description="the name of the ‘trap_NAME’ handler to invoke"/><!--TO DO: should be able to use default name based on `test_NAME`-->
-			<parameter name="using" code="Args" optional="yes" description="a list of zero or more positional parameters to pass to the ‘trap_NAME’ handler (default: {}). The number of positional parameters in the ‘trap_NAME’ handler must match the number of items in this list or else the test will fail."><!-- TO DO: if this catches user out, make trap_NAME arity 1 and accept any type here -->
-				<type type="any" list="yes"/>
-			</parameter>
-			<parameter name="is" code="Equa" type="error record" description="the expected error"/>
-			<parameter name="summary" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+		<command name="assert test error" code="Ü†ë:AsEr" description="">
+			<parameter name="in" code="Hand" type="text" optional="yes" description="the ‘call_NAME’ handler to use; if omitted, a handler with the same NAME as the current ‘test_NAME’ handler is called"/>
+			<parameter name="using" type="any" code="Args" optional="yes" description="if given, the parameter to pass to the ‘call_NAME’ handler; if omitted, no parameters are passed"/>
+			<parameter name="is" code="Equa" type="expected error information" description="the expected error"/>
+			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>to test_uppercaseText
+    ...
+    assert test error using {a:"foo"} is {errorNumber:-1703} ¬
+            note "Check unsuitable value types are rejected."
+end test_uppercaseText
+
+to call_uppercaseText(usingParam)
+    uppercase text usingParam
+end call_uppercaseText
+</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
-		<record-type name="error record" code="#@[E" description="record type used by the ‘assert error’ command to describe the expected error information">
+		<record-type name="expected error information" code="Ü†ëE" description="record type used by the ‘assert…’ command to describe the expected error information"> <!-- note: this user-supplied record is distinct to the error info records TestLib uses internally for reporting failed tests; while both use the same identifier-based keys, internal error info records have their own `class` property and «class Ü†ëé» type which TestReport checks when determining how to convert test data to report text -->
 			<documentation>
 				<html><![CDATA[
 <pre><code>{
@@ -102,7 +118,7 @@
  partialResult:<var>any</var>
 }</code></pre>
 
-<p>The <var>errorNumber</var> is required; other properties are recommended where appropriate.</p>
+<p>The <var>errorNumber</var> property is required; other properties are recommended where appropriate.</p>
 				]]></html>
 			</documentation>
 		</record-type>
