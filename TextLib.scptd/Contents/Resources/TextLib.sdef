@@ -206,5 +206,42 @@
 		
 	</suite>
 	
+	
+	
+	
+	<suite name="Text Formatting" code="****">
+		
+		<command name="format text" code="Txt:FTxt" description="insert a list of values into a text template">
+			<direct-parameter type="text" description="the template into which to insert each item of the list"/>
+			<parameter name="using" code="Usin" description="a list of values">
+				<type type="any" list="yes"/>
+			</parameter>
+			<result type="text"/>
+		</command>
+		
+		<command name="literal representation" code="Txt:FLit" description="convert an AppleScript object to its source code representation">
+			<parameter name="for" code="For_" type="any"/>
+			<result type="text"/>
+		</command>
+		
+	</suite>
+	
+	
+	
+	
+	<suite name="Localization Support" code="****" description="provides information useful when working with localization-aware commands">
+		
+		<command name="available locales" code="Txt:LLoc" description="lists the available locale identifiers">
+			<result description="e.g. {&quot;af&quot;, &quot;af_NA&quot;, &quot;af_ZA&quot;, &quot;agq&quot;, …, &quot;zu_ZA&quot;}">
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+		<command name="current locale" code="Txt:CLoc" description="returns the locale identifier for the host machine's current locale">
+			<result type="text" description="e.g. &quot;en_US&quot;"/>
+		</command>
+		
+	</suite>
+	
 </dictionary>
 

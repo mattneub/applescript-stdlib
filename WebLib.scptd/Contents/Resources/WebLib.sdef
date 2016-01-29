@@ -2,14 +2,14 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
 
-
 	
-	<suite name="" code="****">
+	
+	<suite name="URL Manipulation" code="****">
 		
-		<command name="" code="" description="">
-			<direct-parameter type=""/>
-			<parameter name="" code="" type="" description=""/>
-			<result type=""/>
+		<command name="split URL" code="Web:SplU" description="">
+			<direct-parameter type="text"/>
+			<!--parameter name="" code="" type="" description=""/-->
+			<result type="URL component data"/>
 			
 			<documentation>
 				<html><![CDATA[
@@ -21,8 +21,128 @@
 			
 		</command>
 		
+		<command name="join URL" code="Web:JoiU" description="">
+			<direct-parameter type="URL component record"/>
+			<parameter name="using base URL" code="Base" type="text" optional="yes" description=""/>
+			<result type="text"/>
+		</command>
+		
+		
+		<command name="escape URL characters" code="Web:EscU" description="">
+			<direct-parameter type="text"/>
+			<!--parameter name="" code="" type="" description=""/-->
+			<result type="text"/>			
+		</command>
+		
+		
+		<command name="unescape URL characters" code="Web:UneU" description="">
+			<direct-parameter type="text"/>
+			<!--parameter name="" code="" type="" description=""/-->
+			<result type="text"/>			
+		</command>
+
+		
+		<command name="split URL query string" code="Web:SplQ" description="">
+			<direct-parameter type="text"/>
+			<!--parameter name="" code="" type="" description=""/-->
+			<result type="record"/>
+		</command>
+
+		<command name="join URL query string" code="Web:JoiQ" description="">
+			<direct-parameter type="text"/>
+			<!--parameter name="" code="" type="" description=""/-->
+			<result type="record"/>
+		</command>
+		
+		
+		<record-type name="URL component data" code="WebC" description="">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{
+ urlScheme<var>text</var>,
+ userName<var>text</var>,
+ userPassword<var>text</var>,
+ hostName<var>text</var>,
+ portNumber<var>text</var>,
+ resourcePath<var>text</var>,
+ pathExtension<var>text</var>,
+ pathComponents<var>text</var>,
+ parameterString<var>text</var>,
+ queryString<var>text</var>,
+ urlFragment<var>text</var>
+}</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+	
+		
 	</suite>
 	
+	
+	
+	<suite name="JSON Encoding" code="****">
+		
+		<command name="parse JSON" code="Web:PJSN" description="parse JSON text as an AppleScript value">
+			<direct-parameter type="text"/>
+			<parameter name="fragments allowed" code="Frag" type="boolean" optional="yes" description="(default: false)"/>
+			<result type="any"/>
+		</command>
+		
+		<command name="format JSON" code="Web:FJSN" description="format an AppleScript value as JSON text">
+			<direct-parameter type="any"/>
+			<parameter name="extra white space" code="EWSp" type="boolean" optional="yes" description="(default: false)"/>
+			<result type="text"/>
+		</command>
+		
+	</suite>
+	
+	
+	
+	<suite name="Sending HTTP Requests" code="****">
+		
+		<command name="send HTTP request" code="Web:ReqH" description="">
+			<direct-parameter type="text" optional="yes" description="the HTTP method name (default: &quot;GET&quot;)"/>
+			<parameter name="to" code="Dest" type="text" description="the destination URL"/>
+			<parameter name="with headers" code="Head" optional="yes" description="zero or more Header lines to include in the request">
+				<type type="text" list="yes"/>
+			</parameter>
+			
+			<parameter name="body" code="Body" optional="yes" description="the body data for a POST/PUT request; if given, the ‘headers’ parameter should include the appropriate “Content-Type:…” line">
+				<type type="text"/>
+				<type type="data"/>
+			</parameter>
+			
+			<parameter name="returning" code="Type" type="type" optional="yes" description="the type of data returned by a GET/POST request; this should either be ‘text’ if the returned data is known to be UTF-8 encoded text, or ‘data’ for anything else (default: text)"/>
+			
+			<!-- TO DO: need optional `timeout` parameter (default: 60sec?) -->
+			
+			<result type="HTTP response data"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+			
+		</command>
+		
+		
+		<record-type name="HTTP response data" code="WebR" description="">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{
+ reponseCode:<var>integer</var>,
+ responseHeaders:<var>list of text</var>,
+ responseBody:<var>text or data</var>
+}</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+	
+		
+	</suite>
 	
 	
 </dictionary>

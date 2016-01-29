@@ -5,61 +5,88 @@
 
 	
 	<suite name="General Operations" code="****">
-		
-		
-		<command name="convert number to text" code="Mth:NuTe" description="convert an integer/real number to numeric text in canonical format">
-			<direct-parameter type="number"/>
-			<result type="text"/>
-			<documentation>
-				<html><![CDATA[
-<p>Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, this command always uses the same numerical syntax as AppleScript itself. For example:</p>
 
-<pre><code>3.14 as text → "3.14" (USA)
-3.14 as text → "3,14" (Germany)
 
-convert number to text 3.14 → "3.14" (USA)
-convert number to text 3.14 → "3.14" (Germany)</code></pre>
-				]]></html>
-			</documentation>
-		</command>
 		
-		<command name="convert text to number" code="Mth:TeNu" description="convert numeric text in canonical format to an integer/real number">
+		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="number"/>
 			<documentation>
 				<html><![CDATA[
-<p>Unlike coercing a text value to <code>number</code>, which parses the text according to the current user’s localization settings, this command always uses the same numerical syntax as AppleScript itself. For example:</p>
+				
+<p>By default, the <code>parse number</code> command converts numeric text in canonical format to an integer/real number. Unlike coercing a text value to <code>number</code>, which parses the text according to the current user’s localization settings, this always uses the same numerical syntax as AppleScript itself. For example:</p>
 
 <pre><code>"3.14" as number → 3.14 (USA)
 "3,14" as number → 3.14 (Germany)
 
 convert text to number "3.14" → 3.14 (USA)
 convert text to number "3.14" → 3.14 (Germany)</code></pre>
+
 				]]></html>
 			</documentation>
 		</command>
 		
+		<command name="format number" code="Mth:FNum" description="format a number as text">
+			<direct-parameter type="number"/>
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
+			<result type="text"/>
+			<documentation>
+				<html><![CDATA[
+				
+<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, this always uses the same numerical syntax as AppleScript itself. For example:</p>
+
+<pre><code>3.14 as text → "3.14" (USA)
+3.14 as text → "3,14" (Germany)
+
+format number 3.14 → "3.14" (USA)
+format number 3.14 → "3.14" (Germany)</code></pre>
+
+				]]></html>
+			</documentation>
+		</command>
 		
-		<command name="convert number to hexadecimal" code="Mth:NuHe" description="convert an integer to hexadecimal text">
+		<enumeration name="FNSt" code="FNSt">
+			<enumerator name="plain format" code="FNS0"/>
+			<enumerator name="decimal format" code="FNS1"/>
+			<enumerator name="currency format" code="FNS2"/>
+			<enumerator name="percent format" code="FNS3"/>
+			<enumerator name="scientific format" code="FNS4"/>
+			<enumerator name="word format" code="FNS5"/>
+		</enumeration>
+		
+		
+				
+		<command name="format hexadecimal number" code="Mth:NuHe" description="convert an integer to hexadecimal text">
 			<direct-parameter type="integer"/>
 			<parameter name="padding to" code="Plac" type="integer" optional="yes" description="minimum number of digits to which to pad the resulting hex number, not including sign or prefix (default: 0)"/>
 			<parameter name="prefix" code="Pref" type="boolean" optional="yes" description="include “0x” prefix in result? (default: true)"/>
 			<result type="text"/>
 		</command>
 		
-		<command name="convert hexadecimal to number" code="Mth:HeNu" description="convert hexadecimal text to an integer/real number">
+		<command name="parse hexadecimal number" code="Mth:HeNu" description="convert hexadecimal text to an integer/real number">
 			<direct-parameter type="text"/>
 			<parameter name="perfect precision" code="Prec" type="boolean" optional="yes" description="if true, report an error if the hexadecimal number is too large to be converted to an AppleScript number without losing precision; if false, allow conversion to any real number even if some precision will be lost (default: true)"/>
 			<result type="number"/>
 		</command>
 		
 		
-		<command name="convert degrees to radians" code="Mth:DeRa" description="convert an angle from degrees to radians">
+		
+		
+		<command name="convert to radians" code="Mth:DeRa" description="convert an angle from degrees to radians">
 			<direct-parameter type="real"/>
 			<result type="real"/>
 		</command>
 		
-		<command name="convert radians to degrees" code="Mth:RaDe" description="convert an angle from radians to degrees">
+		<command name="convert to degrees" code="Mth:RaDe" description="convert an angle from radians to degrees">
 			<direct-parameter type="real"/>
 			<result type="real"/>
 		</command>
@@ -70,10 +97,12 @@ convert text to number "3.14" → 3.14 (Germany)</code></pre>
 			<result type="number"/>
 			<documentation>
 				<html><![CDATA[
+				
 <p>Examples:</p>
 <pre><code>abs 3.1 → 3.1
 
 abs -3.1 → 3.1</code></pre>
+
 				]]></html>
 			</documentation>
 		</command>
@@ -85,11 +114,13 @@ abs -3.1 → 3.1</code></pre>
 			<result type="integer" description="returns -1 if first number is lower, 0 if both numbers are about equal, or +1 if first number is higher"/>
 			<documentation>
 				<html><![CDATA[
+				
 <p>Unlike AppleScript's ‘<code>=</code>’ operator, which compares two numbers for <em>exact</em> equality, the <code>cmp</code> command allows a small margin of error (±1.0e-9), so ignores any slight differences due to the limited precision of real (a.k.a. floating point) numbers. For example:</p>
 
 <pre><code>(0.7 * 0.7) = 0.49 → false (probably not what you wanted!)
 
 cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
+
 				]]></html>
 			</documentation>
 		</command>

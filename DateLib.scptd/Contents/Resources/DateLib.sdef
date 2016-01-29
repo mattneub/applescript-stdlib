@@ -3,10 +3,10 @@
 <dictionary title="">
 	
 	<suite name="Date Conversion" code="****">
-		
-		<!-- TO DO: rename `compose date`/`decompose date`? or `join date`/`split date`? -->
-		
-		<command name="convert record to date" code="Dat:ReDa" description="given a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties, returns a new date object">
+	
+	
+	
+		<command name="join date" code="Dat:ReDa" description="given a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties, returns a new date object">
 		
 			<!-- TO DO: the record parameter's `time` property is currently redundant as `seconds` property can be used, as overflowing values for any property rollover automatically; OTOH, if bounds checking is implemented on properties (which it probably should be, at least as an option) then may want to keep it (simplifies using data directly from AS date objects, which only provide a `time` property) -->
 			
@@ -14,54 +14,102 @@
 			<result type="date"/>
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert record to date {year:2016} 
+<pre><code>join date {year:2016} 
 → date "Friday, 1 January 2016 at 00:00:00"
 
-convert record to date {year:1990, month:June, day:15, hours:7, minutes:45}
+join date {year:1990, month:June, day:15, hours:7, minutes:45}
 → date "Friday, 15 June 1990 at 07:45:00"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 		
-		<command name="convert date to record" code="Dat:DaRe" description="given a date object, returns a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and ‘seconds’ properties">
+		
+		<command name="split date" code="Dat:DaRe" description="given a date object, returns a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and ‘seconds’ properties">
 			<direct-parameter type="date" optional="yes" description="(default: 2001-01-01 00:00:00)"/>
 			<result type="record"/>
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert date to record (date "Friday, 15 June 1990 at 07:45:00")
+<pre><code>split date (date "Friday, 15 June 1990 at 07:45:00")
 → {year:1990, month:June, day:15, hours:7, minutes:45}</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 		
 		
-		<!-- TO DO: if moving date string parsing/formatting from FormatLib to here, merge into the following, renaming `parse date`/`format date`-->
 		
-		<command name="convert text to date" code="Dat:TeDa" description="create a date object from ISO8601-formatted text">
-			<direct-parameter type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
+		<command name="parse date" code="Dat:PDat" description="parse text as a date">
+			<direct-parameter type="text"/>
+			<parameter name="using" code="Usin" optional="yes" description="the template text or predefined date and/or time formats to use (default: canonical date format)">
+				<type type="text"/>
+				<type type="FDSt" list="yes"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
 			<result type="date"/>
+			
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert text to date "2016-01-07T00:41:34-0800"
+<p>By default, the <code>parse date</code> command creates a date object from canonical ISO8601-formatted text (i.e. a date in “YYYY-MM-DDTHH:MM:SS” format), for example:</p>
+				
+<pre><code>parse date "2016-01-07T00:41:34-0800"
 → date "Thursday, 7 January 2016 at 08:41:34"</code></pre>
+
+<!-- TO DO: say why canonical ISO8601 format is better choice than AS's native locale- and user settings-dependent format -->
+
+<!-- TO DO: document custom formatting options (this can be adapted from NSDateFormatter documentation) -->
 				]]></html>
 			</documentation>
+
 		</command>
+		
+		
 				
-		<command name="convert date to text" code="Dat:DaTe" description="create ISO8601-formatted text from a date object">
+		<command name="format date" code="Dat:FDat" description="format a date as text">
 			<direct-parameter type="date"/>
-			<parameter name="for timezone" code="TZon" optional="yes" description="">
+			<parameter name="using" code="Usin" optional="yes" description="the template text or predefined date and/or time formats to use (default: canonical date format)">
+				<type type="text"/>
+				<type type="FDSt"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+				<type type="text"/>
+				<type type="missing value"/>
+			</parameter>
+			
+			<!-- TO DO: implement tz support, allowing the formatted date to display the time in the specified timezone (currently always uses local timezone as AS dates don't support tz info so always use local time) -->
+			<parameter name="in timezone" code="TZon" optional="yes" description="TO DO: implement">
 				<type type="integer"/>
 				<type type="text"/>
 			</parameter>
-			<result type="text" description="text of form: “YYYY-MM-DDTHH:MM:SS”"/>
+			
+			<result type="text"/>
+			
 			<documentation>
 				<html><![CDATA[
-<pre><code>convert date to text (date "Thursday, 7 January 2016 at 01:41:34")
+<p>By default, the <code>format date</code> command converts a date object to canonical ISO8601-formatted text (i.e. a date in “YYYY-MM-DDTHH:MM:SS” format), for example:</p>
+
+<pre><code>format date (date "Thursday, 7 January 2016 at 01:41:34")
 → "2016-01-07T01:41:34Z"</code></pre>
+
+<!-- TO DO: describe other constants and text templates (this can be adapted from NSDateFormatter documentation) -->
 				]]></html>
 			</documentation>
 		</command>
+		
+		<enumeration name="FDSt" code="FDSt">
+			<enumerator name="canonical date format" code="FDS0"/> <!-- i.e. ISO8601 -->
+			<enumerator name="short date format" code="FDS1"/>
+			<enumerator name="medium date format" code="FDS2"/>
+			<enumerator name="long date format" code="FDS3"/>
+			<enumerator name="full date format" code="FDS4"/>
+			<enumerator name="short time format" code="FDS6"/>
+			<enumerator name="medium time format" code="FDS7"/>
+			<enumerator name="long time format" code="FDS8"/>
+			<enumerator name="full time format" code="FDS9"/>
+		</enumeration>
+		
+		
 				
 	</suite>
 	
@@ -81,6 +129,6 @@ convert record to date {year:1990, month:June, day:15, hours:7, minutes:45}
 			
 	</suite>
 	
-	<!-- TO DO: Timezone Support? -->
+	<!-- TO DO: Timezone Support, e.g. list canonical TZ codes, commands for calculating time difference between current/GMT and a specified TZ, and anything else useful Cocoa provides -->
 	
 </dictionary>
