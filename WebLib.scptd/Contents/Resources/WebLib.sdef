@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
+<dictionary>
+
+
+	
+	<suite name="" code="****">
+		
+		<command name="" code="" description="">
+			<direct-parameter type=""/>
+			<parameter name="" code="" type="" description=""/>
+			<result type=""/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+			
+		</command>
+		
+	</suite>
+	
+	
+	
+</dictionary>
