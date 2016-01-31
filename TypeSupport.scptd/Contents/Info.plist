@@ -8,6 +8,8 @@
 	<string>TypeSupport</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
+	<key>OSAScriptingDefinition</key>
+	<string>TypeSupport.sdef</string>
 	<key>WindowState</key>
 	<dict>
 		<key>bundleDividerCollapsed</key>
