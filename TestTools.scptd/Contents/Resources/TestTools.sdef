@@ -112,13 +112,11 @@ end call_uppercaseText
 		<record-type name="expected error information" code="Ü†ëE" description="record type used by the ‘assert…’ command to describe the expected error information"> <!-- note: this user-supplied record is distinct to the error info records TestLib uses internally for reporting failed tests; while both use the same identifier-based keys, internal error info records have their own `class` property and «class Ü†ëé» type which TestReport checks when determining how to convert test data to report text -->
 			<documentation>
 				<html><![CDATA[
-<pre><code>{
- errorText:<var>text</var>,
- errorNumber:<var>integer</var>,
- errorValue:<var>any</var>,
- expectedType:<var>type</var>,
- partialResult:<var>any</var>
-}</code></pre>
+<pre><code>{ errorNumber : <var>integer</var>,
+  errorMessage : <var>text</var>,
+  fromValue : <var>any</var>,
+  toType : <var>type</var>,
+  partialResult : <var>any</var> }</code></pre>
 
 <p>The <var>errorNumber</var> property is required; other properties are recommended where appropriate.</p>
 				]]></html>
@@ -153,8 +151,8 @@ end call_uppercaseText
 
 <p>To illustrate, the following <code>assert test error</code> command makes two checks: 1. that the error number is exactly 3000, and 2. that the error value is 0.49 allowing for any slight differences due to real numbers’ limited precision:</p>
 
-<pre><code>assert test error is {errorNumber:3000 errorValue:0.49} ¬
-        using {errorValue:numeric equality check}</code></pre>
+<pre><code>assert test error is {errorNumber:3000 fromValue:0.49} ¬
+        using {fromValue:numeric equality check}</code></pre>
 
 <p>Thus, if the error value was produced by the calculation <code>0.7 * 0.7</code> – which returns a real number that is very nearly but not <em>precisely</em> 0.49 – this test will pass as expected.</p>
 				]]></html>
