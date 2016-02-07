@@ -30,7 +30,7 @@
 		
 		<command name="escape URL characters" code="Web:EscU" description="">
 			<direct-parameter type="text"/>
-			<!--parameter name="" code="" type="" description=""/-->
+			<parameter name="preserving" code="Safe" type="text" description="any additional ASCII characters that should not be escaped (default: &quot;/&quot;)"/>
 			<result type="text"/>			
 		</command>
 		
@@ -55,22 +55,18 @@
 		</command>
 		
 		
-		<record-type name="URL component data" code="WebC" description="">
+		<record-type name="URL component record" code="WebC" description="">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{
- urlScheme<var>text</var>,
- userName<var>text</var>,
- userPassword<var>text</var>,
- hostName<var>text</var>,
- portNumber<var>text</var>,
- resourcePath<var>text</var>,
- pathExtension<var>text</var>,
- pathComponents<var>text</var>,
- parameterString<var>text</var>,
- queryString<var>text</var>,
- urlFragment<var>text</var>
-}</code></pre>
+<pre><code>{ urlScheme : <var>text</var>,
+  userName : <var>text</var>,
+  userPassword : <var>text</var>,
+  hostName : <var>text</var>,
+  portNumber : <var>text</var>,
+  resourcePath : <var>text</var>,
+  parameterString : <var>text</var>,
+  queryString : <var>text</var>,
+  fragmentIdentifier : <var>text</var> }</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>

@@ -3,14 +3,12 @@
 <dictionary title="">
 	
 	<suite name="Date Conversion" code="****">
-	
-	
-	
-		<command name="join date" code="Dat:ReDa" description="given a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties, returns a new date object">
+		
+		<command name="join date" code="Dat:ReDa" description="given a record of year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
 		
 			<!-- TO DO: the record parameter's `time` property is currently redundant as `seconds` property can be used, as overflowing values for any property rollover automatically; OTOH, if bounds checking is implemented on properties (which it probably should be, at least as an option) then may want to keep it (simplifies using data directly from AS date objects, which only provide a `time` property) -->
 			
-			<direct-parameter type="record" optional="yes" description="If given, the ‘month’ property can be a month constant (‘January’, ‘February’, etc) or integer, while the ‘year’, ‘day’, ‘hours’, ‘minutes’, and/or ‘seconds’ properties should be integers. A ‘time’ property (number of seconds since midnight) may be given instead of ‘hours’, ‘minutes’, and ‘seconds’. All properties are optional; if omitted, default values are used instead. (default: 2001-01-01 00:00:00)"/>
+			<direct-parameter type="date component record" optional="yes" description="all properties are optional; if omitted, default values are used instead (default: midnight of 1 January 2001)"/>
 			<result type="date"/>
 			<documentation>
 				<html><![CDATA[
@@ -19,14 +17,19 @@
 
 join date {year:1990, month:June, day:15, hours:7, minutes:45}
 → date "Friday, 15 June 1990 at 07:45:00"</code></pre>
+
+<p>For convenience, a <code>time</code> property (number of seconds since midnight) can also be used instead of <code>hours</code>, <code>minutes</code>, and <code>seconds</code>:</p>
+
+<pre><code>join date {year:1990, month:June, day:15, time:27900}
+→ date "Friday, 15 June 1990 at 07:45:00"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 		
 		
-		<command name="split date" code="Dat:DaRe" description="given a date object, returns a record of  ‘year’, ‘month’, ‘day’, ‘hours’, ‘minutes’, and ‘seconds’ properties">
-			<direct-parameter type="date" optional="yes" description="(default: 2001-01-01 00:00:00)"/>
-			<result type="record"/>
+		<command name="split date" code="Dat:DaRe" description="given a date object, returns a record of year, month, day, hours, minutes, and seconds properties">
+			<direct-parameter type="date" optional="yes" description="(default: midnight of 1 January 2001)"/>
+			<result type="date component record"/>
 			<documentation>
 				<html><![CDATA[
 <pre><code>split date (date "Friday, 15 June 1990 at 07:45:00")
@@ -35,6 +38,21 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 			</documentation>
 		</command>
 		
+		
+		<record-type name="date component record" code="WebC">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{ year : <var>integer</var>,
+  month : <var>integer or constant</var>,
+  day : <var>integer</var>,
+  hours : <var>integer</var>,
+  minutes : <var>integer</var>,
+  seconds : <var>integer</var> }</code></pre>
+  
+<p>If given, the <code>month</code> property can be a month constant (<code>January</code>, <code>February</code>, etc) or integer, while the other properties must be integers.</p>
+				]]></html>
+			</documentation>
+		</record-type>
 		
 		
 		<command name="parse date" code="Dat:PDat" description="parse text as a date">
@@ -113,15 +131,15 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				
 	</suite>
 	
-	<suite name="Miscellaneous" code="****">
+	<suite name="Date Constants" code="****">
 			
-		<command name="month names" code="Dat:Mths">
+		<command name="month names" code="Dat:Mths" description="returns a list of AppleScript month constants">
 			<result>
 				<type type="type" list="yes"/>
 			</result>
 		</command>
 		
-		<command name="weekday names" code="Dat:Wkds">
+		<command name="weekday names" code="Dat:Wkds" description="returns a list of AppleScript weekday constants">
 			<result>
 				<type type="type" list="yes"/>
 			</result>

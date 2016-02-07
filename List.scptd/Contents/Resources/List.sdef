@@ -144,12 +144,47 @@ transpose list trackInfos</code></pre>
 		
 			
 		<command name="list comparator" code="Lst:LiSo" description="returns a ‘ListComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of lists">
-			<parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of form {{index, comparator},...} for comparing specific items in each list (default: default comparator)">
+			<parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of ‘list item comparator’ records for comparing specific items in each list (default: default comparator)">
 				<type type="script"/>
-				<type type="list" list="yes"/>
+				<type type="list item comparator" list="yes"/>
 			</parameter>
 			<result type="script"/>
+			<documentation>
+				<html><![CDATA[
+<p>For example, to sort a list of lists of uniform type (in this case numbers):</p>
+
+<pre><code>sort list {{3}, {1, 1, 5}, {}, {2, 1}, {2}, {1, 3}, {1, 2}} using list comparator
+→ {{}, {1, 1, 5}, {1, 2}, {1, 3}, {2}, {2, 1}, {3}}</code></pre>
+  
+<p>It is also possible to sort a list of lists of mixed types by specifying exactly which items to sort on and how each one should be compared. For example, consider the following list where each sublist is of form <code>{<var>first name</var>, <var>is female</var>, <var>age</var>}</code>:</p>
+
+<pre><code>set myList to { ¬
+        {"Bob", false, 33}, ¬
+        {"Jane", true, 25}, ¬
+        {"Andi", true, 33}}</code></pre>
+        
+To sort this first by comparing item 3 of each sublist numerically, then by comparing item 1 of each sublist as text:</p>
+
+<pre><code>sort list myList using (list comparator for { ¬
+        {itemIndex:3, itemComparator: number comparator}, ¬
+        {itemIndex:1, itemComparator: text comparator}})</code></pre>        
+
+<p>The resulting list of lists is ordered first by ages then by names:</p>
+
+<pre><code>→ {{"Jane", true, 25}, {"Andi", true, 33}, {"Bob", false, 33}}</code></pre>
+				]]></html>
+			</documentation>
 		</command>
+		
+		
+		<record-type name="list item comparator" code="LstC" description="used by ‘list comparator’ to sort a list of sublists on a particular sublist item">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{ itemIndex : <var>integer</var>,
+  itemComparator: <var>script</script> }</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
 		
 		
 		<enumeration name="SrtE" code="SrtE">
