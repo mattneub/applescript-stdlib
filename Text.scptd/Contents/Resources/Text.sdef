@@ -51,12 +51,12 @@
 		
 		<command name="slice text" code="Txt:SliT" description="get the section of text between the specified start and/or end indexes">
 			<direct-parameter type="text"/>
-			<parameter name="from" code="Idx1" type="integer" optional="yes" description="character index"/>
-			<parameter name="to" code="Idx2" type="integer" optional="yes" description="character index"/>
+			<parameter name="from" code="FIdx" type="integer" optional="yes" description="character index"/>
+			<parameter name="to" code="TIdx" type="integer" optional="yes" description="character index"/>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>slice text theText from i to j</code> is equivalent to <code>text i thru j of theText</code>, except that if a character index is out of range it uses the nearest existing character instead of throwing an error.</p>
+<p><code>slice text theText from i to j</code> is similar to <code>get text i thru j of theText</code>, except that it doesn’t throw an error if an index is out of range.</p>
 				]]></html>
 			</documentation>
 		</command>
