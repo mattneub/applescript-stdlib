@@ -8,8 +8,8 @@
 		
 		<command name="split URL" code="Web:SplU" description="">
 			<direct-parameter type="text"/>
-			<!--parameter name="" code="" type="" description=""/-->
-			<result type="URL component data"/>
+			<parameter name="network location record" code="NeLo" type="boolean" optional="yes" description="if true, the ‘networkLocation’ property will contain a network location record; if false, the network location is given as a single text value (default: false)"/>
+			<result type="URL component record"/>
 			
 			<documentation>
 				<html><![CDATA[
@@ -28,41 +28,11 @@
 		</command>
 		
 		
-		<command name="escape URL characters" code="Web:EscU" description="">
-			<direct-parameter type="text"/>
-			<parameter name="preserving" code="Safe" type="text" description="any additional ASCII characters that should not be escaped (default: &quot;/&quot;)"/>
-			<result type="text"/>			
-		</command>
-		
-		
-		<command name="unescape URL characters" code="Web:UneU" description="">
-			<direct-parameter type="text"/>
-			<!--parameter name="" code="" type="" description=""/-->
-			<result type="text"/>			
-		</command>
-
-		
-		<command name="split URL query string" code="Web:SplQ" description="">
-			<direct-parameter type="text"/>
-			<!--parameter name="" code="" type="" description=""/-->
-			<result type="record"/>
-		</command>
-
-		<command name="join URL query string" code="Web:JoiQ" description="">
-			<direct-parameter type="text"/>
-			<!--parameter name="" code="" type="" description=""/-->
-			<result type="record"/>
-		</command>
-		
-		
 		<record-type name="URL component record" code="WebC" description="">
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ urlScheme : <var>text</var>,
-  userName : <var>text</var>,
-  userPassword : <var>text</var>,
-  hostName : <var>text</var>,
-  portNumber : <var>text</var>,
+  networkLocation : <var>text or network location record</var>,
   resourcePath : <var>text</var>,
   parameterString : <var>text</var>,
   queryString : <var>text</var>,
@@ -71,6 +41,69 @@
 			</documentation>
 		</record-type>
 	
+		
+		<record-type name="network location record" code="WebL" description="">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{ userName : <var>text</var>,
+  userPassword : <var>text</var>,
+  hostName : <var>text</var>,
+  portNumber : <var>text</var> }</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+		
+		
+		<command name="escape URL characters" code="Web:EscU" description="replaces “non-safe” characters with the corresponding “%XX” escapes">
+			<direct-parameter type="text"/>
+			<parameter name="preserving" code="Safe" type="text" description="any additional ASCII characters that should not be escaped (default: &quot;&quot;)"/>
+			<result type="text"/>
+			<documentation>
+				<html><![CDATA[
+<p>By default, this converts all characters except <code>A-Za-z0-9_.-</code> to UTF8-based <code>%<var>XX</var></code> escape codes. For example, to escape a resource path, preserving path separators:</p>
+
+<pre><code>escape URL characters "/foo bar/ø.txt" preserving "/" → "/foo%20bar/%C3%B8.txt"</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="unescape URL characters" code="Web:UneU" description="">
+			<direct-parameter type="text"/>
+			<result type="text"/>
+			<documentation>
+				<html><![CDATA[
+<p>All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters. If an escape sequence does not represent a valid UTF8 codepoint, an error is raised instead.</p>
+
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+		</command>
+
+		
+		<command name="split URL query string" code="Web:SplQ" description="splits a URL query string into a list of key-value pairs">
+			<direct-parameter type="text" description="a query string of form &quot;key1=value1&amp;key2=value2&amp;…&quot;"/>
+			<result type="list" description="a list of form {{key1,value1}, {key2,value2}, …}"/>
+			<documentation>
+				<html><![CDATA[
+<p>Keys and values will be text values. All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters.</p>
+
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+		</command>
+
+		<command name="join URL query string" code="Web:JoiQ" description="joins a list of key-value pairs into a URL query string">
+			<direct-parameter type="list" description="a list of form {{key1,value1}, {key2,value2}, …}"/>
+			<result type="text" description="a query string of form &quot;key1=value1&amp;key2=value2&amp;…&quot;"/>
+			<documentation>
+				<html><![CDATA[
+<p>Keys and values must be text or integer values (e.g. real numbers should be converted to numeric text using Number library's `format number` command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes.</p>
+
+<pre><code></code></pre>
+				]]></html>
+			</documentation>
+		</command>
 		
 	</suite>
 	
