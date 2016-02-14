@@ -159,10 +159,11 @@ transpose list trackInfos</code></pre>
         
         
         <enumeration name="SrtE" code="SrtE">
-            <!-- caution: TextLib defines the same enums for use in its `search text` command -->
-            <enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
-            <enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
-            <enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `sort list` is called -->
+            <!-- caution: Text library defines the same enums for use in its `search text` command, so names and codes must match exactly to avoid terminology conflicts -->
+			<enumerator name="exact match" code="CmpE"/> <!-- consider everything except numeric strings -->
+			<enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
+			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `search text`/`sort list` is called -->
         </enumeration>
         
             

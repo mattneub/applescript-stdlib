@@ -126,7 +126,10 @@
 		
 			<direct-parameter type="text" description="the text to search"/>
 			<parameter name="for" code="For_" type="text" description="the text/pattern to find"/>
-			<parameter name="replacing with" code="Repl" type="text" optional="yes" description="the replacement text/template"/>
+			<parameter name="replacing with" code="Repl" optional="yes" description="the replacement text/template">
+				<text type="text"/>
+				<text type="script"/>
+			</parameter>
 			
 			<parameter name="using" code="Usin" type="SerE" optional="yes" description="search using AppleScript (considering/ignoring) text comparison or ICU (regular expression) pattern matching? (default: case insensitivity)"/>
 			
@@ -136,15 +139,45 @@
 					<type type="text"/>
 					<type type="record" list="yes"/>
 			</result>
+			
+			<documentation>
+				<html><![CDATA[
+<p>When finding and replacing plain text, the ‘replacing with’ parameter can be one of the following:</p>
+<ul>
+	<li>the text value to insert</li>
+
+	<li>a script object containing a <code>replaceText(foundText)</code> handler that takes the found text as its sole parameter and returns the text value to insert as its result</li>
+</ul>
+
+<p>When finding and replacing text patterns, the ‘replacing with’ parameter can be one of the following:</p>
+<ul>
+	<li>the text template to insert; text matched by parenthesized groups can be referred to as <code>$1</code> to <code>$9</code></li>
+
+	<li>a script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result</li>
+</ul>
+
+<pre><code>script UppercaseMatchedText
+    to replacePattern(theText, foundGroups)
+        return uppercase text theText
+    end replacePattern
+end script
+
+search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using pattern matching
+→ "AbcdEfgh"</code></pre>
+				]]></html>
+			</documentation>
 
 		</command>
 		
 		
 		<enumeration name="SerE" code="SerE">
-			<!-- caution: ListLib defines the same enums for use in its `text comparator` command -->
-			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<!-- caution: List library defines the same enums for use in its `text comparator` command, so names and codes must match exactly to avoid terminology conflicts -->
+			<enumerator name="exact match" code="CmpE"/> <!-- consider everything except numeric strings -->
 			<enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
-			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `sort list` is called -->
+			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `search text`/`sort list` is called -->
+			
+			<!-- Text library also defines an enum for pattern matching -->
 			<enumerator name="pattern matching" code="CmpP"/> <!-- use ICU regular expression pattern matching -->
 		</enumeration>
 
@@ -173,10 +206,10 @@
 		<record-type name="unmatched text" code="TxtU" description="record type used by the 'search text' command to describe an unmatched text range">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{class:unmatched text,
- startIndex:<var>integer</var>,
- endIndex:<var>integer</var>,
- foundText:<var>text</var>}</code></pre>
+<pre><code>{ class : unmatched text,
+  startIndex : <var>integer</var>,
+  endIndex : <var>integer</var>,
+  foundText : <var>text</var> }</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>
@@ -184,11 +217,11 @@
 		<record-type name="matched text" code="TxtM" description="record type used by the 'search text' command to describe a matched text range">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{class:matched text,
- startIndex:<var>integer</var>,
- endIndex:<var>integer</var>,
- foundText:<var>text</var>,
- foundGroups:<var>list of record</var>}</code></pre>
+<pre><code>{ class : matched text,
+  startIndex : <var>integer</var>,
+  endIndex : <var>integer</var>,
+  foundText : <var>text</var>,
+  foundGroups : <var>list of record</var> }</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>
@@ -196,10 +229,10 @@
 		<record-type name="matched group" code="TxtG" description="record type used by a 'matched text' record's 'foundGroups' property to describe the text matched by a parenthesized group within the matched pattern">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{class:matched group,
- startIndex:<var>integer</var>,
- endIndex:<var>integer</var>,
- foundText:<var>text</var>}</code></pre>
+<pre><code>{ class : matched group,
+  startIndex : <var>integer</var>,
+  endIndex : <var>integer</var>,
+  foundText : <var>text</var> }</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>
