@@ -148,14 +148,17 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 			<enumerator name="all components" code="FLSA"/>
 		</enumeration>
 		
+		
 	</suite>
 	
 	
 	<suite name="Read/Write File" code="****">
 	
 		<!--TO DO: documentation should indicate legacy encodings are discouraged, especially primary encoding which is localized choice of legacy encoding so is different from user to user -->
+		
+		<!-- TO DO: worth noting in documentation that POSIX path strings are also accepted as direct parameter? -->
 	
-		<command name="read file" code="Fil:Read" description="">
+		<command name="read from file" code="Fil:Read" description="read a file as plain text or an AppleScript value">
 			<direct-parameter type="file"/>
 			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
 			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when reading a plain text file, the encoding to use (default: UTF8 encoding)"/>
@@ -168,15 +171,17 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 			</documentation>
 		</command>
 	
-		<command name="write file" code="Fil:Writ" description="">
+		<command name="write to file" code="Fil:Writ" description="write plain text or an AppleScript value to a file">
 			<direct-parameter type="file"/>
 			<parameter name="data" code="Data" type="anything"/>
 			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
 			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when writing a plain text file, the encoding to use (default: UTF8 encoding)"/>
 			<result type="anything"/>
 			
+			<!-- note that when `as` is `text` and `using` is UTF16/32 encoding, a BOM is automatically included [by NSString's write method] -->
 		</command>
 		
+				
 		<!-- note: when defining enumerations, it is better to use a generic single-word parameter name and specific multi-word enumerator names, e.g. `using [UTF8 encoding]` rather than `using encoding [UTF8]`; since the parameter name is already scoped to the command it doesn't need to be particularly distinctive or unique, but enumerator names will be visible throughout the code so need to minimize risk of clashing with any other terminology -->
 		
 		<enumeration name="FEnc" code="FEnc">
@@ -254,7 +259,7 @@ end run
 		</command>
 		
 		
-		<command name="read standard input" code="Fil:RSIn" description="Read the shell script’s standard input (“stdin”) as UTF8-encoded text">
+		<command name="read from standard input" code="Fil:RSIn" description="Read the shell script’s standard input (“stdin”) as UTF8-encoded text">
 			<parameter name="with prompt" code="Prmt" type="text" optional="yes" description="if ‘user interaction’ is true, the interactive line prompt to display (default: &quot;&gt;&gt; &quot;)"/>
 			<parameter name="user interaction" code="ReTo" type="boolean" optional="yes" description="read a single line of text from stdin (for interactive user input), or read all stdin data (for non-interactive input from another process or file) (default: false)"/>
 			<result>
@@ -269,9 +274,9 @@ end run
 		</command>
 		
 		
-		<command name="write standard output" code="Fil:WSOu" description="Write UTF8-encoded text to the shell script’s standard output (“stdout”)">
+		<command name="write to standard output" code="Fil:WSOu" description="Write UTF8-encoded text to the shell script’s standard output (“stdout”)">
 			<direct-parameter type="text" description="the text to write"/>
-			<parameter name="standardized line breaks" code="SLiB" type="boolean" optional="yes" description="if true, automatically converts any Windows- or classic Mac-style line breaks to Unix/OS X-style linefeeds (default: true)"/>
+			<parameter name="normalized line breaks" code="SLiB" type="boolean" optional="yes" description="if true, automatically converts any Windows- or classic Mac-style line breaks to Unix/OS X-style linefeeds (default: true)"/>
 			<parameter name="automatic line ending" code="ALiE" type="boolean" optional="yes" description="if the text does not end with a linefeed character, add one automatically? (default: true)"/>
 			<documentation>
 				<html><![CDATA[
@@ -281,15 +286,15 @@ end run
 
 use script "File"
 
-write standard output "What is your name?"
-set userName to read standard input with user interaction
+write to standard output "What is your name?"
+set userName to read from standard input with user interaction
 if userName is "" then set userName to "stranger"
-write standard output "Hello, " &amp; userName &amp; ". How are you feeling today?"
-set userMood to read standard input with user interaction
+write to standard output "Hello, " &amp; userName &amp; ". How are you feeling today?"
+set userMood to read from standard input with user interaction
 if userMood contains "happy" or userMood contains "good" then
-  write standard output "I’m delighted to hear that."
+  write to standard output "I’m delighted to hear that."
 else
-  write standard output "C’est la vie."
+  write to standard output "C’est la vie."
 end if</code></pre>
 				]]></html>
 			</documentation>
