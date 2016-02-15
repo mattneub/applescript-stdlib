@@ -255,7 +255,44 @@ end run
 		
 		
 		<command name="read standard input" code="Fil:RSIn" description="Read the shell script’s standard input (“stdin”) as UTF8-encoded text">
-			<result type="text"/>
+			<parameter name="with prompt" code="Prmt" type="text" optional="yes" description="if ‘user interaction’ is true, the interactive line prompt to display (default: &quot;&gt;&gt; &quot;)"/>
+			<parameter name="user interaction" code="ReTo" type="boolean" optional="yes" description="read a single line of text from stdin (for interactive user input), or read all stdin data (for non-interactive input from another process or file) (default: false)"/>
+			<result>
+				<type type="text"/>
+				<type type="missing value"/>
+			</result>
+			<documentation>
+				<html><![CDATA[
+<p>If the <code>user interaction</code> option is false, the command will wait until the previous process has finished writing to the script’s stdin before returning. If it is true, it will return a line of text (minus the trailing linefeed) as soon as the Return key is pressed, or ‘missing value’ if there is no more text to be read.</p>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="write standard output" code="Fil:WSOu" description="Write UTF8-encoded text to the shell script’s standard output (“stdout”)">
+			<direct-parameter type="text" description="the text to write"/>
+			<parameter name="standardized line breaks" code="SLiB" type="boolean" optional="yes" description="if true, automatically converts any Windows- or classic Mac-style line breaks to Unix/OS X-style linefeeds (default: true)"/>
+			<parameter name="automatic line ending" code="ALiE" type="boolean" optional="yes" description="if the text does not end with a linefeed character, add one automatically? (default: true)"/>
+			<documentation>
+				<html><![CDATA[
+<p>Here is a simple demonstration of an interactive shell script, written in AppleScript:</p>
+
+<pre><code>#!/usr/bin/osascript
+
+use script "File"
+
+write standard output "What is your name?"
+set userName to read standard input with user interaction
+if userName is "" then set userName to "stranger"
+write standard output "Hello, " &amp; userName &amp; ". How are you feeling today?"
+set userMood to read standard input with user interaction
+if userMood contains "happy" or userMood contains "good" then
+  write standard output "I’m delighted to hear that."
+else
+  write standard output "C’est la vie."
+end if</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
