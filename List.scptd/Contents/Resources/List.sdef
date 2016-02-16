@@ -65,7 +65,7 @@ remove from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>slice list theList from i to j</code> is similar to <code>get items i thru j of theList</code>, except that it doesn’t throw an error if an index is out of range.</p>
+<p><code>slice list theList from i to j</code> is similar to <code>get items i thru j of theList</code>, except that it returns an empty list if the start index is greater than the end index, and doesn’t throw an error if an index is out of range.</p>
 				]]></html>
 			</documentation>
 		</command>

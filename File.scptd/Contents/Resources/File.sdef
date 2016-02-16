@@ -40,14 +40,12 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 		<enumeration name="FLCF" code="FLCF">
 			<enumerator name="POSIX path format" code="FLCP"/>
 			<enumerator name="HFS path format" code="FLCH"/>
-			<enumerator name="Windows path format" code="FLCW"/>
 			<enumerator name="file URL format" code="FLCU"/>
 		</enumeration>
 		
 		<enumeration name="FLCT" code="FLCT">
 			<enumerator name="POSIX path format" code="FLCP"/>
 			<enumerator name="HFS path format" code="FLCH"/>
-			<enumerator name="Windows path format" code="FLCW"/>
 			<enumerator name="file URL format" code="FLCU"/>
 			<enumerator name="alias file object" code="FLCA"/>
 			<enumerator name="POSIX file object" code="FLCX"/>

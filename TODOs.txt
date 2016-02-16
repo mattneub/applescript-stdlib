@@ -1,0 +1,75 @@
+The following TODOs are deferred/ignored/rejected:
+
+
+
+----------------------------------------------------------------------
+File
+----------------------------------------------------------------------
+
+
+- is there any benefit to adding `with UTF8 byte order mark` option to `write to file`? (NSString automatically adds UTF16/32 BOMs, but doesn't add UTF8 BOM for compatibility's sake; however, users might want to add UTF8 BOM to improve portability of files they intend to distribute)
+
+- commands for safely creating temp file/dir?
+
+- is there a Cocoa API to fuzzily convert IANA charset names to NSString encodings? if so, would be better than hardcoded list of encoding constants. A. Doesn't appear to be; also, NSStringEncodings aren't a directly interchangeable subset of CFStringEncodings, and since CFString APIs aren't accessible via ASOC there isn't any way to access the additional CF encodings anyway
+
+- implement Windows path support in `convert path`? (TBH, CFURLCreateWithFileSystemPath and CFURLCopyFileSystemPath don't do a convincing job of this on OS X, so probably best forget about this)
+
+- any way to determine (via Cocoa) if stdout/stderr is connected to a terminal? if so, get rid of `terminal styles` parameter in `format command line help`? or provide separate `outputs to terminal` command that returns true/false (isStyled should only be true if help text will be displayed in Terminal.app or other VT100 terminal emulator) - A. probably not: isatty() is part of C stdlib, which ASOC can't import AFAIK, and NSFileHandle doesn't provide an equivalent method
+
+- if isStyled, text should be auto-wrapped to terminal width; Q. any way to get current terminal width, if available? (suspect that's a C call only [e.g. see osatest's terminalColumns() function]; anything in NSUserDefaults?)
+
+- in `read from file` allow `unknown encoding` to be passed, in which case use NSString's stringWithContentsOfFile:usedEncoding:error:, which tries to determine file's text encoding in various ways (e.g. by checking for BOM or "com.apple.TextEncoding" extended file attribute)? downside of that approach is that it really ought to return the encoding along with text for caller's information, which would make the command's return type inconsistent; another option might be to cheat it and implement a separate `detect encoding` and/or `guess encoding` command that returns just the encoding (ideally along with a value that indicates whether it's a reliable determination based on BOM or extended attribute or a heuristic guess)
+
+- what is status of alias and bookmark («class bmrk») objects in AS? (the former is deprecated everywhere else in OS X; bmrk objects are poorly supported, with crashing bugs, and rarely appears); what can/should/shouldn't be done to support these?
+
+
+----------------------------------------------------------------------
+List
+----------------------------------------------------------------------
+
+
+- implement `ordered comparator for {enum_1, enum_2, ..., enum_N}` that works for any enumeration, including boolean
+
+
+- in _sort(), if resultListObject's _list_'s length>someLargeThreshold then use median of 3 items? (TBH, picking a good midrange pivot is probably least of its problems performance-wise)
+
+- stable sorting? A. currently out of scope: a non-stable sort is still better than no sort at all, although `sort list` documentation does need to state that it isn't stable sort so items that are 'equal' aren't guaranteed to maintain their original order, e.g. sorting {{name:"Bob", age:33}, {name:"Jan", age:33}} on age only can return either {{name:"Bob", age:33}, {name:"Jan", age:33}} or {{name:"Jan", age:33}, {name:"Bob", age:33}}
+
+
+- what about lists containing lots of duplicates, e.g. when sorting a large list containing only numbers from 0 to 10, or only true/false? basic quicksort gets pathological on those cases, so a three-way quicksort or a mergesort would work much better there
+
+
+- might consider using NSMutableArray when sorting simple uniform lists of text or number without a user-supplied comparator (would need to compare costs of ASOC bridging vs native sorting to see which performs better); not sure about dates given that they're mutable (ASOC will perform deep copy of list, so resulting list will contain copies of the original date objects, whereas native sort preserves the original date objects); complex values (e.g. list of records) will still be sorted natively, of course (though even there it might be possible to use NSArray to sort an array of [key,valueIndex] and then iterate the result to reposition values in output list, making the [slow] AS part of the code O(2n))
+
+
+- would it be worth implementing an ArrayCollection object that encapsulates list lookup kludges, and just encouraging users to use that for manipulating lists (in which case some/most of the below handlers might be as well made into methods on that); A. out of scope for stdlib: since it's an AS flaw it should be fixed at source, though would be useful as a 3rd-partly library
+
+
+- in `search text`, when matching with TIDs, optionally accept a list of multiple text values to match? (note:TIDs can do that for free, so it'd just be a case of relaxing restriction on 'for' parameter's type when pattern matching is false to accept a list of text as well); also optionally accept a corresponding list of replacement values for doing mapping? (note that map will need to be O(n) associative list in order to support considering/ignoring, although NSDictionary should be usable when matching case-sensitively)
+
+
+----------------------------------------------------------------------
+Number
+----------------------------------------------------------------------
+
+
+- what about NSByteCountFormatter, NSEnergyFormatter, NSMassFormatter, NSLengthFormatter, MKDistanceFormatter? Also, is it worth trying to support AS's largely neglected and awkwardly incomplete unit types, or is it better just to leave those to do their own thing (i.e. limited range unit conversions) and deal solely with plain numbers? If the latter, would it be worth provided more comprehensive `convert [length/mass/volume/etc] NUMBER from UNIT to UNIT` commands here, eliminating the need for users to use AS's unit types completely?
+
+
+
+----------------------------------------------------------------------
+Text
+----------------------------------------------------------------------
+
+
+- add `matching first item only` boolean option to `search text` (this allows users to perform incremental matching fairly efficiently without having to use an Iterator API)? Currently inclined to reject this, as `search text` command is already fairly complex so am reluctant to add any more parameters unless a convincing use case is identified first.
+
+
+- would it be worth implementing a `compare text` command that allows considering/ignoring options to be supplied as `considering`/`ignoring` parameters (considering/ignoring blocks can't be parameterized as they require hardcoded constants) as this would allow comparisons to be safely performed without having to futz with considering/ignoring blocks all the time (c.f. Number library's `compare number`); for extra flexibility, the comparator constructor should also be exposed as a public command, and the returned object implement the same `makeKey`+`compareItems` methods as List library's sort comparators, allowing them to be used interchangeably (one could even argue for putting all comparators into their own lib, which other libraries and user scripts can import whenever they need to parameterize comparison behavior). Currently inclined to reject this: while reliably comparing text in AS is a PITA, don't think having such a command will do much to improve things (end users will likely continue to use standard operators in their own code, and library developers will be better off adding considering/ignoring blocks as required.)
+
+
+- in `_findText`, is it worth switching to a more efficient algorithim when hypens, punctuation, and white space are all considered and numeric strings ignored (the default)? i.e. given a fixed-length match, the endIndex of a match can be determined using `forText's length + startIndex - 1` instead of measuring the length of all remaining text after `text item i`; will need to implement both approaches and profile them to determine if it makes any significant difference to speed
+
+
+- `literal representation` - problem with this is that while it's straightforward enough to use OSAKit running in a background process to format AS values (just wrap the values in a script object and send that to the process via Apple event), ASOC's ocid specifiers can't be sent out of process so any lists/records containing those will cause a serialization error when packed into an AE. While lists could (laboriously) be recursively formatted one item at a time to avoid this, there's no way to iterate records natively (passing them to ASOC won't help as its record-to-NSDictionary conversion screws up a lot of record contents). Add the extra problems of formatting application references and type/constant names (which will appear as raw chevron syntax unless app terminology is explicitly loaded at runtime), and really the only satisfactory solution is for AS to implement this feature as a built-in command. (Alternatively, being able to call OSAKit methods directly on ASOC-hosted script objects might work better with ocids as it'd avoid going out of process, but ASOC doesn't expose public APIs for manipulating those script objects as OSAScript instances.)
