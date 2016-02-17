@@ -57,6 +57,39 @@ Number
 - what about NSByteCountFormatter, NSEnergyFormatter, NSMassFormatter, NSLengthFormatter, MKDistanceFormatter? Also, is it worth trying to support AS's largely neglected and awkwardly incomplete unit types, or is it better just to leave those to do their own thing (i.e. limited range unit conversions) and deal solely with plain numbers? If the latter, would it be worth provided more comprehensive `convert [length/mass/volume/etc] NUMBER from UNIT to UNIT` commands here, eliminating the need for users to use AS's unit types completely?
 
 
+----------------------------------------------------------------------
+Objects
+----------------------------------------------------------------------
+
+
+- worth adding 'maximum size' option to stack and queue constructors? (simplest way to implement it is to define a script object can inherit either StackCollection or QueueCollection [caveat this will obscure original object's name, which users should be able to see when logging/displaying a script object, e.g. for troubleshooting purposes], overriding addItem() to check `my _count` before continuing)
+
+
+- any other data structures worth adding? e.g. PriorityQueueCollection?
+
+
+- decide naming convention for constructors; e.g. `make dictionary object` vs `make dictionary` vs `dictionary object` vs `new dictionary`? (`new ...` might be safest, as 'new' isn't an existing AS keyword, whereas `make ...` will try to to compile as `[make] [identifier]` if the full command isn't found) (note: if sticking to verb-noun format, `create ...` might be an option: while 'create' keyword was used as a synonym for 'make' in some early apps, e.g. FMP, 'create' isn't a keyword in AS dictionary itself); would quite like to get rid of 'object' suffix (which is really only included to make the keyword more 'unique' and less likely to conflict/compile incorrectly) as it isn't used consistently and smacks of restating the obvious; another consideration: comparator constructors use noun-only names, e.g. `text comparator`, which suggests `dictionary collection`, `unique collection`, `queue sequence`, `stack sequence` might be better names for constructors
+
+
+- decide naming convention for object methods: traditional positional parameters or ObjC-style syntax? e.g. `setItem(k, v)` vs `setValue: v forKey: k` (while the former doesn't explicitly describe each parameter, the latter is visually ambiguous and often needs parentheses to avoid being mis-read by both AS and users)
+
+
+		
+- Is it worth implementing a growable bucket list? or would a balanced B-tree be more efficient? (it would eliminate the significant impact of dynamically growing bucket list, though lookups will be O(log n) rather than ameliorated O(1) [degrades as collisions increase] and inserts will likely be slower due to rebalancing [which requires each traversed node's key to be re-compared]); TBH, the simplest and most efficient option would probably be to use a default size (e.g. 1024) suitable for light-to-medium use, but allow a different size to be optionally passed to constructor command if user needs a particularly large or small collection; however, that isn't very user-friendly, in which case a better option may be to grow by fixed sizes only (e.g. 128->2048->32768)
+
+
+- Is it worth implementing a case-insensitive Dictionary? (client code traditionally normalizes keys (e.g. by lowercasing) prior to adding items, but it may be more user-friendly to do it automatically)
+
+
+- option to specify no. of buckets? (cheaper than growing dynamically, but also less user-friendly); if so, would probably make more sense to use enum rather than int, e.g. `small`/`default`/`large`; however, probably best to try a conservative growing algorithm first (e.g. starts at 256 and grows 4x/8x each time, with additional tweak to pre-grow dictionary before adding a large list of items) and see how well that works in practice (i.e. if auto-growing proves to be 'good enough' then it's best to keep things simple for users and not complicate its API with technical housekeeping crud); alternatively, maybe just stick with 1024-item bucket list as a reasonable compromise (users who need more speed and are only working with basic types can still use NSMutableDictionary if they wish)
+
+
+- if implementing variable size bucket lists, addDictionary() will be faster if records include hashNum, avoiding need to fully re-hash keys
+
+
+- removed `unique collection` for now as it's a quick-n-dirty implementation (just a wrapper around `dictionary collection`) and currently lacks most set functionality (union, intersection, etc). Furthermore, there is a good argument to be made for using NSMutableSet, either directly or in a script object wrapper, as unlike `dictionary collection` it only has to support a few basic AS types - integer, real, text, date - which are all fully bridged and safely round-trippable. (Ideally, type and constant names would also be supported, but NSAppleEventDescriptors aren't hashable and there's probably not much need for it in practice.) The downside of using NSMutableSet is that it breaks autosave and serialization, something these libraries aim to avoid, so might be best left to a third-party library.
+
+
 
 ----------------------------------------------------------------------
 Text
@@ -73,3 +106,8 @@ Text
 
 
 - `literal representation` - problem with this is that while it's straightforward enough to use OSAKit running in a background process to format AS values (just wrap the values in a script object and send that to the process via Apple event), ASOC's ocid specifiers can't be sent out of process so any lists/records containing those will cause a serialization error when packed into an AE. While lists could (laboriously) be recursively formatted one item at a time to avoid this, there's no way to iterate records natively (passing them to ASOC won't help as its record-to-NSDictionary conversion screws up a lot of record contents). Add the extra problems of formatting application references and type/constant names (which will appear as raw chevron syntax unless app terminology is explicitly loaded at runtime), and really the only satisfactory solution is for AS to implement this feature as a built-in command. (Alternatively, being able to call OSAKit methods directly on ASOC-hosted script objects might work better with ocids as it'd avoid going out of process, but ASOC doesn't expose public APIs for manipulating those script objects as OSAScript instances.)
+
+
+- `insert into text`, `delete from text` for inserting/replacing/deleting ranges of characters (c.f. `insert into list`, `delete from list` in List library)
+
+

@@ -10,9 +10,51 @@
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>DictionaryCollection</code> script objects define the following handlers:</p>
+<h3>About Dictionaries</h3>
+
+<p>Unlike AppleScript records, which are predefined groups of properties whose values are identified by keyword or identifier, dictionary objects are dynamic collections of key-value pairs that can be added and removed at any time. Dictionary keys are typically text values, though numbers, dates, and type and constant symbols can also be used.</p>
+
+
+<h3>Example Code</h3>
+
+<p>The following example uses a dictionary to store and retrieve RGB color values by name:</p>
+
+<pre><code>-- create a new dictionary
+set d to dictionary collection
+
+-- add some key-value pairs
+d's addItem("red", {255, 0, 0})
+d's addItem("yellow", {255, 255, 0})
+d's addItem("green", {0, 255, 0})
+d's addItem("blue", {0, 0, 255})
+
+-- get the number of items in the collection
+log d's countItems() --> 4
+
+-- get the value that is currently stored under the key "green"
+log d's getItem("green") --> {0, 255, 0}</code></pre>
+
+
+<h3>Object Commands</h3>
+
+<p><code>DictionaryCollection</code> script objects recognize the following commands:</p>
 
 <dl>
+<dt><code>objectDescription()</code></dt>
+<dd><p>Returns a brief description of the object</p>
+<ul>
+	<li>Result: <tt>text</tt></li>
+</ul>
+</dd>
+
+<dt><code>copyObject()</code></dt>
+<dd><p>Returns a shallow copy of the object</p>
+<ul>
+	<li>Result: <tt>script</tt> – a new DictionaryObject containing the same keys and values</li>
+</ul>
+</dd>
+
+
 <dt><code>countItems()</code></dt>
 <dd><p>Count the number of key-value pairs in the collection</p>
 <ul>
@@ -52,85 +94,82 @@
 </ul>
 </dd>
 
+
+<dt><code>addDictionary(<var>theDictionary</var>)</code></dt>
+<dd><p>Add another DictionaryObject's key-value pairs to the collection</p>
+<ul>
+	<li><var>theDictionary</var> : <tt>script</tt> – the DictionaryObject whose keys and values are to be added</li>
+</ul>
+</dd>
+
+<dt><code>addKeysAndValues(<var>keyValueList</var>)</code></dt>
+<dd><p>Add a list of key-value pairs to the collection</p>
+<ul>
+	<li><var>keyValueList</var> : <tt>list of list</tt> – a list of form: <code>{{<var>KEY</var>, <var>VALUE</var>},...}</code></li>
+</ul>
+</dd>
+
+<dt><code>getKeysAndValues()</code></dt>
+<dd><p>Get a list of key-value pairs from the collection</p>
+<ul>
+	<li>Result: <tt>list of list</tt> – a list of form: <code>{{<var>KEY</var>, <var>VALUE</var>},...}</code></li>
+</ul>
+</dd>
+
+<dt><code>getKeys()</code></dt>
+<dd><p>Get a list of keys from the collection</p>
+<ul>
+	<li>Result: <tt>list of anything</tt></li>
+</ul>
+</dd>
+
+<dt><code>getValues()</code></dt>
+<dd><p>Get a list of values from the collection</p>
+<ul>
+	<li>Result: <tt>list of anything</tt></li>
+</ul>
+</dd>
+
+
 <dt><code>deleteAllItems()</code>
 <dd><p>Delete all key-value pairs from the collection</p></dd>
 
-<p>Unlike AppleScript records, which are fixed collections of properties whose names are keywords and/or identifiers defined in the code, dictionary objects are collections of arbitrary key-value pairs. Dictionary keys are typically text values, though other value types (numbers, dates, type and constant symbols) can also be used as long as they can also be coerced to text. Numeric keys are compared for numeric equality (e.g. <code>1</code> and <code>1.0</code> are the same). Other types of keys, including text-based keys, are compared exactly (e.g. <code>"foo"</code> and <code>"Foo"</code> are different).</p>
+</dl>
 
-<p>Examples:</p>
+<h3>Notes</h3>
 
-<pre><code>set d to dictionary collection
+<p>Numeric keys are compared for numeric equality (e.g. <code>1</code> and <code>1.0</code> are the same). Other types of keys, including text-based keys, are compared exactly (e.g. <code>"foo"</code> and <code>"Foo"</code> are different).</p>
 
-d's addItem("red", {255, 0, 0})
-d's addItem("yellow", {255, 255, 0})
-d's addItem("green", {0, 255, 0})
-d's addItem("blue", {0, 0, 255})
-
-log d's countItems() --> 4
-
-log d's getItem("green") --> {0, 255, 0}</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 		
-		<command name="unique collection" code="Typ:SetO" description="returns a new UniqueCollection (a.k.a. Counted Set)">
-			<result type="script"/>
-			<documentation>
-				<html><![CDATA[
-<p><code>UniqueCollection</code> script objects define the following handlers:</p>
-
-<dl>
-<dt><code>countItems()</code></dt>
-<dd><p>Count the number of items in the collection</p>
-<ul>
-	<li>Result: <tt>integer</tt></i>
-</ul>
-</dd>
-
-<dt><code>containsItem(<var>theValue</var>)</code></dt>
-<dd><p>Does the collection contain the specified item?</p>
-<ul>
-	<li><var>theValue</var> : <tt>text</tt></li>
-	<li>Result: <tt>boolean</tt></li>
-</ul>
-</dd>
-
-<dt><code>addItem(<var>theValue</var>)</code></dt>
-<dd><p>Add an item to the collection</p>
-<ul>
-	<li><var>theValue</var> : <tt>text</tt></li>
-</ul>
-</dd>
-
-<dt><code>removeItem(<var>theValue</var>)</code></dt>
-<dd><p>Remove an item from the collection</p>
-<ul>
-	<li><var>theValue</var> : <tt>text</tt></li>
-	<li>Result: <tt>integer</tt> – the number of times the item was previously added</li>
-</ul>
-</dd>
-
-<dt><code>getItemCount(<var>theValue</var>)</code></dt>
-<dd><p>Count the number of times the item was previously added</p>
-<ul>
-	<li><var>theValue</var> : <tt>text</tt></li>
-	<li>Result: <tt>integer</tt></li>
-</ul>
-</dd>
-
-<dt><code>deleteAllItems()</code>
-<dd><p>Delete all items from the collection</p></dd>
-				]]></html>
-			</documentation>
-		</command>
+		
 		
 		<command name="queue collection" code="Typ:QueO" description="returns a new QueueCollection (a.k.a. First-In-First-Out sequence)">
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>QueueCollection</code> script objects define the following handlers:</p>
+<h3>Object Commands</h3>
+
+<p><code>QueueCollection</code> script objects recognize the following commands:</p>
 
 <dl>
+<dt><code>objectDescription()</code></dt>
+<dd><p>Returns a brief description of the object</p>
+<ul>
+	<li>Result: <tt>text</tt></li>
+</ul>
+</dd>
+
+<dt><code>copyObject()</code></dt>
+<dd><p>Returns a shallow copy of the object</p>
+<ul>
+	<li>Result: <tt>script</tt></li>
+</ul>
+</dd>
+
+
 <dt><code>countItems()</code></dt>
 <dd><p>Count the number of items in the collection</p>
 <ul>
@@ -139,21 +178,21 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 </dd>
 
 <dt><code>addItem(<var>theValue</var>)</code></dt>
-<dd><p>Add an item to the end of the queue</p>
+<dd><p>Push an item onto the end of the queue</p>
 <ul>
 	<li><var>theValue</var> : <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>removeItem()</code></dt>
-<dd><p>Remove an item from the head of the queue</p>
+<dd><p>Pull an item from the head of the queue</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>getItem()</code></dt>
-<dd><p>Return the item at the head of the queue without removing it</p>
+<dd><p>Return the item at the head of the queue <em>without</em> removing it</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
@@ -161,17 +200,37 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 
 <dt><code>deleteAllItems()</code>
 <dd><p>Delete all items from the collection</p></dd>
+</dl>
 				]]></html>
 			</documentation>
 		</command>
+		
+		
 		
 		<command name="stack collection" code="Typ:StaO" description="returns a new StackCollection (a.k.a. Last-In-First-Out sequence)">
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>StackCollection</code> script objects define the following handlers:</p>
+<h3>Object Commands</h3>
+
+<p><code>StackCollection</code> script objects recognize the following commands:</p>
 
 <dl>
+<dt><code>objectDescription()</code></dt>
+<dd><p>Returns a brief description of the object</p>
+<ul>
+	<li>Result: <tt>text</tt></li>
+</ul>
+</dd>
+
+<dt><code>copyObject()</code></dt>
+<dd><p>Returns a shallow copy of the object</p>
+<ul>
+	<li>Result: <tt>script</tt></li>
+</ul>
+</dd>
+
+
 <dt><code>countItems()</code></dt>
 <dd><p>Count the number of items in the collection</p>
 <ul>
@@ -180,21 +239,21 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 </dd>
 
 <dt><code>addItem(<var>theValue</var>)</code></dt>
-<dd><p>Add an item to the top of the stack</p>
+<dd><p>Push an item onto the top of the stack</p>
 <ul>
 	<li><var>theValue</var> : <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>removeItem()</code></dt>
-<dd><p>Remove an item from the top of the stack</p>
+<dd><p>Pop an item from the top of the stack</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>getItem()</code></dt>
-<dd><p>Return the item at the top of the stack without removing it</p>
+<dd><p>Return the item at the top of the stack <em>without</em> removing it</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
@@ -202,6 +261,7 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 
 <dt><code>deleteAllItems()</code>
 <dd><p>Delete all items from the collection</p></dd>
+</dl>
 				]]></html>
 			</documentation>
 		</command>
