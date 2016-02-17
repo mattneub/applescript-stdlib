@@ -61,9 +61,9 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="text"/>
 				<type type="FDSt" list="yes"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
-				<type type="missing value"/>
+				<type type="LclE"/>
 			</parameter>
 			<result type="date"/>
 			
@@ -90,9 +90,9 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="text"/>
 				<type type="FDSt"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
-				<type type="missing value"/>
+				<type type="LclE"/>
 			</parameter>
 			
 			<!-- TO DO: implement tz support, allowing the formatted date to display the time in the specified timezone (currently always uses local timezone as AS dates don't support tz info so always use local time) -->
@@ -100,7 +100,6 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="integer"/>
 				<type type="text"/>
 			</parameter>
-			
 			<result type="text"/>
 			
 			<documentation>
@@ -127,9 +126,15 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 			<enumerator name="full time format" code="FDS9"/>
 		</enumeration>
 		
-		
+		<enumeration name="LclE" code="LclE">
+			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
+			<enumerator name="no locale" code="LclS"/>
+			<enumerator name="user locale" code="LclC"/>
+		</enumeration>
 				
 	</suite>
+	
+	
 	
 	<suite name="Date Constants" code="****">
 			

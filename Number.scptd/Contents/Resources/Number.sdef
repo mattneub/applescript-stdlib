@@ -10,10 +10,10 @@
 		
 		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
-			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: default format)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
-				<type type="missing value"/>
+				<type type="LclE"/>
 			</parameter>
 			<result type="number"/>
 			<documentation>
@@ -33,29 +33,37 @@ convert text to number "3.14" → 3.14 (Germany)</code></pre>
 		
 		<command name="format number" code="Mth:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
-			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: plain style)"/>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: missing value, i.e. no locale)">
+			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: default format)"/>
+			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
-				<type type="missing value"/>
+				<type type="LclE"/>
 			</parameter>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
 				
-<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, this always uses the same numerical syntax as AppleScript itself. For example:</p>
+<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> always uses the same numerical syntax as AppleScript itself, unless a locale is explicitly specified.</p>
 
-<pre><code>3.14 as text → "3.14" (USA)
-3.14 as text → "3,14" (Germany)
+<p>For example, on a US-localized system, coercing <code>3.14</code> to text produces <code>"3.14"</code>:</p>
 
-format number 3.14 → "3.14" (USA)
-format number 3.14 → "3.14" (Germany)</code></pre>
+<pre><code>3.14 as text → "3.14"
 
+format number 3.14 → "3.14"</code></pre>
+
+whereas on a German system, the same coercion produces <code>"3,14"</code> instead, using a comma instead of a period as the decimal separator:
+
+<pre><code>3.14 as text → <strong>"3,14"</strong>
+
+format number 3.14 → "3.14"</code></pre>
+
+<p>By disregarding the current locale, the <code>format number</code> command ensures the same text value will be produced no matter where the script is run.</p>
 				]]></html>
 			</documentation>
 		</command>
 		
 		<enumeration name="FNSt" code="FNSt">
-			<enumerator name="plain format" code="FNS0"/>
+			<enumerator name="default format" code="FNSD"/>
+			<enumerator name="integer format" code="FNS0"/>
 			<enumerator name="decimal format" code="FNS1"/>
 			<enumerator name="currency format" code="FNS2"/>
 			<enumerator name="percent format" code="FNS3"/>
@@ -63,6 +71,11 @@ format number 3.14 → "3.14" (Germany)</code></pre>
 			<enumerator name="word format" code="FNS5"/>
 		</enumeration>
 		
+		<enumeration name="LclE" code="LclE">
+			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
+			<enumerator name="no locale" code="LclS"/>
+			<enumerator name="user locale" code="LclC"/>
+		</enumeration>
 		
 				
 		<command name="format hexadecimal number" code="Mth:NuHe" description="convert an integer to hexadecimal text">
@@ -152,7 +165,6 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 		</command>
 		
 		
-		<!-- same as in StandardAdditions.sdef -->
 		<enumeration name="MRnd" code="MRnd">
 			<enumerator name="rounding up" code="RN_U"/>
 			<enumerator name="rounding down" code="RN_D"/>
