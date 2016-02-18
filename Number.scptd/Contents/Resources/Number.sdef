@@ -78,28 +78,35 @@ format number 3.14 → "3.14"</code></pre>
 		</enumeration>
 		
 				
-		<command name="format hexadecimal number" code="Mth:NuHe" description="convert an integer to hexadecimal text">
-			<direct-parameter type="integer"/>
-			<parameter name="padding to" code="Plac" type="integer" optional="yes" description="minimum number of digits to which to pad the resulting hex number, not including sign or prefix (default: 0)"/>
-			<parameter name="prefix" code="Pref" type="boolean" optional="yes" description="include “0x” prefix in result? (default: true)"/>
+		<command name="format hex" code="Mth:NuHe" description="convert an integer, or list of integers, to hexadecimal text">
+			<direct-parameter>
+				<type type="integer"/>
+				<type type="integer" list="yes"/>
+			</direct-parameter>
+			<parameter name="width" code="Plac" type="integer" optional="yes" description="if greater than 0, the width of the resulting hexadecimal text, or each chunk if a list of numbers is given, not including sign or prefix (default: 0)"/>
+			<parameter name="prefix" code="Pref" type="boolean" optional="yes" description="include “0x” prefix in result? (default: false)"/>
 			<result type="text"/>
 		</command>
 		
-		<command name="parse hexadecimal number" code="Mth:HeNu" description="convert hexadecimal text to an integer/real number">
+		<command name="parse hex" code="Mth:HeNu" description="convert hexadecimal text to an integer, or list of integers">
 			<direct-parameter type="text"/>
-			<parameter name="perfect precision" code="Prec" type="boolean" optional="yes" description="if true, report an error if the hexadecimal number is too large to be converted to an AppleScript number without losing precision; if false, allow conversion to any real number even if some precision will be lost (default: true)"/>
-			<result type="number"/>
+			<parameter name="width" code="Plac" type="integer" optional="yes" description="if greater than 0, the hexadecimal text is split into chunks of the specified width and converted to a list of numbers (default: 0)"/>
+			<parameter name="precision loss" code="Prec" type="boolean" optional="yes" description="if false, report an error if the hexadecimal number is too large to be converted to an AppleScript number without losing precision; if true, allow conversion to any real number even if some precision will be lost (default: false)"/>
+			<result>
+				<type type="integer"/>
+				<type type="integer" list="yes"/>
+			</result>
 		</command>
 		
 		
 		
 		
-		<command name="convert to radians" code="Mth:DeRa" description="convert an angle from degrees to radians">
+		<command name="deg2rad" code="Mth:DeRa" description="convert an angle from degrees to radians">
 			<direct-parameter type="real"/>
 			<result type="real"/>
 		</command>
 		
-		<command name="convert to degrees" code="Mth:RaDe" description="convert an angle from radians to degrees">
+		<command name="rad2deg" code="Mth:RaDe" description="convert an angle from radians to degrees">
 			<direct-parameter type="real"/>
 			<result type="real"/>
 		</command>

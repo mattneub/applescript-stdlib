@@ -73,6 +73,7 @@ end call_uppercaseText
 		</command>
 	
 		<command name="numeric equality check" code="Ü†ë:NmEq" description="used in ‘assert test result’ to check that the expected and actual results are the same number, ignoring any slight differences (±1.0e-9) caused by the limited precision of real numbers">
+			<parameter name="matching types" code="ETyp" type="boolean" optional="yes" description="if true, test will automatically fail if expected and actual numbers aren’t the same type; if false, test will pass as long as both numbers are numerically equal (default: true)"/>
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[

@@ -57,6 +57,10 @@ Number
 - what about NSByteCountFormatter, NSEnergyFormatter, NSMassFormatter, NSLengthFormatter, MKDistanceFormatter? Also, is it worth trying to support AS's largely neglected and awkwardly incomplete unit types, or is it better just to leave those to do their own thing (i.e. limited range unit conversions) and deal solely with plain numbers? If the latter, would it be worth provided more comprehensive `convert [length/mass/volume/etc] NUMBER from UNIT to UNIT` commands here, eliminating the need for users to use AS's unit types completely?
 
 
+- what else needs implemented? e.g. atan2? (note that trivial operations such as `hypotenuse`, `square` and `square root` are not implemented as those are simple to do using AS's existing `^` operator (e.g. sqrt(n)=n^0.5), while `floor`, `ceil`, etc. are already covered by `round number`
+
+
+
 ----------------------------------------------------------------------
 Objects
 ----------------------------------------------------------------------
