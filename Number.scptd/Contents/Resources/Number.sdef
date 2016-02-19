@@ -4,13 +4,14 @@
 
 
 	
-	<suite name="General Operations" code="****">
-
-
+	<suite name="Number Conversion" code="****">
 		
 		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
-			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: default format)"/>
+			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
+				<type type="MthZ"/>
+				<type type="number format record"/>
+			</parameter>
 			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
 				<type type="LclE"/>
@@ -18,14 +19,27 @@
 			<result type="number"/>
 			<documentation>
 				<html><![CDATA[
-				
-<p>By default, the <code>parse number</code> command converts numeric text in canonical format to an integer/real number. Unlike coercing a text value to <code>number</code>, which parses the text according to the current user’s localization settings, this always uses the same numerical syntax as AppleScript itself. For example:</p>
+<h3>Basic Use</h3>
 
-<pre><code>"3.14" as number → 3.14 (USA)
-"3,14" as number → 3.14 (Germany)
+<p>By default, the <code>parse number</code> command converts numeric text in canonical format to an integer/real number. Unlike coercing a text value to <code>number</code>, which parses the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
 
-convert text to number "3.14" → 3.14 (USA)
-convert text to number "3.14" → 3.14 (Germany)</code></pre>
+<p>For example, on a US-localized system, coercing <code>"3.14"</code> to a number produces <code>3.14</code>:</p>
+
+<pre><code>"3.14" as number → 3.14 -- localized conversion
+
+parse number "3.14" → 3.14 -- canonical conversion</code></pre>
+
+<p>On a German system, however, the same text-to-number coercion requires the decimal separator to be a comma, not a period:</p>
+
+<pre><code>"3.14" as number → Error: Can’t make "3.14" into type number.
+
+<strong>"3,14"</strong> as number → 3.14 -- localized conversion
+
+parse number "3.14" → 3.14 -- canonical conversion</code></pre>
+
+<p>Using the <code>parse number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
+
+<!-- TO DO: custom formatting discussion and examples -->
 
 				]]></html>
 			</documentation>
@@ -33,7 +47,11 @@ convert text to number "3.14" → 3.14 (Germany)</code></pre>
 		
 		<command name="format number" code="Mth:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
-			<parameter name="using" code="Usin" type="FNSt" optional="yes" description="(default: default format)"/>
+			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
+				<type type="MthZ"/>
+				<type type="text"/>
+				<type type="number format record"/>
+			</parameter>
 			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
 				<type type="LclE"/>
@@ -41,34 +59,54 @@ convert text to number "3.14" → 3.14 (Germany)</code></pre>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
+<h3>Basic Use</h3>
 				
-<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> always uses the same numerical syntax as AppleScript itself, unless a locale is explicitly specified.</p>
+<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
 
 <p>For example, on a US-localized system, coercing <code>3.14</code> to text produces <code>"3.14"</code>:</p>
 
-<pre><code>3.14 as text → "3.14"
+<pre><code>3.14 as text → "3.14" -- localized conversion
 
-format number 3.14 → "3.14"</code></pre>
+format number 3.14 → "3.14" -- canonical conversion</code></pre>
 
-whereas on a German system, the same coercion produces <code>"3,14"</code> instead, using a comma instead of a period as the decimal separator:
+<p>On a German system, however, the same number-to-text coercion uses a comma instead of a period as the decimal separator:</p>
 
-<pre><code>3.14 as text → <strong>"3,14"</strong>
+<pre><code>3.14 as text → <strong>"3,14"</strong> -- localized conversion
 
-format number 3.14 → "3.14"</code></pre>
+format number 3.14 → "3.14" -- canonical conversion</code></pre>
 
-<p>By disregarding the current locale, the <code>format number</code> command ensures the same text value will be produced no matter where the script is run.</p>
+<p>Using the <code>format number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
+
+<!-- TO DO: custom formatting discussion and examples -->
+
 				]]></html>
 			</documentation>
 		</command>
 		
-		<enumeration name="FNSt" code="FNSt">
-			<enumerator name="default format" code="FNSD"/>
-			<enumerator name="integer format" code="FNS0"/>
-			<enumerator name="decimal format" code="FNS1"/>
-			<enumerator name="currency format" code="FNS2"/>
-			<enumerator name="percent format" code="FNS3"/>
-			<enumerator name="scientific format" code="FNS4"/>
-			<enumerator name="word format" code="FNS5"/>
+		
+		<record-type name="number format definition" code="MthR">
+			<property name="basic format" code="MthA">
+				<type type="MthZ"/>
+				<type type="text"/>
+			</property>
+			<property name="minimum decimal places" code="MthB" type="integer"/>
+			<property name="maximum decimal places" code="MthC" type="integer"/>
+			<property name="minimum significant digits" code="MthD" type="integer"/>
+			<property name="maximum significant digits" code="MthE" type="integer"/>
+			<property name="decimal separator" code="MthF" type="text"/>
+			<property name="grouping separator" code="MthG" type="text"/>
+			<property name="rounding behavior" code="MthH" type="MRnd"/>
+		</record-type>
+		
+		
+		<enumeration name="MthZ" code="MthZ">
+			<enumerator name="default format" code="Mth0"/>
+			<enumerator name="integer format" code="Mth1"/>
+			<enumerator name="decimal format" code="Mth2"/>
+			<enumerator name="scientific format" code="Mth3"/>
+			<enumerator name="percent format" code="Mth4"/>
+			<enumerator name="currency format" code="Mth5"/>
+			<enumerator name="word format" code="Mth6"/>
 		</enumeration>
 		
 		<enumeration name="LclE" code="LclE">
@@ -97,9 +135,12 @@ format number 3.14 → "3.14"</code></pre>
 				<type type="integer" list="yes"/>
 			</result>
 		</command>
-		
-		
-		
+	
+	</suite>
+	
+	
+	
+	<suite name="General Operations" code="****">
 		
 		<command name="deg2rad" code="Mth:DeRa" description="convert an angle from degrees to radians">
 			<direct-parameter type="real"/>
@@ -161,14 +202,10 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 		
 		
 		<command name="round number" code="Mth:RouN" description="round a number to the specified number of places">
-			<direct-parameter type="real"/>
+			<direct-parameter type="number"/>
 			<parameter name="to places" code="Plac" type="integer" optional="yes" description="The maximum number of decimal places that can appear in the result (default: 0). If 0, the result is an integer; if greater than 0, the number's least significant digits are also rounded."/>
-			<parameter name="by" code="Dire" type="MRnd" optional="yes" description="the rounding direction (default: ‘rounding halves to even’)"/>
-			<result>
-				<type type="real"/>
-				<type type="integer"/>
-			</result>
-			<!-- TO DO: need documentation to fully explain each rounding behavior -->
+			<parameter name="by" code="Dire" type="MRnd" optional="yes" description="the rounding direction (default: rounding halves to even)"/>
+			<result type="number"/>
 		</command>
 		
 		

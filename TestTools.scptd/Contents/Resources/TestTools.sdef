@@ -88,6 +88,20 @@ end call_uppercaseText
 			</documentation>
 		</command>
 	
+
+		<command name="numeric range check" code="Ü†ë:NmRg" description="used in ‘assert test result’ to check that the actual result is within the expected numeric range">
+			<parameter name="matching types" code="ETyp" type="boolean" optional="yes" description="if true, test will automatically fail if expected and actual numbers aren’t the same type; if false, test will pass as long as the number is in range (default: true)"/>
+			<result type="script"/>
+			<documentation>
+				<html><![CDATA[
+<p>The <code>assert test result</code> command’s <code>is</code> parameter should be a two-number list of form <code>{<var>MIN</var>, <var>MAX</var>}</code>. For example:</p>
+
+<pre><code>assert test result for <var>aResult</code> is {0.49, 0.51} -- result must be 0.5±0.01</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
 		<command name="exact error check" code="Ü†ë:ExEr" description="used in ‘assert test error’ to check that the actual error that occurs exactly matches the expected error information">
 					<parameter name="using" code="Usin" type="record" optional="yes" description="a record of zero or more objects for checking specific error attributes (default: expected error attributes are checked for exact equality with actual error)"/>
 			<result type="script"/>
@@ -123,21 +137,21 @@ end call_uppercaseText
 <dt><code>timerName()</code></dt>
 <dd><p>the timer name, if given</p>
 <ul>
-	<li>Result: <tt>text</tt></i>
+	<li>Result: <tt>text</tt></li>
 </ul>
 </dd>
 
 <dt><code>startTimer()</code></dt>
 <dd><p>[re]start the timer (this does nothing if the timer is currently running)</p>
 <ul>
-	<li>Result: <tt>script</tt> – the TimerObject returns itself, allowing timer creation and start commands to be chained for convenience, e.g. <code>(timer object)'s startTimer()</code></i>
+	<li>Result: <tt>script</tt> – the TimerObject returns itself, allowing timer creation and start commands to be chained for convenience, e.g. <code>(timer object)'s startTimer()</code></li>
 </ul>
 </dd>
 
 <dt><code>stopTimer()</code></dt>
 <dd><p>stop the timer (this does nothing if the timer is already stopped)</p>
 <ul>
-	<li>Result: <tt>real</tt> – the number of seconds elapsed since timer was last started</i>
+	<li>Result: <tt>real</tt> – the number of seconds elapsed since timer was last started</li>
 </ul>
 </dd>
 
@@ -145,7 +159,7 @@ end call_uppercaseText
 <dt><code>elapsedTime()</code></dt>
 <dd><p>returns the number of seconds since running timer was last started</p>
 <ul>
-	<li>Result: <tt>real</tt></i>
+	<li>Result: <tt>real</tt></li>
 </ul>
 </dd>
 
@@ -153,7 +167,7 @@ end call_uppercaseText
 <dt><code>totalTime()</code></dt>
 <dd><p>returns the total number of seconds the timer has been running</p>
 <ul>
-	<li>Result: <tt>real</tt></i>
+	<li>Result: <tt>real</tt></li>
 </ul>
 </dd>
 </dl>
