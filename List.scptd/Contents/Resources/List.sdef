@@ -168,9 +168,9 @@ transpose list trackInfos</code></pre>
         
             
         <command name="list comparator" code="Lst:LiSo" description="returns a ‘ListComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of lists">
-            <parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of ‘list item comparator’ records for comparing specific items in each list (default: default comparator)">
+            <parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of ‘item comparator’ records for comparing specific items in each list (default: default comparator)">
                 <type type="script"/>
-                <type type="list item comparator" list="yes"/>
+                <type type="item comparator" list="yes"/>
             </parameter>
             <result type="script"/>
             <documentation>
@@ -229,7 +229,7 @@ sort list myList using PersonRecordComparator
         </command>
         
         
-        <record-type name="list item comparator" code="LstC" description="used by ‘list comparator’ to sort a list of sublists on a particular sublist item">
+        <record-type name="item comparator" code="LstC" description="used by ‘list comparator’ to sort a list of sublists on a particular sublist item">
             <documentation>
                 <html><![CDATA[
 <pre><code>{ itemIndex : <var>integer</var>,
