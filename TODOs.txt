@@ -3,13 +3,29 @@ The following TODOs are deferred/ignored/rejected:
 
 
 ----------------------------------------------------------------------
+Date
+----------------------------------------------------------------------
+
+
+- what about adding optional `using current day/current time/OS X epoch/Unix epoch/classic Mac epoch` parameter to `datetime` for specifying default year/month/date/time (currently default values are hardcoded for OS X epoch)? also, what about optional `for first`, `for second`, etc. parameters for specifying first/second/third/fourth/fifth Monday/Tuesday/Wednesday/../Sunday in a month? 
+
+
+- what about NSDateComponentsFormatter, NSDateIntervalFormatter?
+
+- see also NSFormattingContext... constants in NSFormatter.h for fine-tuning capitalization for standalone/start-of-sentence/in-sentence use
+
+
+
+----------------------------------------------------------------------
 File
 ----------------------------------------------------------------------
 
 
+- Standard Additions' `read` and `write` commands don't always provide good explanatory error messages (e.g. passing wrong `as` parameter just gives 'Parameter error.' -50); Cocoa error messages often aren't very helpful either. Not sure there's anything can be done about this.
+
 - is there any benefit to adding `with UTF8 byte order mark` option to `write to file`? (NSString automatically adds UTF16/32 BOMs, but doesn't add UTF8 BOM for compatibility's sake; however, users might want to add UTF8 BOM to improve portability of files they intend to distribute)
 
-- commands for safely creating temp file/dir?
+- commands for safely creating temp file/dir? (challenge here is doing it securely, via `do shell script`; see: http://developer.apple.com/library/etc/redirect/xcode/mac/1153/documentation/OpenSource/Conceptual/ShellScripting/ShellScriptSecurity/ShellScriptSecurity.html)
 
 - is there a Cocoa API to fuzzily convert IANA charset names to NSString encodings? if so, would be better than hardcoded list of encoding constants. A. Doesn't appear to be; also, NSStringEncodings aren't a directly interchangeable subset of CFStringEncodings, and since CFString APIs aren't accessible via ASOC there isn't any way to access the additional CF encodings anyway
 
@@ -92,6 +108,14 @@ Objects
 
 
 - removed `unique collection` for now as it's a quick-n-dirty implementation (just a wrapper around `dictionary collection`) and currently lacks most set functionality (union, intersection, etc). Furthermore, there is a good argument to be made for using NSMutableSet, either directly or in a script object wrapper, as unlike `dictionary collection` it only has to support a few basic AS types - integer, real, text, date - which are all fully bridged and safely round-trippable. (Ideally, type and constant names would also be supported, but NSAppleEventDescriptors aren't hashable and there's probably not much need for it in practice.) The downside of using NSMutableSet is that it breaks autosave and serialization, something these libraries aim to avoid, so might be best left to a third-party library.
+
+
+----------------------------------------------------------------------
+TestTools
+----------------------------------------------------------------------
+
+
+- implement line-wrapping in TestSupport.scpt to improve readability when displaying reports in Terminal
 
 
 

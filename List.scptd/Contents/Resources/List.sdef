@@ -3,9 +3,7 @@
 <dictionary>
     
     <suite name="Modify" code="****">
-    
-    <!-- TO DO: there is some inconsistency between these commands, which name their parameters `from item`/`to item`/`before item`/`after item`, and Text library's `slice text` command, which names its parameters `from` and `to` (since `from character` and `to character` is awfully verbose); not sure if there's any better alternative though -->
-    
+        
         <command name="insert into list" code="Lst:Inst" description="insert an item (or items) into the given list, returning a new list">
             <direct-parameter type="list"/>
             <parameter name="value" code="Valu" type="anything"/>
@@ -35,17 +33,59 @@ insert into list {1, 2, 3} value {7, 8, 9} after item 2 with concatenation → {
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<pre><code>remove from list {1, 2, 3, 4, 5} → {1, 2, 3, 4}
+<pre><code>delete from list {1, 2, 3, 4, 5} → {1, 2, 3, 4}
 
-remove from list {1, 2, 3, 4, 5} item 2 → {1, 3, 4, 5}
+delete from list {1, 2, 3, 4, 5} item 2 → {1, 3, 4, 5}
 
-remove from list {1, 2, 3, 4, 5} from item 2 to item 4 → {1, 5}
+delete from list {1, 2, 3, 4, 5} from item 2 to item 4 → {1, 5}
 
-remove from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
+delete from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
+
+<p>Returns a copy of the full list if the start index is greater than the end index. Throws error -1728 if an index is out of range.</p>
                 ]]></html>
             </documentation>
         </command>
 		
+        
+        <command name="map list" code="Lst:Map_" description="convert each item in the given list, returning a new list containing the converted values">
+            <direct-parameter type="list"/>
+            <parameter name="using" code="Usin" type="script"/>
+            <result type="list"/>
+            <documentation>
+                <html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>convertItem</code> that takes a value as its input and returns a new value as its output.</p>
+
+<pre><code>script DoubleNumber
+  to convertItem(aValue)
+    return aValue * 2
+  end convertItem
+end script
+
+map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
+                ]]></html>
+            </documentation>
+        </command>
+        
+        
+        <command name="reduce list" code="Lst:Redu" description="convert each item in the given list, returning a new list containing the converted values">
+            <direct-parameter type="list"/>
+            <parameter name="using" code="Usin" type="script"/>
+            <result type="list"/>
+            <documentation>
+                <html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>combineItem</code> that takes two values as its input and returns a new value as its output.</p>
+
+<pre><code>script SumNumbers
+  to combineItem(partialResult, aValue)
+    return partialResult + aValue
+  end convertItem
+end script
+
+reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
+                ]]></html>
+            </documentation>
+        </command>
+        
 		
 		<command name="remove duplicates from list" code="Lst:RDuL" description="remove duplicate items from the list, returning a new list">
 			<direct-parameter type="list"/>
@@ -86,8 +126,10 @@ remove from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
 
 <p>To obtain a list of {name, album, artist} sublists for each track in iTunes:</p>
 
-<pre><code>tell application "iTunes" to set trackInfos to {name, album, artist} of every track
-transpose list trackInfos</code></pre>
+<pre><code>tell application "iTunes"
+  set trackInfo to {name, album, artist} of every track
+end tell
+transpose list trackInfo</code></pre>
                 ]]></html>
             </documentation>
         </command>
@@ -103,11 +145,67 @@ transpose list trackInfos</code></pre>
     
     
     
+    <suite name="Search" code="****">
+        
+        <command name="find in list" code="Lst:Find" description="return the index(es) of the specified value in a list">
+            <direct-parameter type="list"/>
+            <parameter name="value" code="Valu" type="anything" optional="yes" description="the value to find (default: missing value)"/>
+            <parameter name="using" code="Usin" type="script" optional="yes" definition="the test to perform on each item; if given, the ‘value’ parameter is ignored"/>
+            <parameter name="returning" code="Retu" type="LFWh" optional="yes" description=""/>
+            <result>
+                <type type="integer" list="yes" description="a list of item index(es), or an empty list if no matches are found"/>
+            </result>
+            <documentation>
+                <html><![CDATA[
+<pre><code>find in list {"a", "b", "c"} value "b" → {2}</code></pre>
+
+<p>The <code>value</code> parameter uses AppleScript’s <code>is</code> operator to determine if a list item matches the specified value. e.g. When processing lists of text, wrap the <code>find in list</code> command in <code>considering</code>/<code>ignoring</code> blocks as necessary.</p>
+
+<p>For more complex tests, use the <code>using</code> parameter instead. This takes a script object containing a <code>checkItem</code> handler that takes the item to check as its sole parameter and returns <code>true</code> or <code>false</code> to indicate a match or non-match.</p>
+                ]]></html>
+            </documentation>
+        </command>
+        
+        <enumeration name="LFWh" code="LFWh">
+            <enumerator name="first occurrence" code="LFWF"/>
+            <enumerator name="last occurrence" code="LFWL"/>
+            <enumerator name="all occurrences" code="LFWA"/>
+        </enumeration>
+    
+        
+        <command name="filter list" code="Lst:Filt" description="check each item in the given list, returning a new list containing only those items that pass the test">
+            <direct-parameter type="list"/>
+            <parameter name="using" code="Usin" type="script"/>
+            <result type="list"/>
+            <documentation>
+                <html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>checkItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
+
+<pre><code>script Over18
+  to checkItem(aValue)
+    return aValue > 18
+  end checkItem
+end script
+
+filter list {12, 42, 16, 21} using Over18 → {42, 21}</code></pre>
+
+<p>Note that AppleScript specifiers can also be used to filter lists by item type, for example:</p>
+
+<pre><code>every number of {true, -1, 2.5, "42", {99}, 1.0E+6} → {-1, 2.5, 1.0E+6}</code></pre>
+
+                ]]></html>
+            </documentation>
+        </command>
+        
+    </suite>
+    
+    
+    
     <suite name="Sort" code="****">
         
         <command name="sort list" code="Lst:Sort" description="sort a list of comparable items">
             <direct-parameter type="list" description="the items to sort; if items cannot be directly compared against each other (e.g. if the list contains a mixture of text and numbers, or is a list of lists/records/scripts), the appropriate ‘using’ parameter must also be given"/>
-            <parameter name="using" code="Comp" type="script" optional="yes" description="a ‘Comparator’ script object that implements ‘makeKey’ and ‘compareKeys’ handlers, used to compare list items (default: default comparator)"/>
+            <parameter name="using" code="Comp" type="script" optional="yes" description="a ‘comparator’ script object that implements ‘makeKey’ and ‘compareKeys’ handlers, used to compare list items (default: default comparator)"/>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
@@ -115,6 +213,12 @@ transpose list trackInfos</code></pre>
                 ]]></html>
             </documentation>
         </command>
+        
+        <command name="unsort list" code="Lst:LiUS" description="randomly rearrange the items in a list, returning a new list as result">
+            <direct-parameter type="list"/>
+            <result type="list"/>
+        </command>
+        
     
         <command name="default comparator" code="Lst:DeSo" description="returns a ‘DefaultComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list containing only numbers OR text OR dates">
             <result type="script"/>
@@ -129,7 +233,7 @@ transpose list trackInfos</code></pre>
         </command>
     
         <command name="text comparator" code="Lst:TeSo" description="returns a ‘TextComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of text items, or values that can be coerced to text">
-            <parameter name="using" code="Cons" type="SrtE" optional="yes" description="(default: case insensitivity)"/>
+            <parameter name="for" code="Cons" type="SrtE" optional="yes" description="(default: case insensitivity)"/>
             <result type="script"/>
             <documentation>
                 <html><![CDATA[
@@ -139,19 +243,18 @@ transpose list trackInfos</code></pre>
 <li>It compares a pair of text keys to determine which item should come first, and rearranges the items in the original list as needed.</li>
 </ol>
 
-<p>This command can produce three different types of text comparators:</p>
+<p>This command can customize text comparators as follows:</p>
 <ul>
+<li><code>exact match</code> – Case, diacriticals, hyphens, punctuation, and white space are all considered, while <code>numeric strings</code> are ignored. (Considering numeric strings treats e.g. <code>"7"</code> and <code>"007"</code> as equal; ignoring numeric strings matches them character for character.)</li>
+<li><code>case sensitivity</code> – Only diacriticals are ignored, while all other settings, including <code>case</code> and <code>numeric strings</code> are considered. (Be aware that AppleScript orders characters according to Unicode, not ASCII, rules, so "a" comes before "A", and "A" comes before "b", and so on.)</li>
 <li><code>case insensitivity</code> – Case and diacriticals are ignored, while all other settings, including <code>numeric strings</code> are considered.</li>
-<li><code>case sensitivity</code> – Only diacriticals are ignored, while all other settings, including <code>case</code> and <code>numeric strings</code> are considered. (Be aware that AppleScript orders characters according to Unicode – not ASCII – rules, so "a" comes before "A", and "A" comes before "b", and so on.)</li>
 <li><code>current considerations</code> – Text is sorted using whatever considering/ignoring settings are currently applied when <code>sort list</code> is called. (By default, AppleScript ignores case and numeric strings, and considers diacriticals, hyphens, punctuation, and white space. To alter these settings – or to guarantee predictable sorting at all times – wrap your <code>sort list</code> command in the appropriate <code>considering</code> and/or <code>ignoring</code> block.)</li>
 </ul>
 
 <p>For example:</p>
 
-<pre><code>sort list {"foo", "Foo", "bar"} using (text comparator using case sensitivity)</code></pre>
+<pre><code>sort list {"foo", "Foo", "bar"} using (text comparator for case sensitivity)</code></pre>
 
-<!-- TO DO: update/extend this info if/when TextLib gets ability to construct arbitrary text comparator objects from scratch (by combining multiple script objects in a delegation chain, each applying a single considering/ignoring block to the next, which is necessary due to the inability to parameterize `considering/ignoring` statements at runtime) -->
-<!-- TO DO: what about a `pattern matching` option? -->
                 ]]></html>
             </documentation>
 
@@ -177,21 +280,22 @@ transpose list trackInfos</code></pre>
                 <html><![CDATA[
 <p>For example, to sort a list of lists of uniform type, in this case numbers:</p>
 
-<pre><code>sort list {{3}, {1, 1, 5}, {}, {2, 1}, {2}, {1, 3}, {1, 2}} using (list comparator for number comparator)
+<pre><code>sort list {{3}, {1, 1, 5}, {}, {2, 1}, {2}, {1, 3}, {1, 2}} ¬
+    using (list comparator for number comparator)
 → {{}, {1, 1, 5}, {1, 2}, {1, 3}, {2}, {2, 1}, {3}}</code></pre>
   
 <p>It is also possible to sort a list of lists of mixed types by specifying exactly which items to sort on and how each one should be compared. For example, consider the following list where each sublist is of form <code>{<var>name</var>, <var>female</var>, <var>age</var>}</code>:</p>
 
 <pre><code>set myList to { ¬
-        {"Bob", false, 33}, ¬
-        {"Jane", true, 25}, ¬
-        {"Andi", true, 33}}</code></pre>
+    {"Bob", false, 33}, ¬
+    {"Jane", true, 25}, ¬
+    {"Andi", true, 33}}</code></pre>
         
 To sort this first by comparing item 3 of each sublist numerically, then by comparing item 1 of each sublist as text:</p>
 
 <pre><code>sort list myList using (list comparator for { ¬
-        {itemIndex:3, itemComparator: number comparator}, ¬
-        {itemIndex:1, itemComparator: text comparator}})</code></pre>        
+    {itemIndex:3, itemComparator: number comparator}, ¬
+    {itemIndex:1, itemComparator: text comparator}})</code></pre>        
 
 <p>The resulting list of lists is ordered first by ages then by names:</p>
 
@@ -201,19 +305,19 @@ To sort this first by comparing item 3 of each sublist numerically, then by comp
 
 <pre><code>script PersonRecordComparator
     
-    property parent : list comparator for {¬
-        {itemIndex:3, itemComparator:number comparator}, ¬
-        {itemIndex:1, itemComparator:text comparator}}
+  property parent : list comparator for { ¬
+      {itemIndex:3, itemComparator:number comparator}, ¬
+      {itemIndex:1, itemComparator:text comparator}}
     
-    to makeKey(aRecord)
-        set keyList to {name, female, age} of aRecord
-        return continue makeKey(keyList)
-    end makeKey
+  to makeKey(aRecord)
+    set keyList to {name, female, age} of aRecord
+    return continue makeKey(keyList)
+  end makeKey
     
 end script
 
 
-set myList to {¬
+set myList to { ¬
     {name:"Bob", female:false, age:33}, ¬
     {name:"Jane", female:true, age:25}, ¬
     {name:"Andi", female:true, age:33}}
@@ -233,7 +337,7 @@ sort list myList using PersonRecordComparator
             <documentation>
                 <html><![CDATA[
 <pre><code>{ itemIndex : <var>integer</var>,
-  itemComparator: <var>script</script> }</code></pre>
+  itemComparator: <var>script</var> }</code></pre>
                 ]]></html>
             </documentation>
         </record-type>
@@ -244,114 +348,7 @@ sort list myList using PersonRecordComparator
             <result type="script"/>
         </command>
         
-    
-        <command name="unsort list" code="Lst:LiUS" description="randomly rearrange the items in a list, returning a new list as result">
-            <direct-parameter type="list"/>
-            <result type="list"/>
-        </command>
-        
     </suite>
-
-    
-    
-    <suite name="Search" code="****">
-        
-        <command name="find in list" code="Lst:Find" description="return the index(es) of the specified item in a list">
-            <direct-parameter type="list"/>
-            <parameter name="item" code="Valu" type="anything"/>
-            <!-- TO DO: also allow a comparator object to be used instead of item? -->
-            <parameter name="returning" code="Retu" type="LFWh" optional="yes" description=""/>
-            <!-- TO DO: add optional parameter for matching range of items instead of item? -->
-            <result>
-                <type type="integer" list="yes" description="a list of item index(es), or an empty list if no matches are found"/>
-            </result>
-            <documentation>
-                <html><![CDATA[
-<pre><code>find in list {"a", "b", "c"} item "b" → {2}</code></pre>
-
-<p>This uses AppleScript’s <code>is</code> operator to determine if a list item matches the specified value. When processing lists of text, wrap the <code>remove duplicates from list</code> command in <code>considering</code>/<code>ignoring</code> blocks as necessary.</p>
-                ]]></html>
-            </documentation>
-        </command>
-        
-        <enumeration name="LFWh" code="LFWh">
-            <enumerator name="first occurrence" code="LFWF"/>
-            <enumerator name="last occurrence" code="LFWL"/>
-            <enumerator name="all occurrences" code="LFWA"/>
-        </enumeration>
-    
-    </suite>
-    
-    
-    
-    <suite name="Map, Filter, Reduce" code="****">
-        
-        <command name="map list" code="Lst:Map_" description="convert each item in the given list, returning a new list containing the converted values">
-            <direct-parameter type="list"/>
-            <parameter name="using" code="Usin" type="script"/>
-            <result type="list"/>
-            <documentation>
-                <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>convertItem</code> that takes a value as its input and returns a new value as its output.</p>
-
-<pre><code>script DoubleNumber
-    to convertItem(theValue)
-        return theValue * 2
-    end convertItem
-end script
-
-map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
-                ]]></html>
-            </documentation>
-        </command>
-        
-        
-        <command name="filter list" code="Lst:Filt" description="chck each item in the given list, returning a new list containing only those items that pass the test">
-            <direct-parameter type="list"/>
-            <parameter name="using" code="Usin" type="script"/>
-            <result type="list"/>
-            <documentation>
-                <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>checkItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
-
-<pre><code>script Over18
-    to checkItem(theValue)
-        return theValue > 18
-    end checkItem
-end script
-
-filter list {12, 42, 16, 21} using Over18 → {42, 21}</code></pre>
-
-<p>Note that AppleScript specifiers can also be used to filter lists by item type, for example:</p>
-
-<pre><code>every number of {true, -1, 2.5, "42", {99}, 1.0E+6} → {-1, 2.5, 1.0E+6}</code></pre>
-
-                ]]></html>
-            </documentation>
-        </command>
-        
-        
-        <command name="reduce list" code="Lst:Redu" description="convert each item in the given list, returning a new list containing the converted values">
-            <direct-parameter type="list"/>
-            <parameter name="using" code="Usin" type="script"/>
-            <result type="list"/>
-            <documentation>
-                <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>combineItems</code> that takes two values as its input and returns a new value as its output.</p>
-
-<pre><code>script SumNumbers
-    to combineItem(partialResult, theValue)
-        return partialResult + theValue
-    end convertItem
-end script
-
-reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
-                ]]></html>
-            </documentation>
-        </command>
-        
-    </suite>
-    
     
     
 </dictionary>

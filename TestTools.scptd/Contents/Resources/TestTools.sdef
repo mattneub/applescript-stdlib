@@ -101,6 +101,12 @@ end call_uppercaseText
 			</documentation>
 		</command>
 		
+	
+		<command name="multiple choice check" code="Ü†ë:ExMu" description="used in ‘assert test result’/‘assert test error’ to check that the actual result matches one of the items a list of expected values">
+			<parameter name="using" code="Usin" type="script" optional="yes" description="the result/error check object that should be used to compare the actual result against each of the expected items in turn (default: exact equality check)"/>
+			<result type="script"/>
+		</command>
+		
 		
 		<command name="exact error check" code="Ü†ë:ExEr" description="used in ‘assert test error’ to check that the actual error that occurs exactly matches the expected error information">
 					<parameter name="using" code="Usin" type="record" optional="yes" description="a record of zero or more objects for checking specific error attributes (default: expected error attributes are checked for exact equality with actual error)"/>
