@@ -10,7 +10,7 @@
 		<!-- TO DO: slight problem using `is` as parameter name is that AS parses it differently depending on whether or not the command's parameters appear in the same order as below; if not, the `is` will be parsed as an operator instead of parameter name -->
 				
 		<command name="assert test result" code="Ü†ë:AsRe" description="">
-			<parameter name="for" code="Valu" type="any" description="the result to check"/>
+			<parameter name="for" code="Valu" type="any" description="the actual result"/>
 			<parameter name="is" code="Equa" type="any" optional="yes" description="the expected result"/>
 			<parameter name="using" code="Usin" type="script" optional="yes" description="the type of check to perform (default: exact equality check)"/>
 			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
@@ -67,6 +67,25 @@ end call_uppercaseText
 				]]></html>
 			</documentation>
 		</record-type>
+		
+		
+	
+		<command name="assert test passed" code="Ü†ë:AsPa" description="report a passed assertion">
+			<parameter name="for" code="Valu" type="any" description="the actual result"/>
+			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+			<documentation>
+				<html><![CDATA[
+<p>While <code>assert test result</code> is the preferred choice for checking whether or not a result value is correct, <code>assert test passed</code> and <code>assert test failed</code> may occasionally be used in situations that require complex checking logic beyond the capabilities of a standard ‘check’ object.</p>
+				]]></html>
+			</documentation>
+		</command>
+	
+		<command name="assert test failed" code="Ü†ë:AsFa" description="report a failed assertion and abort the current test">
+			<parameter name="for" code="Valu" type="any" description="the actual result"/>
+			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
+		</command>
+		
+		
 	
 		<command name="exact equality check" code="Ü†ë:ExEq" description="used in ‘assert test result’ to check that the expected and actual results are identical in both class and content">
 			<result type="script"/>
