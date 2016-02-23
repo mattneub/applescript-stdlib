@@ -2,8 +2,23 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary title="">
 	
-	<suite name="Date Conversion" code="****">
+	
+	<suite name="Hidden Suite" code="****" hidden="yes">
+	
+		<!-- re-export the terminology for Standard Additions' `current date` handler so that users who've imported the Date library can always compile `current date` commands in their scripts, even if their scripts haven't loaded the Standard Additions terminology directly (i.e. the Date library imports Standard Additions for its own use, so the handlers are already loaded into the current process; it's just a matter of making sure the corresponding terminology is loaded as well) -->
 		
+		<command name="current date" code="misccurd" hidden="yes" description="Return the current date and time">
+			<result type="date" description="the current date and time. Use ‘month of (current date)’, etc. to get individual parts."/>
+		</command>
+		
+		<!-- don't bother with `time to GMT` terminology though as the Date library already provides its own more capable `seconds to GMT` handler -->
+		
+	</suite>
+	
+	
+	
+	<suite name="Date Conversion" code="****">
+	
 		<command name="join date" code="Dat:ReDa" description="given a record of year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
 		
 			<!-- TO DO: the record parameter's `time` property is currently redundant as `seconds` property can be used, as overflowing values for any property rollover automatically; OTOH, if bounds checking is implemented on properties (which it probably should be, at least as an option) then may want to keep it (simplifies using data directly from AS date objects, which only provide a `time` property) -->
@@ -65,6 +80,10 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="text"/>
 				<type type="LclE"/>
 			</parameter>
+			<parameter name="time zone" code="TZon" optional="yes" description="if given, the date is parsed for the specified time zone (name or seconds to GMT); if omitted, the local time zone is used (TO DO: this parameter is experimental)"> <!-- TO DO: what happens if date text/date format includes TZ? -->
+				<type type="text"/>
+				<type type="integer"/>
+			</parameter>
 			<result type="date"/>
 			
 			<documentation>
@@ -94,9 +113,7 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="text"/>
 				<type type="LclE"/>
 			</parameter>
-			
-			<!-- TO DO: implement tz support, allowing the formatted date to display the time in the specified timezone (currently always uses local timezone as AS dates don't support tz info so always use local time) -->
-			<parameter name="in timezone" code="TZon" optional="yes" description="TO DO: implement">
+			<parameter name="time zone" code="TZon" optional="yes" description="if given, the date is formatted for the specified time zone (name or seconds to GMT); if omitted, the local time zone is used">
 				<type type="integer"/>
 				<type type="text"/>
 			</parameter>
@@ -108,6 +125,23 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 
 <pre><code>format date (date "Thursday, 7 January 2016 at 01:41:34")
 → "2016-01-07T01:41:34Z"</code></pre>
+
+<p>By default, dates are formatted for Universal Time (a.k.a. GMT). If the <code>time zone</code> parameter is given, the date is formatted for that time zone instead:</p>
+
+<pre><code>format date (date "Thursday, 7 January 2016 at 01:41:34") time zone (5 * hours) 
+→ "2016-02-23T01:19:02+05:00"
+
+format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addis_Ababa"
+→ "2016-01-07T04:41:34+03:00"</code></pre>
+
+<p>To format a date for the host machine’s local time zone, use the <code>current time zone</code> command to retrieve the local time zone’s name first:</p>
+
+<pre><code>format date (current date) time zone (current time zone)</code></pre>
+
+
+
+
+
 
 <!-- TO DO: describe other constants and text templates (this can be adapted from NSDateFormatter documentation) -->
 				]]></html>
@@ -136,6 +170,27 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 	
 	
 	
+	<suite name="Time Zone Support" code="****">
+		
+		<command name="available time zones" code="Dat:LiTz" description="lists the available time zone names">
+			<result description="e.g. {&quot;Africa/Abidjan&quot;, &quot;Africa/Accra&quot;, &quot;Africa/Addis_Ababa&quot;, …, &quot;Pacific/Wallis&quot;}">
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+		<command name="current time zone" code="Dat:CuTz" description="returns the name of the local time zone">
+			<result type="text" description="e.g. &quot;America/Los_Angeles&quot;"/>
+		</command>
+		
+		<command name="seconds to GMT" code="Dat:TzGM" description="returns the number of seconds between the specified time zone and GMT">
+			<parameter name="from" code="From" type="text" optional="yes" description="the time zone’s name, e.g. &quot;America/Los_Angeles&quot;; if omitted, the local time zone is used"/>
+			<result type="integer"/>
+		</command>
+		
+	</suite>
+	
+	
+	
 	<suite name="Date Constants" code="****">
 			
 		<command name="month names" code="Dat:Mths" description="returns a list of AppleScript month constants">
@@ -152,6 +207,5 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 			
 	</suite>
 	
-	<!-- TO DO: Timezone Support, e.g. list canonical TZ codes, commands for calculating time difference between current/GMT and a specified TZ, and anything else useful Cocoa provides -->
 	
 </dictionary>
