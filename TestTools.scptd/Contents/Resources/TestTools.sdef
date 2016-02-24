@@ -6,11 +6,31 @@
 
 	
 	<suite name="Unit Testing" code="****">
-	
+		
+		<command name="unit test runner" code="Ü†ë:TRPa" description="returns the location of the unit test runner (command line executable)">
+			<result type="file"/>
+		</command>
+		
+		<command name="run unit tests" code="Ü†ë:RunT" description="run the unit tests in the specified script file">
+			<direct-parameter type="file"/>
+			<result type="text" description="the test report"/>
+			<documentation>
+				<html><![CDATA[
+<p>To run a unit test script directly in Script Editor, include the following handler in the script:</p>
+
+<pre><code>on run
+  run unit tests (path to me)
+end run</code></pre>
+
+				]]></html>
+			</documentation>
+
+		</command>
+		
 		<!-- TO DO: slight problem using `is` as parameter name is that AS parses it differently depending on whether or not the command's parameters appear in the same order as below; if not, the `is` will be parsed as an operator instead of parameter name -->
 				
-		<command name="assert test result" code="Ü†ë:AsRe" description="">
-			<parameter name="for" code="Valu" type="any" description="the actual result"/>
+		<command name="assert test result" code="Ü†ë:AsRe" description="checks and reports that test code produces the correct output for valid input">
+			<parameter name="for" code="Valu" type="any" description="the actual result returned by the code being tested"/>
 			<parameter name="is" code="Equa" type="any" optional="yes" description="the expected result"/>
 			<parameter name="using" code="Usin" type="script" optional="yes" description="the type of check to perform (default: exact equality check)"/>
 			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
@@ -19,8 +39,7 @@
 <p>For example:</p>
 
 <pre><code>to test_uppercaseText
-    assert test result for (uppercase text "foøbår") is "FOØBÅR"
-    ...
+  assert test result for (uppercase text "foøbår") is "FOØBÅR"
 end test_uppercaseText</code></pre>
 
 <p>If the <code>note</code> parameter is given, its text is included in the generate test report. For example, an <code>assert test result</code> command could use this parameter to describe the type of bugs that particular test is designed to detect.</p>
@@ -29,7 +48,7 @@ end test_uppercaseText</code></pre>
 
 		</command>
 	
-		<command name="assert test error" code="Ü†ë:AsEr" description="">
+		<command name="assert test error" code="Ü†ë:AsEr" description="checks and reports that test code throws the correct error for invalid input">
 			<parameter name="in" code="Hand" type="text" optional="yes" description="the ‘call_NAME’ handler to use; if omitted, a handler with the same NAME as the current ‘test_NAME’ handler is called"/>
 			<parameter name="with parameter" type="any" code="Args" optional="yes" description="if given, the parameter to pass to the ‘call_NAME’ handler; if omitted, no parameters are passed"/>
 			<parameter name="is" code="Equa" type="expected error information" description="the expected error"/>
@@ -40,13 +59,12 @@ end test_uppercaseText</code></pre>
 <p>For example:</p>
 
 <pre><code>to test_uppercaseText
-    ...
-    assert test error using {a:"foo"} is {errorNumber:-1703} ¬
-            note "Check unsuitable value types are rejected."
+  assert test error using {a:"foo"} is {errorNumber:-1703} ¬
+      note "Check unsuitable value types are rejected."
 end test_uppercaseText
 
 to call_uppercaseText(usingParam)
-    uppercase text usingParam
+  uppercase text usingParam
 end call_uppercaseText
 </code></pre>
 				]]></html>

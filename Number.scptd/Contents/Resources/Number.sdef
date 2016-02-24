@@ -9,8 +9,9 @@
 		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
 			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
-				<type type="MthZ"/>
+				<type type="number format enumeration"/>
 				<type type="number format record"/>
+				<type type="text"/>
 			</parameter>
 			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
@@ -25,17 +26,17 @@
 
 <p>For example, on a US-localized system, coercing <code>"3.14"</code> to a number produces <code>3.14</code>:</p>
 
-<pre><code>"3.14" as number → 3.14 -- localized conversion
+<pre><code>"3.14" as number → 3.14 (localized conversion)
 
-parse number "3.14" → 3.14 -- canonical conversion</code></pre>
+parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 
 <p>On a German system, however, the same text-to-number coercion requires the decimal separator to be a comma, not a period:</p>
 
 <pre><code>"3.14" as number → Error: Can’t make "3.14" into type number.
 
-<strong>"3,14"</strong> as number → 3.14 -- localized conversion
+<strong>"3,14"</strong> as number → 3.14 (localized conversion)
 
-parse number "3.14" → 3.14 -- canonical conversion</code></pre>
+parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 
 <p>Using the <code>parse number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
 
@@ -48,9 +49,9 @@ parse number "3.14" → 3.14 -- canonical conversion</code></pre>
 		<command name="format number" code="Mth:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
 			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
-				<type type="MthZ"/>
-				<type type="text"/>
+				<type type="number format enumeration"/>
 				<type type="number format record"/>
+				<type type="text"/>
 			</parameter>
 			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
 				<type type="text"/>
@@ -60,20 +61,20 @@ parse number "3.14" → 3.14 -- canonical conversion</code></pre>
 			<documentation>
 				<html><![CDATA[
 <h3>Basic Use</h3>
-				
+
 <p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
 
 <p>For example, on a US-localized system, coercing <code>3.14</code> to text produces <code>"3.14"</code>:</p>
 
-<pre><code>3.14 as text → "3.14" -- localized conversion
+<pre><code>3.14 as text → "3.14" (localized conversion)
 
-format number 3.14 → "3.14" -- canonical conversion</code></pre>
+format number 3.14 → "3.14" (canonical conversion)</code></pre>
 
 <p>On a German system, however, the same number-to-text coercion uses a comma instead of a period as the decimal separator:</p>
 
-<pre><code>3.14 as text → <strong>"3,14"</strong> -- localized conversion
+<pre><code>3.14 as text → <strong>"3,14"</strong> (localized conversion)
 
-format number 3.14 → "3.14" -- canonical conversion</code></pre>
+format number 3.14 → "3.14" (canonical conversion)</code></pre>
 
 <p>Using the <code>format number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
 
@@ -84,9 +85,9 @@ format number 3.14 → "3.14" -- canonical conversion</code></pre>
 		</command>
 		
 		
-		<record-type name="number format definition" code="MthR">
+		<record-type name="number format record" code="MthR">
 			<property name="basic format" code="MthA">
-				<type type="MthZ"/>
+				<type type="number format enumeration"/>
 				<type type="text"/>
 			</property>
 			<property name="minimum decimal places" code="MthB" type="integer"/>
@@ -99,7 +100,7 @@ format number 3.14 → "3.14" -- canonical conversion</code></pre>
 		</record-type>
 		
 		
-		<enumeration name="MthZ" code="MthZ">
+		<enumeration name="number format enumeration" code="MthZ">
 			<enumerator name="default format" code="Mth0"/>
 			<enumerator name="integer format" code="Mth1"/>
 			<enumerator name="decimal format" code="Mth2"/>
@@ -111,8 +112,8 @@ format number 3.14 → "3.14" -- canonical conversion</code></pre>
 		
 		<enumeration name="LclE" code="LclE">
 			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
+			<enumerator name="current locale" code="LclC"/>
 			<enumerator name="no locale" code="LclS"/>
-			<enumerator name="user locale" code="LclC"/>
 		</enumeration>
 		
 				

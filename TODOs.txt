@@ -7,12 +7,9 @@ Date
 ----------------------------------------------------------------------
 
 
-- what about adding optional `using current day/current time/OS X epoch/Unix epoch/classic Mac epoch` parameter to `datetime` for specifying default year/month/date/time (currently default values are hardcoded for OS X epoch)? also, what about optional `for first`, `for second`, etc. parameters for specifying first/second/third/fourth/fifth Monday/Tuesday/Wednesday/../Sunday in a month? 
+- what about NSDateComponentsFormatter, NSDateIntervalFormatter? (e.g. handy for formatting time intervals, although it is possible to kludge that already using date arithmetic)
 
-
-- what about NSDateComponentsFormatter, NSDateIntervalFormatter?
-
-- see also NSFormattingContext... constants in NSFormatter.h for fine-tuning capitalization for standalone/start-of-sentence/in-sentence use
+- see also NSFormattingContext... constants in NSFormatter.h for fine-tuning capitalization for standalone/start-of-sentence/in-sentence use (TBH, any user who needs this level of control would be better using Cocoa classes directly)
 
 
 

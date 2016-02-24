@@ -37,8 +37,8 @@
 		
 		<enumeration name="LclE" code="LclE">
 			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
+			<enumerator name="current locale" code="LclC"/>
 			<enumerator name="no locale" code="LclS"/>
-			<enumerator name="user locale" code="LclC"/>
 		</enumeration>
 		
 		
@@ -148,8 +148,8 @@
 			<direct-parameter type="text" description="the text to search"/>
 			<parameter name="for" code="For_" type="text" description="the text/pattern to find"/>
 			<parameter name="replacing with" code="Repl" optional="yes" description="the replacement text/template">
-				<text type="text"/>
-				<text type="script"/>
+				<type type="text"/>
+				<type type="script"/>
 			</parameter>
 			
 			<parameter name="using" code="Usin" type="SerE" optional="yes" description="search using AppleScript (considering/ignoring) text comparison or ICU (regular expression) pattern matching? (default: case insensitivity)"/>
@@ -257,22 +257,6 @@ search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using p
 				]]></html>
 			</documentation>
 		</record-type>
-		
-	</suite>
-	
-	
-	
-	<suite name="Localization Support" code="****" description="provides information useful when working with localization-aware commands">
-		
-		<command name="available locales" code="Txt:LLoc" description="lists the available locale identifiers">
-			<result description="e.g. {&quot;af&quot;, &quot;af_NA&quot;, &quot;af_ZA&quot;, &quot;agq&quot;, …, &quot;zu_ZA&quot;}">
-				<type type="text" list="yes"/>
-			</result>
-		</command>
-		
-		<command name="current locale" code="Txt:CLoc" description="returns the locale identifier for the host machine's current locale">
-			<result type="text" description="e.g. &quot;en_US&quot;"/>
-		</command>
 		
 	</suite>
 	

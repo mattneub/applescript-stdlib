@@ -3,20 +3,6 @@
 <dictionary title="">
 	
 	
-	<suite name="Hidden Suite" code="****" hidden="yes">
-	
-		<!-- re-export the terminology for Standard Additions' `current date` handler so that users who've imported the Date library can always compile `current date` commands in their scripts, even if their scripts haven't loaded the Standard Additions terminology directly (i.e. the Date library imports Standard Additions for its own use, so the handlers are already loaded into the current process; it's just a matter of making sure the corresponding terminology is loaded as well) -->
-		
-		<command name="current date" code="misccurd" hidden="yes" description="Return the current date and time">
-			<result type="date" description="the current date and time. Use ‘month of (current date)’, etc. to get individual parts."/>
-		</command>
-		
-		<!-- don't bother with `time to GMT` terminology though as the Date library already provides its own more capable `seconds to GMT` handler -->
-		
-	</suite>
-	
-	
-	
 	<suite name="Date Conversion" code="****">
 	
 		<command name="join date" code="Dat:ReDa" description="given a record of year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
@@ -129,7 +115,7 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 <p>By default, dates are formatted for Universal Time (a.k.a. GMT). If the <code>time zone</code> parameter is given, the date is formatted for that time zone instead:</p>
 
 <pre><code>format date (date "Thursday, 7 January 2016 at 01:41:34") time zone (5 * hours) 
-→ "2016-02-23T01:19:02+05:00"
+→ "2016-01-07T06:41:34+05:00"
 
 format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addis_Ababa"
 → "2016-01-07T04:41:34+03:00"</code></pre>
@@ -162,31 +148,10 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 		
 		<enumeration name="LclE" code="LclE">
 			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
+			<enumerator name="current locale" code="LclC"/>
 			<enumerator name="no locale" code="LclS"/>
-			<enumerator name="user locale" code="LclC"/>
 		</enumeration>
 				
-	</suite>
-	
-	
-	
-	<suite name="Time Zone Support" code="****">
-		
-		<command name="available time zones" code="Dat:LiTz" description="lists the available time zone names">
-			<result description="e.g. {&quot;Africa/Abidjan&quot;, &quot;Africa/Accra&quot;, &quot;Africa/Addis_Ababa&quot;, …, &quot;Pacific/Wallis&quot;}">
-				<type type="text" list="yes"/>
-			</result>
-		</command>
-		
-		<command name="current time zone" code="Dat:CuTz" description="returns the name of the local time zone">
-			<result type="text" description="e.g. &quot;America/Los_Angeles&quot;"/>
-		</command>
-		
-		<command name="seconds to GMT" code="Dat:TzGM" description="returns the number of seconds between the specified time zone and GMT">
-			<parameter name="from" code="From" type="text" optional="yes" description="the time zone’s name, e.g. &quot;America/Los_Angeles&quot;; if omitted, the local time zone is used"/>
-			<result type="integer"/>
-		</command>
-		
 	</suite>
 	
 	
@@ -205,6 +170,125 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 			</result>
 		</command>
 			
+	</suite>
+	
+	
+	
+	<suite name="Localization Support" code="****">
+				
+		<command name="available locale IDs" code="Dat:LLoc" description="lists the available locale identifiers">
+			<result description="e.g. {&quot;af&quot;, &quot;af_NA&quot;, &quot;af_ZA&quot;, &quot;agq&quot;, …, &quot;zu_ZA&quot;}">
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+		
+		<command name="current locale ID" code="Dat:CLoc" description="returns the locale identifier for the host machine's current locale">
+			<result type="text" description="e.g. &quot;en_US&quot;"/>
+		</command>
+		
+		
+		<command name="locale info" code="Dat:LoIn" description="returns a record describing the specified locale">
+			<parameter name="for" type="text" code="For_" optional="yes" description="the locale’s identifier, e.g. &quot;en_US&quot; if omitted, the current locale is used"/>
+			<parameter name="in language" code="Loca" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given (default: no locale)">
+				<type type="text"/>
+				<type type="LclE"/>
+			</parameter>
+			<result type="record"/>
+		
+			<documentation>
+				<html><![CDATA[
+<pre><code>locale info for "en_GB" in language "de_DE"
+→ { localeIdentifier:"en_GB", 
+    localeName:"Englisch (Vereinigtes Königreich)", 
+    languageCode:"en", 
+    countryCode:"GB"}</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+
+		
+		
+		<command name="available time zone IDs" code="Dat:LiTz" description="lists the available time zone identifiers">
+			<result description="e.g. {&quot;Africa/Abidjan&quot;, &quot;Africa/Accra&quot;, &quot;Africa/Addis_Ababa&quot;, …, &quot;Pacific/Wallis&quot;}">
+				<type type="text" list="yes"/>
+			</result>
+		</command>
+		
+		
+		<command name="current time zone ID" code="Dat:CuTz" description="returns the identifier for the local time zone">
+			<result type="text" description="e.g. &quot;America/Los_Angeles&quot;"/>
+		</command>
+
+		
+		<command name="time zone info" code="Dat:TzIn" description="returns a record describing the specified time zone">
+			<parameter name="for" type="text" code="For_" optional="yes" description="the time zone’s identifier, e.g. &quot;Africa/Addis_Ababa&quot; if omitted, the current time zone is used"/>
+			<parameter name="in language" code="Loca" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given (default: no locale)">
+				<type type="text"/>
+				<type type="LclE"/>
+			</parameter>
+			<result type="record"/>
+		
+			<documentation>
+				<html><![CDATA[
+<pre><code>time zone info for "GMT" in language "de_DE"
+→ { timeZoneID:"Europe/London", 
+    secondsToGMT:0, 
+    standardName:"Mittlere Greenwich-Zeit", 
+    standardAbbreviation:"GMT", 
+    daylightSavingName:"Britische Sommerzeit", 
+    daylightSavingAbbreviation:"BST", 
+    isDaylightSaving:false, 
+    daylightSavingOffset:0, 
+    nextDaylightSavingTransition:date "Sunday, 27 March 2016 at 02:00:00" }</code></pre>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
+		<command name="time zone offset" code="Dat:TzOf" description="returns the number of seconds between two time zones">
+			<parameter name="from" code="From" optional="yes" description="the time zone’s identifier, e.g. &quot;Africa/Addis_Ababa&quot;, or offset from GMT in seconds (default: missing value)">
+				<type type="text"/>
+				<type type="integer"/>
+				<type type="missing value"/>
+			</parameter>
+			<parameter name="to" code="To__" optional="yes" description="the time zone’s identifier, e.g. &quot;America/Los_Angeles&quot;, or offset from GMT in seconds (default: missing value)">
+				<type type="text"/>
+				<type type="integer"/>
+				<type type="missing value"/>
+			</parameter>
+			<result type="integer"/>
+		
+			<documentation>
+				<html><![CDATA[
+<p>If both parameters are given, the result is the number of seconds between the two time zones:</p>
+
+<pre><code>(time zone offset from "Africa/Addis_Ababa" to "GMT") / hours 
+→ 3.0 (Addis Ababa is 3 hours, or 10800 seconds, ahead of Greenwich Mean Time)
+
+(time zone offset from "America/New_York" to "Africa/Addis_Ababa") / hours
+→ -8.0 (New York is 8 hours behind Addis Ababa)</code></pre>
+
+<p>Time zones can also be given as offsets to GMT in seconds (e.g. Central Europe is 1 hour, or 3600 seconds, ahead of GMT):</p>
+
+<pre><code>(time zone offset from (1 * hours) to "America/New_York") / hours → 6.0</code></pre>
+
+<p>If one parameter is given, the result is the number of seconds between that time zone and the current time zone. For example, if the current time zone is “Africa/Addis_Ababa”:</p>
+
+<pre><code>(time zone offset from "Asia/Shanghai") / hours → 5.0
+
+(time zone offset from "America/New_York") / hours → -8.0
+
+(time zone offset to "America/New_York") / hours → 8.0</code></pre>
+
+<p>If no parameters are given, the result is the number of seconds between the current time zone and GMT (equivalent to <code>time zone offset to "GMT"</code>):</p>
+
+<pre><code>(time zone offset) / hours → 3.0</code></pre>
+
+				]]></html>
+			</documentation>
+		</command>
+
 	</suite>
 	
 	
