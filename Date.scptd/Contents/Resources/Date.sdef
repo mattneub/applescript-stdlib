@@ -5,10 +5,7 @@
 	
 	<suite name="Date Conversion" code="****">
 	
-		<command name="join date" code="Dat:ReDa" description="given a record of year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
-		
-			<!-- TO DO: the record parameter's `time` property is currently redundant as `seconds` property can be used, as overflowing values for any property rollover automatically; OTOH, if bounds checking is implemented on properties (which it probably should be, at least as an option) then may want to keep it (simplifies using data directly from AS date objects, which only provide a `time` property) -->
-			
+		<command name="join date" code="Dat:ReDa" description="given a record of valid year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
 			<direct-parameter type="date component record" optional="yes" description="all properties are optional; if omitted, default values are used instead (default: midnight of 1 January 2001)"/>
 			<result type="date"/>
 			<documentation>
@@ -40,7 +37,7 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 		</command>
 		
 		
-		<record-type name="date component record" code="WebC">
+		<record-type name="date component record" code="DatR">
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ year : <var>integer</var>,

@@ -223,29 +223,26 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 	
 	<suite name="Shell Script Support" code="****" description="Commands used in AppleScript-based shell scripts">
 		
-		<command name="current working folder" code="Fil:CurF" description="Returns the host shell’s current working folder, if known"> <!-- TO DO:  should command be named `current working directory` for consistency with established shell jargon? -->
+		<command name="current working directory" code="Fil:CurF" description="Returns the host shell’s current working folder, if known">
 			<result type="file"/>
 			
 			<documentation>
 				<html><![CDATA[
-<p>Useful in AppleScript-based shell scripts to obtain the shell's current working folder. For example, the following shell script processes one or more file paths supplied as arguments or, if no arguments are given, the current working folder’s path instead:</p>
+<p>Useful in AppleScript-based shell scripts to obtain the shell's current working directory. For example, the following shell script processes one or more file paths supplied as arguments or, if no arguments are given, the current working directory’s path instead:</p>
 
 <pre><code>#!/usr/bin/osascript
 
 use script "FileLib"
 
-to run pathsToProcess
-    if pathsToProcess is {} then
-        set pathsToProcess to {POSIX path of (current folder)}
-    end if
-    repeat with pathRef in pathsToProcess
-        set theFile to (normalize path pathRef with full expansion) as POSIX file
-        -- process the file…
-    end repeat
-end run
-</code></pre>
+to run pathsList
+  if pathsList is {} then set pathsList to {(current working directory)'s POSIX path}
+  repeat with pathRef in pathsList
+    set aFile to (normalize path pathRef's contents with full expansion) as POSIX file
+    -- process the file...
+  end repeat
+end run</code></pre>
 
-<p>Throws error number -1728 if the current working folder is unknown.</p> 
+<p>Throws error number -1728 if the current working directory is unknown.</p> 
 				]]></html>
 			</documentation>
 			
