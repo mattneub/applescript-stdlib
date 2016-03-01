@@ -50,16 +50,6 @@ check type for 3.14 is {number, text, date} → true</code></pre>
 			<result type="specifier" description="an AppleScript-ObjC object specifier, ‘«class ocid» id «data optr...»’"/>
 		</command>
 
-
-
-
-		<enumeration name="LclE" code="LclE">
-			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
-			<enumerator name="no locale" code="LclS"/>
-			<enumerator name="user locale" code="LclC"/>
-		</enumeration>
-	
-
 	</suite>
 	
 

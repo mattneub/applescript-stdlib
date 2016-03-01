@@ -65,10 +65,10 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 <p>Examples:</p>
 
 <pre><code>normalize path "~/Pictures/Camera Roll/../../Movies/"
-→ "/Users/jsmith/Movies
+→ "/Users/jsmith/Movies"
 
 normalize path "Music/iTunes" with full expansion
-→ "/Users/jsmith/Music/iTunes</code></pre>
+→ "/Users/jsmith/Music/iTunes"</code></pre>
 
 <p>A new path is made by performing the following operations:</p>
 
@@ -108,7 +108,7 @@ join path {"Documents", "ReadMe"} using file extension "txt"
 → "Documents/ReadMe.txt"
 
 join path {POSIX file "/Users/jsmith", "Documents/ReadMe.txt"} 
-→ "/Users/jsmith/ReadMe.txt"</code></pre>
+→ "/Users/jsmith/Documents/ReadMe.txt"</code></pre>
 
 <p>To construct an absolute path, the first item should be/start with &quot;/&quot; (the first item may also be an alias or file object); the remaining items are always treated as relative paths.</p>
 
@@ -130,7 +130,7 @@ join path {POSIX file "/Users/jsmith", "Documents/ReadMe.txt"}
 <pre><code>set {folderPath, fileName} to split path "/Users/jsmith/Documents/ReadMe.txt"
 → {"/Users/jsmith/Documents", "ReadMe.txt"}
 
-split path (POSIX path "/Users/jsmith/Documents/ReadMe.txt") at all components 
+split path (POSIX file "/Users/jsmith/Documents/ReadMe.txt") at all components 
 → {"/", "Users", "jsmith", "Documents", "ReadMe.txt"}
 
 split path "/Users/jsmith/Documents/ReadMe.txt" at file extension 
@@ -183,7 +183,7 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 		<!-- note: when defining enumerations, it is better to use a generic single-word parameter name and specific multi-word enumerator names, e.g. `using [UTF8 encoding]` rather than `using encoding [UTF8]`; since the parameter name is already scoped to the command it doesn't need to be particularly distinctive or unique, but enumerator names will be visible throughout the code so need to minimize risk of clashing with any other terminology -->
 		
 		<enumeration name="FEnc" code="FEnc">
-			<!-- TO DO: option to determine UTF encoding from BOM, if found? -->
+			<!-- TO DO: option to determine UTF encoding from BOM, if found? (check Cocoa docs, as it may use various heuristics to determine encoding automatically) -->
 			
 			<!-- Unicode encodings -->
 			<enumerator name="UTF8 encoding" code="FE01"/>
@@ -219,8 +219,7 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 	</suite>
 	
 	
-	<!-- TO DO: move these commands to separate ShellSupportLib, or maybe to LibrarySupportLib and rename it accordingly? (argument for keeping them here is that FileLib is where I/O stuff goes) -->
-	
+		
 	<suite name="Shell Script Support" code="****" description="Commands used in AppleScript-based shell scripts">
 		
 		<command name="current working directory" code="Fil:CurF" description="Returns the host shell’s current working folder, if known">

@@ -13,10 +13,7 @@
 				<type type="number format record"/>
 				<type type="text"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="number"/>
 			<documentation>
 				<html><![CDATA[
@@ -53,10 +50,7 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 				<type type="number format record"/>
 				<type type="text"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
@@ -108,12 +102,6 @@ format number 3.14 → "3.14" (canonical conversion)</code></pre>
 			<enumerator name="percent format" code="Mth4"/>
 			<enumerator name="currency format" code="Mth5"/>
 			<enumerator name="word format" code="Mth6"/>
-		</enumeration>
-		
-		<enumeration name="LclE" code="LclE">
-			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
-			<enumerator name="current locale" code="LclC"/>
-			<enumerator name="no locale" code="LclS"/>
 		</enumeration>
 		
 				

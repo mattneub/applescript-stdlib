@@ -10,36 +10,21 @@
 		
 		<command name="uppercase text" code="Txt:UppT" description="convert all alphabetical characters to uppercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
 		</command>
 		
 		<command name="lowercase text" code="Txt:LowT" description="convert all alphabetical letters to lowercase">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
 		</command>
 		
 		<command name="capitalize text" code="Txt:CapT" description="capitalize all words (though be aware that this command has only a rudimentary understanding of the complex capitalization rules used in natural languages so results may be inferior to human-capitalized text)">
 			<direct-parameter type="text"/>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
 		</command>
-		
-		<enumeration name="LclE" code="LclE">
-			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
-			<enumerator name="current locale" code="LclC"/>
-			<enumerator name="no locale" code="LclS"/>
-		</enumeration>
 		
 		
 		<command name="format text" code="Txt:FTxt" description="insert a list of values into a text template">

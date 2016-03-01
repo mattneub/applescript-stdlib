@@ -53,12 +53,12 @@ delete from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>convertItem</code> that takes a value as its input and returns a new value as its output.</p>
+<p>The <code>using</code> parameter's script object must implement a handler named <code>mapItem</code> that takes a value as its input and returns a new value as its output.</p>
 
 <pre><code>script DoubleNumber
-  to convertItem(aValue)
+  to mapItem(aValue)
     return aValue * 2
-  end convertItem
+  end mapItem
 end script
 
 map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
@@ -73,12 +73,12 @@ map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>combineItem</code> that takes two values as its input and returns a new value as its output.</p>
+<p>The <code>using</code> parameter's script object must implement a handler named <code>reduceItem</code> that takes two values as its input and returns a new value as its output.</p>
 
 <pre><code>script SumNumbers
-  to combineItem(partialResult, aValue)
+  to reduceItem(partialResult, aValue)
     return partialResult + aValue
-  end convertItem
+  end reduceItem
 end script
 
 reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
@@ -161,7 +161,7 @@ transpose list trackInfo</code></pre>
 
 <p>The <code>value</code> parameter uses AppleScript’s <code>is</code> operator to determine if a list item matches the specified value. e.g. When processing lists of text, wrap the <code>find in list</code> command in <code>considering</code>/<code>ignoring</code> blocks as necessary.</p>
 
-<p>For more complex tests, use the <code>using</code> parameter instead. This takes a script object containing a <code>checkItem</code> handler that takes the item to check as its sole parameter and returns <code>true</code> or <code>false</code> to indicate a match or non-match.</p>
+<p>For more complex tests, use the <code>using</code> parameter instead. This takes a script object containing a <code>filterItem</code> handler that takes the item to check as its sole parameter and returns <code>true</code> or <code>false</code> to indicate a match or non-match.</p>
                 ]]></html>
             </documentation>
         </command>
@@ -179,12 +179,12 @@ transpose list trackInfo</code></pre>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>checkItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
+<p>The <code>using</code> parameter's script object must implement a handler named <code>filterItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
 
 <pre><code>script Over18
-  to checkItem(aValue)
+  to filterItem(aValue)
     return aValue > 18
-  end checkItem
+  end filterItem
 end script
 
 filter list {12, 42, 16, 21} using Over18 → {42, 21}</code></pre>

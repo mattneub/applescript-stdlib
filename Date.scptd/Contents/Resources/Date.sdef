@@ -5,16 +5,36 @@
 	
 	<suite name="Date Conversion" code="****">
 	
-		<command name="join date" code="Dat:ReDa" description="given a record of valid year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
-			<direct-parameter type="date component record" optional="yes" description="all properties are optional; if omitted, default values are used instead (default: midnight of 1 January 2001)"/>
+		<command name="join date" code="Dat:JDat" description="given a record of valid year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
+			<direct-parameter type="date component record" description="all properties are optional; if omitted, default values are used instead (default: midnight of 1 January 2001)"/>
+			<parameter name="time zone" code="TZon" optional="yes" description="the date’s time zone (name or seconds to GMT; default: “current”)">
+				<type type="text"/>
+				<type type="integer"/>
+			</parameter>
 			<result type="date"/>
 			<documentation>
 				<html><![CDATA[
-<pre><code>join date {year:2016} 
-→ date "Friday, 1 January 2016 at 00:00:00"
+<p>The following command creates a date object describing 7:45am local time on June 15, 1990:</code>
 
-join date {year:1990, month:June, day:15, hours:7, minutes:45}
+<pre><code>join date {year:1990, month:June, day:15, hours:7, minutes:45, seconds:0}
 → date "Friday, 15 June 1990 at 07:45:00"</code></pre>
+
+<p>All record properties are optional, thus the following creates a date object describing midnight (local time) on January 1, 2016:</p>
+
+<pre><code>join date {year:2016} 
+→ date "Friday, 1 January 2016 at 00:00:00"</code></pre>
+
+By default, the date components record is interpreted as local time. If it describes a date in a different time zone, the time zone’s ID should be given via the optional <code>time zone</code>. The following example creates a date object describing midnight in New York on January 1, 2016:</p>
+
+<pre><code>join date {year:2016} time zone "America/New_York"</code></pre>
+
+<p>If the local time zone is “GMT”, AppleScript will display the resulting date object as follows:</p>
+
+<pre><code>→ date "Friday, 1 January 2016 at 05:00:00" (GMT is 5 hours ahead of New York)</code></pre>
+
+<p>Or, if the local time zone is “America/Los_Angeles”:</p>
+
+<pre><code>→ date "Thursday, 31 December 2015 at 17:00:00" (Los Angeles is 3 hours behind New York)</code></pre>
 
 <p>For convenience, a <code>time</code> property (number of seconds since midnight) can also be used instead of <code>hours</code>, <code>minutes</code>, and <code>seconds</code>:</p>
 
@@ -25,13 +45,22 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 		</command>
 		
 		
-		<command name="split date" code="Dat:DaRe" description="given a date object, returns a record of year, month, day, hours, minutes, and seconds properties">
-			<direct-parameter type="date" optional="yes" description="(default: midnight of 1 January 2001)"/>
+		<command name="split date" code="Dat:SDat" description="given a date object, returns a record of year, month, day, hours, minutes, and seconds properties">
+			<direct-parameter type="date" description="(default: midnight of 1 January 2001)"/>
+			<parameter name="time zone" code="TZon" optional="yes" description="the date’s time zone (name or seconds to GMT; default: “current”)">
+				<type type="text"/>
+				<type type="integer"/>
+			</parameter>
 			<result type="date component record"/>
 			<documentation>
 				<html><![CDATA[
 <pre><code>split date (date "Friday, 15 June 1990 at 07:45:00")
 → {year:1990, month:June, day:15, hours:7, minutes:45}</code></pre>
+
+
+<pre><code>split date (date "Friday, 1 January 2016 at 12:00:00") time zone "America/New_York"
+→ {year:2016, month:1, day:1, hours:7, minutes:0, seconds:0}</code></pre>
+
 				]]></html>
 			</documentation>
 		</command>
@@ -59,11 +88,8 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 				<type type="text"/>
 				<type type="FDSt" list="yes"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
-			<parameter name="time zone" code="TZon" optional="yes" description="if given, the date is parsed for the specified time zone (name or seconds to GMT); if omitted, the local time zone is used (TO DO: this parameter is experimental)"> <!-- TO DO: what happens if date text/date format includes TZ? -->
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
+			<parameter name="time zone" code="TZon" optional="yes" description="the date’s time zone if not already specified by the date text (name or seconds to GMT; default: “current”)">
 				<type type="text"/>
 				<type type="integer"/>
 			</parameter>
@@ -90,15 +116,12 @@ join date {year:1990, month:June, day:15, hours:7, minutes:45}
 			<direct-parameter type="date"/>
 			<parameter name="using" code="Usin" optional="yes" description="the template text or predefined date and/or time formats to use (default: canonical date format)">
 				<type type="text"/>
-				<type type="FDSt"/>
+				<type type="FDSt" list="yes"/>
 			</parameter>
-			<parameter name="for locale" code="Loca" optional="yes" description="a locale identifier, e.g. “en_US” (default: no locale)">
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
+			<parameter name="time zone" code="TZon" optional="yes" description="if given, the date is formatted for the specified time zone (name or seconds to GMT; default: “current”)">
 				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
-			<parameter name="time zone" code="TZon" optional="yes" description="if given, the date is formatted for the specified time zone (name or seconds to GMT); if omitted, the local time zone is used">
 				<type type="integer"/>
-				<type type="text"/>
 			</parameter>
 			<result type="text"/>
 			
@@ -142,13 +165,7 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 			<enumerator name="long time format" code="FDS8"/>
 			<enumerator name="full time format" code="FDS9"/>
 		</enumeration>
-		
-		<enumeration name="LclE" code="LclE">
-			<!-- important: this enum must appear exactly as-is in all SDEFs that use `for locale` parameters -->
-			<enumerator name="current locale" code="LclC"/>
-			<enumerator name="no locale" code="LclS"/>
-		</enumeration>
-				
+						
 	</suite>
 	
 	
@@ -187,10 +204,7 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 		
 		<command name="locale info" code="Dat:LoIn" description="returns a record describing the specified locale">
 			<parameter name="for" type="text" code="For_" optional="yes" description="the locale’s identifier, e.g. &quot;en_US&quot; if omitted, the current locale is used"/>
-			<parameter name="in language" code="Loca" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="in language" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given, or “current” or “none” (default: “none”)"/>
 			<result type="record"/>
 		
 			<documentation>
@@ -220,10 +234,7 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 		
 		<command name="time zone info" code="Dat:TzIn" description="returns a record describing the specified time zone">
 			<parameter name="for" type="text" code="For_" optional="yes" description="the time zone’s identifier, e.g. &quot;Africa/Addis_Ababa&quot; if omitted, the current time zone is used"/>
-			<parameter name="in language" code="Loca" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given (default: no locale)">
-				<type type="text"/>
-				<type type="LclE"/>
-			</parameter>
+			<parameter name="in language" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “de_DE”, indicating the language in which the result should be given, or “current” or “none” (default: “none”)"/>
 			<result type="record"/>
 		
 			<documentation>
@@ -244,12 +255,12 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 		
 		
 		<command name="time zone offset" code="Dat:TzOf" description="returns the number of seconds between two time zones">
-			<parameter name="from" code="From" optional="yes" description="the time zone’s identifier, e.g. &quot;Africa/Addis_Ababa&quot;, or offset from GMT in seconds (default: missing value)">
+			<parameter name="from" code="From" optional="yes" description="if given, a time zone identifier, e.g. &quot;Africa/Addis_Ababa&quot;, or offset from GMT in seconds (default: missing value)">
 				<type type="text"/>
 				<type type="integer"/>
 				<type type="missing value"/>
 			</parameter>
-			<parameter name="to" code="To__" optional="yes" description="the time zone’s identifier, e.g. &quot;America/Los_Angeles&quot;, or offset from GMT in seconds (default: missing value)">
+			<parameter name="to" code="To__" optional="yes" description="if given, a time zone identifier, e.g. &quot;America/Los_Angeles&quot;, or offset from GMT in seconds (default: missing value)">
 				<type type="text"/>
 				<type type="integer"/>
 				<type type="missing value"/>
@@ -258,29 +269,33 @@ format date (date "Thursday, 7 January 2016 at 01:41:34") time zone "Africa/Addi
 		
 			<documentation>
 				<html><![CDATA[
-<p>If both parameters are given, the result is the number of seconds between the two time zones:</p>
+<p>The <code>time zone offset</code> command returns different results depending on whether none, one, or both parameters are given:</p>
 
-<pre><code>(time zone offset from "Africa/Addis_Ababa" to "GMT") / hours 
-→ 3.0 (Addis Ababa is 3 hours, or 10800 seconds, ahead of Greenwich Mean Time)
+<ul>
+<li><p>If no parameters are given (i.e. both are <code>missing value</code>), the result is the number of seconds between the current time zone and GMT (equivalent to <code>time zone offset to "GMT"</code>):</p>
 
-(time zone offset from "America/New_York" to "Africa/Addis_Ababa") / hours
-→ -8.0 (New York is 8 hours behind Addis Ababa)</code></pre>
+<pre><code>(time zone offset) / hours → 3.0</code></pre></li>
 
-<p>Time zones can also be given as offsets to GMT in seconds (e.g. Central Europe is 1 hour, or 3600 seconds, ahead of GMT):</p>
-
-<pre><code>(time zone offset from (1 * hours) to "America/New_York") / hours → 6.0</code></pre>
-
-<p>If one parameter is given, the result is the number of seconds between that time zone and the current time zone. For example, if the current time zone is “Africa/Addis_Ababa”:</p>
+<li><p>If one parameter is given, the result is the number of seconds between that time zone and the current time zone. For example, if the current time zone is “Africa/Addis_Ababa”:</p>
 
 <pre><code>(time zone offset from "Asia/Shanghai") / hours → 5.0
 
 (time zone offset from "America/New_York") / hours → -8.0
 
-(time zone offset to "America/New_York") / hours → 8.0</code></pre>
+(time zone offset to "America/New_York") / hours → 8.0</code></pre></li>
 
-<p>If no parameters are given, the result is the number of seconds between the current time zone and GMT (equivalent to <code>time zone offset to "GMT"</code>):</p>
+<li><p>If both parameters are given, the result is the number of seconds between the two time zones:</p>
 
-<pre><code>(time zone offset) / hours → 3.0</code></pre>
+<pre><code>(time zone offset from "Africa/Addis_Ababa" to "GMT") / hours 
+→ 3.0 (Addis Ababa is 3 hours, or 10800 seconds, ahead of Greenwich Mean Time)
+
+(time zone offset from "America/New_York" to "Africa/Addis_Ababa") / hours
+→ -8.0 (New York is 8 hours behind Addis Ababa)</code></pre></li>
+</ul>
+
+<p>Time zones can also be given as offsets to GMT in seconds (e.g. Central Europe is 1 hour, or 3600 seconds, ahead of GMT):</p>
+
+<pre><code>(time zone offset from (1 * hours) to "America/New_York") / hours → 6.0</code></pre>
 
 				]]></html>
 			</documentation>

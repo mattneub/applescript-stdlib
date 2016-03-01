@@ -50,7 +50,7 @@ end test_uppercaseText</code></pre>
 	
 		<command name="assert test error" code="Ü†ë:AsEr" description="checks and reports that test code throws the correct error for invalid input">
 			<parameter name="in" code="Hand" type="text" optional="yes" description="the ‘call_NAME’ handler to use; if omitted, a handler with the same NAME as the current ‘test_NAME’ handler is called"/>
-			<parameter name="with parameter" type="any" code="Args" optional="yes" description="if given, the parameter to pass to the ‘call_NAME’ handler; if omitted, no parameters are passed"/>
+			<parameter name="for" type="any" code="Args" optional="yes" description="if given, the parameter to pass to the ‘call_NAME’ handler; if omitted, no parameters are passed"/>
 			<parameter name="is" code="Equa" type="expected error information" description="the expected error"/>
 			<parameter name="using" code="Usin" type="script" optional="yes" description="the type of check to perform (default: exact error check)"/>
 			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
@@ -59,7 +59,7 @@ end test_uppercaseText</code></pre>
 <p>For example:</p>
 
 <pre><code>to test_uppercaseText
-  assert test error using {a:"foo"} is {errorNumber:-1703} ¬
+  assert test error for {a:"foo"} is {errorNumber:-1703} ¬
       note "Check unsuitable value types are rejected."
 end test_uppercaseText
 
@@ -89,7 +89,7 @@ end call_uppercaseText
 		
 	
 		<command name="assert test passed" code="Ü†ë:AsPa" description="report a passed assertion">
-			<parameter name="for" code="Valu" type="any" description="the actual result"/>
+			<parameter name="for" code="Valu" type="any" optional="yes" description="the actual result"/>
 			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
 			<documentation>
 				<html><![CDATA[
@@ -99,7 +99,7 @@ end call_uppercaseText
 		</command>
 	
 		<command name="assert test failed" code="Ü†ë:AsFa" description="report a failed assertion and abort the current test">
-			<parameter name="for" code="Valu" type="any" description="the actual result"/>
+			<parameter name="for" code="Valu" type="any" optional="yes" description="the actual result"/>
 			<parameter name="note" code="Summ" type="text" optional="yes" description="any additional information to include in the test result"/>
 		</command>
 		

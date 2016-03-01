@@ -20,19 +20,22 @@
 <p>The following example uses a dictionary to store and retrieve RGB color values by name:</p>
 
 <pre><code>-- create a new dictionary
-set d to dictionary collection
+set obj to dictionary collection
 
 -- add some key-value pairs
-d's addItem("red", {255, 0, 0})
-d's addItem("yellow", {255, 255, 0})
-d's addItem("green", {0, 255, 0})
-d's addItem("blue", {0, 0, 255})
+obj's addItem("red", {255, 0, 0})
+obj's addItem("yellow", {255, 255, 0})
+obj's addItem("green", {0, 255, 0})
+obj's addItem("blue", {0, 0, 255})
 
 -- get the number of items in the collection
-log d's countItems() --> 4
+log obj's countItems() --> 4
 
 -- get the value that is currently stored under the key "green"
-log d's getItem("green") --> {0, 255, 0}</code></pre>
+log obj's getItem("green") --> {0, 255, 0}
+
+-- attempting to get or remove a non-existent item raises an error
+log obj's getItem("banana") -- Error -1728: "Item not found."</code></pre>
 
 
 <h3>Object Commands</h3>
@@ -150,6 +153,29 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[
+<h3>About Queues</h3>
+
+<p>Unlike a list, where any item can be accessed at any time, a queue is an ordered sequence of items where items can only be added (“pushed”) to the back of the queue and retrieved/removed (“pulled”) from the front – i.e. items are returned in the exact same order as they were added.</p>
+
+
+<h3>Example Code</h3>
+
+<pre><code>set obj to queue collection
+
+obj's addItem("a")
+obj's addItem("b")
+obj's addItem("c")
+log obj's removeItem() --> "a"
+
+obj's addItem("d")
+log obj's removeItem() --> "b"
+log obj's removeItem() --> "c"
+log obj's removeItem() --> "d"
+
+log obj's countItems() --> 0
+log obj's removeItem() -- Error -1728: "Queue is empty."</code></pre>
+
+
 <h3>Object Commands</h3>
 
 <p><code>QueueCollection</code> script objects recognize the following commands:</p>
@@ -178,21 +204,21 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 </dd>
 
 <dt><code>addItem(<var>theValue</var>)</code></dt>
-<dd><p>Push an item onto the end of the queue</p>
+<dd><p>Push an item onto the back of the queue</p>
 <ul>
 	<li><var>theValue</var> : <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>removeItem()</code></dt>
-<dd><p>Pull an item from the head of the queue</p>
+<dd><p>Pull an item from the front of the queue</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
 </dd>
 
 <dt><code>getItem()</code></dt>
-<dd><p>Return the item at the head of the queue <em>without</em> removing it</p>
+<dd><p>Return the item at the front of the queue <em>without</em> removing it</p>
 <ul>
 	<li>Result: <tt>anything</tt></li>
 </ul>
@@ -211,6 +237,29 @@ log d's getItem("green") --> {0, 255, 0}</code></pre>
 			<result type="script"/>
 			<documentation>
 				<html><![CDATA[
+<h3>About Stachs</h3>
+
+<p>Unlike a list, where any item can be accessed at any time, a stack is an ordered sequence of items where items can only be added (“pushed”) and retrieved/removed (“popped”) from the top of the stack – i.e. the most recently added item is returned first, and the oldest added item returned last.</p>
+
+
+<h3>Example Code</h3>
+
+<pre><code>set obj to stack collection
+
+obj's addItem("a")
+obj's addItem("b")
+obj's addItem("c")
+log obj's removeItem() --> "c"
+
+obj's addItem("d")
+log obj's removeItem() --> "d"
+log obj's removeItem() --> "b"
+log obj's removeItem() --> "a"
+
+log obj's countItems() --> 0
+log obj's removeItem() -- Error -1728: "Stack is empty."</code></pre>
+
+
 <h3>Object Commands</h3>
 
 <p><code>StackCollection</code> script objects recognize the following commands:</p>
