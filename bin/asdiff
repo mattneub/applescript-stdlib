@@ -17,7 +17,7 @@ For basic .applescript code coloring, BBEdit/TextWrangler codeless language modu
 
 property _difftool : "/usr/local/bin/twdiff"
 
-use script "FileLib"
+use script "File"
 use scripting additions
 
 on run {arg1, arg2}
