@@ -8,7 +8,7 @@
 		
 		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
-			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
+			<parameter name="using" code="Usin" optional="yes" description="(default: canonical number format)">
 				<type type="number format enumeration"/>
 				<type type="number format record"/>
 				<type type="text"/>
@@ -45,7 +45,7 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 		
 		<command name="format number" code="Mth:FNum" description="format a number as text">
 			<direct-parameter type="number"/>
-			<parameter name="using" code="Usin" optional="yes" description="(default: default format)">
+			<parameter name="using" code="Usin" optional="yes" description="(default: canonical number format)">
 				<type type="number format enumeration"/>
 				<type type="number format record"/>
 				<type type="text"/>
@@ -80,7 +80,7 @@ format number 3.14 → "3.14" (canonical conversion)</code></pre>
 		
 		
 		<record-type name="number format record" code="MthR">
-			<property name="basic format" code="MthA">
+			<property name="based on format" code="MthA">
 				<type type="number format enumeration"/>
 				<type type="text"/>
 			</property>
@@ -95,7 +95,7 @@ format number 3.14 → "3.14" (canonical conversion)</code></pre>
 		
 		
 		<enumeration name="number format enumeration" code="MthZ">
-			<enumerator name="default format" code="Mth0"/>
+			<enumerator name="canonical number format" code="Mth0"/> <!-- equivalent to AppleScript's own number formatting behavior -->
 			<enumerator name="integer format" code="Mth1"/>
 			<enumerator name="decimal format" code="Mth2"/>
 			<enumerator name="scientific format" code="Mth3"/>
