@@ -82,7 +82,7 @@
 	
 		<command name="split text" code="Txt:SplT" description="split text using the specified separator(s)">
 			<direct-parameter type="text"/>
-			<parameter name="at" code="Sepa" optional="yes" description="the separator(s) upon which to split (default: one or more white space characters)">
+			<parameter name="at" code="Sepa" optional="yes" description="the separator(s) upon which to split; if omitted, leading and trailing white space is trimmed and the remaining text split on contiguous white space characters">
 				<type type="text"/>
 				<type type="text" list="yes"/>
 			</parameter>
