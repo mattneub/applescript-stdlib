@@ -2,9 +2,6 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary title="">
 
-
-	<!-- note: all commands in library use same event class code -->
-
 	
 	<suite name="Modify Text" code="****">
 		
@@ -139,9 +136,9 @@
 			
 			<parameter name="using" code="Usin" type="SerE" optional="yes" description="search using AppleScript (considering/ignoring) text comparison or ICU (regular expression) pattern matching? (default: case insensitivity)"/>
 			
-			<parameter name="returning" code="Retu" type="RetE" optional="yes" description="if 'replacing with' parameter is omitted, the type(s) of description records to return (default: matching text)"/>
+			<parameter name="returning" code="Retu" type="RetE" optional="yes" description="if the ‘replacing with’ parameter is omitted, the type(s) of description records to return (default: matching text)"/>
 			
-			<result description="The modified text if the 'replacing with' parameter is given, otherwise a list of 'unmatched text' and/or 'matched text' records.">
+			<result description="the modified text if the ‘replacing with’ parameter is given, otherwise a list of ‘unmatched text’ and/or ‘matched text’ records">
 					<type type="text"/>
 					<type type="record" list="yes"/>
 			</result>
@@ -163,9 +160,9 @@
 </ul>
 
 <pre><code>script UppercaseMatchedText
-    to replacePattern(theText, foundGroups)
-        return uppercase text theText
-    end replacePattern
+  to replacePattern(theText, foundGroups)
+    return uppercase text theText
+  end replacePattern
 end script
 
 search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using pattern matching
@@ -194,12 +191,12 @@ search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using p
 		</enumeration>
 		
 		
-		<command name="escape pattern" code="Txt:EPat" description="when pattern matching, escape any special characters in 'search text' command's 'for' parameter so that they only match as literal characters">
+		<command name="escape pattern" code="Txt:EPat" description="when pattern matching, escape any special characters in ‘search text’ command’s ‘for’ parameter so that they only match as literal characters">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 		</command>
 		
-		<command name="escape template" code="Txt:ETem" description="when pattern matching, escape any special characters in search text' command's 'replacing with' parameter so that they are not substituted">
+		<command name="escape template" code="Txt:ETem" description="when pattern matching, escape any special characters in ‘search text’ command’s ‘replacing with’ parameter so that they are not substituted">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 		</command>
@@ -207,9 +204,9 @@ search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using p
 		
 		<!-- record structures returned by `search text` are defined here for documentation purposes
 		
-			note: only the record's type names are defined as keywords (Script Editor/OSAKit choke when displaying records that contain `class` properties whose value isn't a type class, e.g. `{property class:"foo"}`); other properties use standard AS identifiers so can be safely used anywhere, not just inside `tell script "TextLib"...` blocks (since the record's class property is really only included for informational purposes, e.g. when testing and debugging, it doesn't particularly matter if its corresponding keyword isn't always available) -->
+			note: only the record’s type names are defined as keywords (Script Editor/OSAKit choke when displaying records that contain `class` properties whose value isn’t a type class, e.g. `{property class:"foo"}`); other properties use standard AS identifiers so can be safely used anywhere, not just inside `tell script "TextLib"...` blocks (since the record’s class property is really only included for informational purposes, e.g. when testing and debugging, it doesn’t particularly matter if its corresponding keyword isn’t always available) -->
 		
-		<record-type name="unmatched text" code="TxtU" description="record type used by the 'search text' command to describe an unmatched text range">
+		<record-type name="unmatched text" code="TxtU" description="record type used by the ‘search text’ command to describe an unmatched text range">
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ class : unmatched text,
@@ -220,7 +217,7 @@ search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using p
 			</documentation>
 		</record-type>
 		
-		<record-type name="matched text" code="TxtM" description="record type used by the 'search text' command to describe a matched text range">
+		<record-type name="matched text" code="TxtM" description="record type used by the ‘search text’ command to describe a matched text range">
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ class : matched text,
@@ -232,7 +229,7 @@ search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using p
 			</documentation>
 		</record-type>
 		
-		<record-type name="matched group" code="TxtG" description="record type used by a 'matched text' record's 'foundGroups' property to describe the text matched by a parenthesized group within the matched pattern">
+		<record-type name="matched group" code="TxtG" description="record type used by a ‘matched text’ record’s ‘foundGroups’ property to describe the text matched by a parenthesized group within the matched pattern">
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ class : matched group,

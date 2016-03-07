@@ -3,30 +3,11 @@
 <dictionary title="">
 	
 	<!-- note: this SDEF uses four-char codes containing "high-ASCII" chars (i.e. bytes in range 128-255 represented as characters originally found in MacOSRoman charset) to reduce the likelihood of keyword collisions with the code being tested; TO DO: check how these raw codes appear in AS when host system uses different primary encodings -->
-
 	
-	<suite name="Unit Testing" code="****">
-		
-		<command name="unit test runner" code="Ü†ë:TRPa" description="returns the location of the unit test runner (command line executable)">
-			<result type="file"/>
-		</command>
-		
-		<command name="run unit tests" code="Ü†ë:RunT" description="run the unit tests in the specified script file">
-			<direct-parameter type="file"/>
-			<result type="text" description="the test report"/>
-			<documentation>
-				<html><![CDATA[
-<p>To run a unit test script directly in Script Editor, include the following handler in the script:</p>
-
-<pre><code>on run
-  run unit tests (path to me)
-end run</code></pre>
-
-				]]></html>
-			</documentation>
-
-		</command>
-		
+	
+	
+	<suite name="Assertions" code="****" description="commands used to compare expected vs actual results">
+	
 		<!-- TO DO: slight problem using `is` as parameter name is that AS parses it differently depending on whether or not the command's parameters appear in the same order as below; if not, the `is` will be parsed as an operator instead of parameter name -->
 				
 		<command name="assert test result" code="Ü†ë:AsRe" description="checks and reports that test code produces the correct output for valid input">
@@ -104,6 +85,11 @@ end call_uppercaseText
 		</command>
 		
 		
+	</suite>
+	
+	
+	<suite name="Comparing Results" code="****" description="objects used to compare expected vs actual results">
+	
 	
 		<command name="exact equality check" code="Ü†ë:ExEq" description="used in ‘assert test result’ to check that the expected and actual results are identical in both class and content">
 			<result type="script"/>
@@ -165,61 +151,30 @@ end call_uppercaseText
 	</suite>
 
 
-
-	<suite name="Performance Profiling" code="****">
+	
+	<suite name="Running Test Scripts" code="****" description="commands used to interact with ‘osatest’ runner">
 		
-		<command name="timer object" code="Ü†ë:MTmr" description="returns a new TimerObject">
-			<direct-parameter type="text" optional="yes" description="an optional name, for reference (default: &quot;&quot;)"/>
-			<result type="script"/>
-			
+		<command name="unit test runner" code="Ü†ë:TRPa" description="returns the location of the unit test runner (a command line executable embedded in the TestTools library)">
+			<result type="file"/>
+		</command>
+		
+		<command name="run unit tests" code="Ü†ë:RunT" description="run the unit tests in the specified script file">
+			<direct-parameter type="file"/>
+			<result type="text" description="the test report"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>TimerObject</code> script objects define the following handlers:</p>
+<p>To run a unit test script directly in Script Editor, include the following handler in the script:</p>
 
-<dl>
-<dt><code>timerName()</code></dt>
-<dd><p>the timer name, if given</p>
-<ul>
-	<li>Result: <tt>text</tt></li>
-</ul>
-</dd>
+<pre><code>on run
+  run unit tests (path to me)
+end run</code></pre>
 
-<dt><code>startTimer()</code></dt>
-<dd><p>[re]start the timer (this does nothing if the timer is currently running)</p>
-<ul>
-	<li>Result: <tt>script</tt> – the TimerObject returns itself, allowing timer creation and start commands to be chained for convenience, e.g. <code>(timer object)'s startTimer()</code></li>
-</ul>
-</dd>
-
-<dt><code>stopTimer()</code></dt>
-<dd><p>stop the timer (this does nothing if the timer is already stopped)</p>
-<ul>
-	<li>Result: <tt>real</tt> – the number of seconds elapsed since timer was last started</li>
-</ul>
-</dd>
-
-<dl>
-<dt><code>elapsedTime()</code></dt>
-<dd><p>returns the number of seconds since running timer was last started</p>
-<ul>
-	<li>Result: <tt>real</tt></li>
-</ul>
-</dd>
-
-<dl>
-<dt><code>totalTime()</code></dt>
-<dd><p>returns the total number of seconds the timer has been running</p>
-<ul>
-	<li>Result: <tt>real</tt></li>
-</ul>
-</dd>
-</dl>
 				]]></html>
 			</documentation>
+
 		</command>
 		
 	</suite>
-	
 		
 </dictionary>
 
