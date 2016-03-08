@@ -7,24 +7,24 @@
 	
 		<command name="join date" code="Dat:JDat" description="given a record of valid year, month, day, hours, minutes, and/or seconds properties, returns a new date object">
 			<direct-parameter type="date component record" description="all properties are optional; if omitted, default values are used instead (default: midnight of 1 January 2001)"/>
-			<parameter name="time zone" code="TZon" optional="yes" description="the date’s time zone (name or seconds to GMT; default: “current”)">
+			<parameter name="time zone" code="TZon" optional="yes" description="the default time zone (name or seconds to GMT; default: “current”); ignored if the date component record includes its own ‘timezone’ property">
 				<type type="text"/>
 				<type type="integer"/>
 			</parameter>
 			<result type="date"/>
 			<documentation>
 				<html><![CDATA[
-<p>The following command creates a date object describing 7:45am local time on June 15, 1990:</code>
+<p>The following command creates a date object describing 7:45am, New York time, on June 15, 1990:</code>
 
-<pre><code>join date {year:1990, month:June, day:15, hours:7, minutes:45, seconds:0}
-→ date "Friday, 15 June 1990 at 07:45:00"</code></pre>
+<pre><code>join date {year:1990, month:June, day:15, hours:7, minutes:45, seconds:0, timezone:"America/New_York"}
+→ date "Friday, 15 June 1990 at 07:45:00" (note: displayed time is adjusted to user’s current time zone)</code></pre>
 
-<p>All record properties are optional, thus the following creates a date object describing midnight (local time) on January 1, 2016:</p>
+<p>All record properties are optional, thus the following creates a date object describing midnight local time on January 1, 2016:</p>
 
 <pre><code>join date {year:2016} 
 → date "Friday, 1 January 2016 at 00:00:00"</code></pre>
 
-By default, the date components record is interpreted as local time. If it describes a date in a different time zone, the time zone’s ID should be given via the optional <code>time zone</code>. The following example creates a date object describing midnight in New York on January 1, 2016:</p>
+<p>If the date components record does not contain a <code>timezone</code> property then it is interpreted as local time by default. The optional <code>time zone</code> parameter can be used to specify a different default time zone if necessary. The following example creates a date object describing midnight in New York on January 1, 2016:</p>
 
 <pre><code>join date {year:2016} time zone "America/New_York"</code></pre>
 
@@ -69,14 +69,16 @@ By default, the date components record is interpreted as local time. If it descr
 		<record-type name="date component record" code="DatR">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{ year : <var>integer</var>,
+<pre><code>{ class : date component record,
+  year : <var>integer</var>,
   month : <var>integer or constant</var>,
   day : <var>integer</var>,
   hours : <var>integer</var>,
   minutes : <var>integer</var>,
-  seconds : <var>integer</var> }</code></pre>
+  seconds : <var>integer</var>
+  timezone: <var>text or integer</var> }</code></pre>
   
-<p>If given, the <code>month</code> property can be a month constant (<code>January</code>, <code>February</code>, etc) or integer, while the other properties must be integers.</p>
+<p>All properties are optional. The <code>month</code> property can be a month constant (<code>January</code>, <code>February</code>, etc) or integer. The <code>timezone</code> property should be a time zone ID or GMT offset. Other properties must be integers.</p>
 				]]></html>
 			</documentation>
 		</record-type>

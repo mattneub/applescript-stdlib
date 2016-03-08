@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
-<dictionary title="">
-
+<dictionary>
+	
+	<!-- Note that while ‘verb noun’-style command names (e.g. `split text`) are strongly discouraged in application dictionaries, their use is recommended in library dictionaries to minimize the risk of collisions with user identifiers and other imported keywords (e.g. `split list`) when SDEF-based libraries are imported via global ‘use’ statements. -->
 	
 	<suite name="Modify Text" code="****">
 		
@@ -9,27 +10,56 @@
 			<direct-parameter type="text"/>
 			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>uppercase text "foø bår" → "FOØ BÅR"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<command name="lowercase text" code="Txt:LowT" description="convert all alphabetical letters to lowercase">
 			<direct-parameter type="text"/>
 			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>lowercase text "FOØ BÅR" → "foø bår"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
-		<command name="capitalize text" code="Txt:CapT" description="capitalize all words (though be aware that this command has only a rudimentary understanding of the complex capitalization rules used in natural languages so results may be inferior to human-capitalized text)">
+		<command name="capitalize text" code="Txt:CapT" description="capitalize all words">
 			<direct-parameter type="text"/>
 			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>capitalize text "FOØ bår" → "Foø Bår"</code></pre>
+
+<p>Be aware this command has only a rudimentary understanding of the complex capitalization rules used in natural languages, so results may not be as good or correct as manually capitalized text.</p>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
 		<command name="format text" code="Txt:FTxt" description="insert a list of values into a text template">
 			<direct-parameter type="text" description="the template into which to insert each item of the list"/>
-			<parameter name="using" code="Usin" description="a list of values">
-				<type type="any" list="yes"/>
+			<parameter name="using" code="Usin" description="a list of values to insert (each value must be text or coercible to text)">
+				<type type="text" list="yes"/>
 			</parameter>
 			<result type="text"/>
+						
+			<documentation>
+				<html><![CDATA[
+<pre><code>format text "Good $4, $1 $3." using {"Dr", "Jan", "Smith", "morning"}
+→ "Good morning, Dr Smith."</code></pre>
+
+<!-- TO DO: template syntax needs documented here and/or in `search text` -->
+				]]></html>
+			</documentation>
 		</command>
 		
 		<command name="normalize line breaks" code="Txt:NLiB" description="standardize line break characters">
@@ -59,7 +89,7 @@
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>slice text theText from i to j</code> is similar to <code>get text i thru j of theText</code>, except that it returns an empty list if the start index is greater than the end index, and doesn’t throw an error if an index is out of range.</p>
+<p><code>slice text theText from i to j</code> is similar to <code>get text i thru j of theText</code>, except that it returns an empty text value if the end index is before the start index, and doesn’t throw an error if an index is out of range.</p>
 				]]></html>
 			</documentation>
 		</command>
@@ -159,14 +189,14 @@
 	<li>a script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result</li>
 </ul>
 
-<pre><code>script UppercaseMatchedText
+<pre><code>script ReplaceObject
   to replacePattern(theText, foundGroups)
-    return uppercase text theText
+    return "[" & (uppercase text theText) & "]"
   end replacePattern
 end script
 
-search text "abcdefgh" for "[aeiou]" replacing with UppercaseMatchedText using pattern matching
-→ "AbcdEfgh"</code></pre>
+search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern matching
+→ "[A]bcd[E]fgh"</code></pre>
 				]]></html>
 			</documentation>
 
