@@ -2,6 +2,8 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
     
+    <!-- TO DO: finish `sort list` documentation -->
+    
     <suite name="Modify" code="****">
         
         <command name="insert into list" code="Lst:Inst" description="insert an item (or items) into the given list, returning a new list">
@@ -53,15 +55,15 @@ delete from list {1, 2, 3, 4, 5} to item 3 → {4, 5}</code></pre>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>mapItem</code> that takes a value as its input and returns a new value as its output.</p>
+<p>The <code>using</code> parameter's script object must implement a handler named <code>mapItem</code> that takes a value as its input and returns a new value as its output.  The following example demonstrates how to map a list of numbers to create a new list where each item is the square of its original value:</p>
 
-<pre><code>script DoubleNumber
+<pre><code>script SquareNumbers
   to mapItem(aValue)
-    return aValue * 2
+    return aValue ^ 2
   end mapItem
 end script
 
-map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
+map list {1, 2, 3, 4, 5} using SquareNumbers → {1, 4, 9, 16, 25}</code></pre>
                 ]]></html>
             </documentation>
         </command>
@@ -73,7 +75,7 @@ map list {1, 2, 3} using DoubleNumber → {2, 4, 6}</code></pre>
             <result type="list"/>
             <documentation>
                 <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>reduceItem</code> that takes two values as its input and returns a new value as its output.</p>
+<p>The <code>using</code> parameter's script object must implement a handler named <code>reduceItem</code> that takes two values as its input and returns a new value as its output. The following example demonstrates how to reduce a list of numbers to the sum of all its items:</p>
 
 <pre><code>script SumNumbers
   to reduceItem(partialResult, aValue)
@@ -92,7 +94,17 @@ reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
 			<result type="list"/>
 			<documentation>
 				<html><![CDATA[
-<p>This uses AppleScript’s <code>is in</code> operator to determine if each item has already appeared in the list. When processing lists of text, wrap the <code>remove duplicates from list</code> command in <code>considering</code>/<code>ignoring</code> blocks as necessary.</p>
+<p>For example:</p>
+
+<pre><code>remove duplicates from list {"A", "b", "c", B", "E", "b"} → {"A", "b", "c", "E"}</code></pre>
+				
+<p>Be aware that this command uses AppleScript’s standard <code>is in</code> operator to check if each item has previously appeared in the list. When working with lists of text, for example, you may want to wrap the <code>remove duplicates from list</code> command in an appropriate <code>considering</code>/<code>ignoring</code> block to ensure predictable behavior whenever that code is executed. For example, wrapping the previous command in a <code>considering case</code> block alters the way in which text items are compared:</p>
+
+<pre><code>considering case
+  remove duplicates from list {"A", "b", "c", B", "E", "b"} → {"A", "b", "c", "B", "E"}
+end considering</code></pre>
+
+<p>(Similarly, when working with lists of real numbers, be aware that two fractional numbers that appear identical can sometimes compare as <code>false</code> due to the limited accuracy of that data type. For example, <code>0.7 * 0.7 ≠ 0.49</code>(!) due to tiny imprecisions in the CPU’s floating point math calculations.)</p>
 				]]></html>
 			</documentation>
 		</command>
@@ -105,7 +117,21 @@ reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
-<p><code>slice list theList from i to j</code> is similar to <code>get items i thru j of theList</code>, except that it returns an empty list if the start index is greater than the end index, and doesn’t throw an error if an index is out of range.</p>
+<p>This command works similarly to <code>get items i thru j of theList</code>, except that it returns an empty list if the start index is greater than the end index, and doesn’t throw an error if an index is out of range. (Index 0 is still forbidden though, as AppleScript lists are 1-indexed.) For example:</p>
+
+<pre><code>slice list {"a", "b", "c", "d", "e"} from item 4 → {"d", "e"}
+
+slice list {"a", "b", "c", "d", "e"} from item 2 to item -2 → {"b", "c", "d"}
+
+slice list {"a", "b", "c", "d", "e"} from item 3 to item 3 → {"c"}
+
+slice list {"a", "b", "c", "d", "e"} to item 2 → {"a", "b"}
+
+slice list {"a", "b", "c", "d", "e"} from item 10 to item 15 → {}
+
+slice list {"a", "b", "c", "d", "e"} from item 4 to item 3 → {}
+
+</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -122,14 +148,24 @@ reduce list {5, 1, 9, 3} using SumNumbers → 18</code></pre>
             </result>
             <documentation>
                 <html><![CDATA[
-<pre><code>transpose list {{1, 2, 3}, {4, 5, 6}} → {{1, 4}, {2, 5}, {3, 6}}</code></pre>
+<p>The <code>transpose list</code> command treats a list of lists as a 2D matrix, rearranging it so that rows become columns and columns become rows.</p>
 
-<p>To obtain a list of {name, album, artist} sublists for each track in iTunes:</p>
+<pre><code>transpose list {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}} → {{1, 4, 7}, {2, 5, 8}, {3, 6, 9}}</code></pre>
+
+<p>This command is particularly useful when getting large amounts of data from scriptable applications, as it is much quicker to ask the application to <code>get <var>property</var> of every <var>element</var></code> than to get every element, then iterate over the returned list of references asking for each element’s properties one at a time. For example, to obtain name, album, and artist information for every track in iTunes, then rearrange it into an easier-to-use form:</p>
 
 <pre><code>tell application "iTunes"
-  set trackInfo to {name, album, artist} of every track
+  tell every track
+    set allNames to its name
+    set allAlbums to its album
+    set allArtists to its artist
+  end tell
 end tell
-transpose list trackInfo</code></pre>
+set trackInfo to {allNames, allAlbum, allArtists}
+-- trackInfo is a list of form {{name, name, ...}, {album, album, ...}, {artist, artist, ...}}
+
+set trackInfo to transpose list trackInfo
+-- trackInfo is now a list of form {{name, album, artist}, {name, album, artist}, ...}</code></pre>
                 ]]></html>
             </documentation>
         </command>
@@ -146,22 +182,59 @@ transpose list trackInfo</code></pre>
     
     
     <suite name="Search" code="****">
+    
+        <command name="filter list" code="Lst:Filt" description="check each item in the given list, returning a new list containing only those items that pass the test">
+            <direct-parameter type="list"/>
+            <parameter name="using" code="Usin" type="script"/>
+            <result type="list"/>
+            <documentation>
+                <html><![CDATA[
+<p>The <code>using</code> parameter's script object must implement a handler named <code>filterItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list. The following example demonstrates how to filter a list of numbers to obtain a new list containing only the items that are greater than 18:</p>
+
+<pre><code>script IsOverEighteen
+  to filterItem(aValue)
+    return aValue > 18
+  end filterItem
+end script
+
+filter list {12, 23, 17, 22, 14} using IsOverEighteen → {23, 22}</code></pre>
+
+                ]]></html>
+            </documentation>
+        </command>
+        
         
         <command name="find in list" code="Lst:Find" description="return the index(es) of the specified value in a list">
             <direct-parameter type="list"/>
             <parameter name="value" code="Valu" type="anything" optional="yes" description="the value to find (default: missing value)"/>
             <parameter name="using" code="Usin" type="script" optional="yes" definition="the test to perform on each item; if given, the ‘value’ parameter is ignored"/>
-            <parameter name="returning" code="Retu" type="LFWh" optional="yes" description=""/>
+            <parameter name="returning" code="Retu" type="LFWh" optional="yes" description="(default: all occurences)"/>
             <result>
                 <type type="integer" list="yes" description="a list of item index(es), or an empty list if no matches are found"/>
             </result>
             <documentation>
                 <html><![CDATA[
-<pre><code>find in list {"a", "b", "c"} value "b" → {2}</code></pre>
+<pre><code>find in list {"A", "b", "c", B", "E", "b"} value "b" → {2, 4, 6}
 
-<p>The <code>value</code> parameter uses AppleScript’s <code>is</code> operator to determine if a list item matches the specified value. e.g. When processing lists of text, wrap the <code>find in list</code> command in <code>considering</code>/<code>ignoring</code> blocks as necessary.</p>
+find in list {"A", "b", "c", B", "E", "b"} value "b" returning first occurrence → {2}
 
-<p>For more complex tests, use the <code>using</code> parameter instead. This takes a script object containing a <code>filterItem</code> handler that takes the item to check as its sole parameter and returns <code>true</code> or <code>false</code> to indicate a match or non-match.</p>
+find in list {"A", "b", "c", B", "E", "b"} value "b" returning first occurrence → {2}</code></pre>
+
+<p>The <code>value</code> parameter uses AppleScript’s standard <code>is equal to</code> operator to compare each list item to the specified value, adding the item’s index to the result list if true. As with <code>remove duplicates from list</code>, remember that AppleScript’s <code>is equal to</code> operation is subject to additional rules and restrictions when comparing certain types. For example, wrapping the previous command in a <code>considering case</code> block alters the way in which text items are compared:</p>
+
+<pre><code>considering case
+  find in list {"A", "b", "c", B", "E", "b"} value "b" → {2, 6}
+end considering</code></pre>
+
+<p>For more complex tests than simple comparison, the <code>using</code> parameter can be used to supply a custom matching handler. Like the <code>filter list</code> command’s <code>using</code> parameter, this takes a script object containing a <code>filterItem</code> handler that takes the item to check as its sole parameter and returns <code>true</code> or <code>false</code> to indicate a match or non-match. For example:</p>
+
+<pre><code>script IsOverEighteen
+  to filterItem(aValue)
+    return aValue > 18
+  end filterItem
+end script
+
+find in list {12, 23, 17, 22, 14} using IsOverEighteen returning last occurrence → {4}</code></pre>
                 ]]></html>
             </documentation>
         </command>
@@ -171,31 +244,6 @@ transpose list trackInfo</code></pre>
             <enumerator name="last occurrence" code="LFWL"/>
             <enumerator name="all occurrences" code="LFWA"/>
         </enumeration>
-    
-        
-        <command name="filter list" code="Lst:Filt" description="check each item in the given list, returning a new list containing only those items that pass the test">
-            <direct-parameter type="list"/>
-            <parameter name="using" code="Usin" type="script"/>
-            <result type="list"/>
-            <documentation>
-                <html><![CDATA[
-<p>The <code>using</code> parameter's script object must implement a handler named <code>filterItem</code> that takes a value as its input and returns <code>true</code> or <code>false</code> indicating whether or not the item should appear in the output list.</p>
-
-<pre><code>script Over18
-  to filterItem(aValue)
-    return aValue > 18
-  end filterItem
-end script
-
-filter list {12, 42, 16, 21} using Over18 → {42, 21}</code></pre>
-
-<p>Note that AppleScript specifiers can also be used to filter lists by item type, for example:</p>
-
-<pre><code>every number of {true, -1, 2.5, "42", {99}, 1.0E+6} → {-1, 2.5, 1.0E+6}</code></pre>
-
-                ]]></html>
-            </documentation>
-        </command>
         
     </suite>
     
