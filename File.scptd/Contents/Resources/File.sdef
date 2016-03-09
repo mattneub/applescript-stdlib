@@ -54,9 +54,7 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 		
 
 		<command name="normalize path" code="Fil:NorP" description="">
-			<direct-parameter>
-				<type type="text"/>
-			</direct-parameter>
+			<direct-parameter type="text"/>
 			<parameter name="full expansion" code="ExpR" type="boolean" optional="yes" description="if true, relative paths will also be expanded to absolute paths within the current folder (default: false)"/>
 			<result type="text"/>
 			
@@ -70,21 +68,21 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 normalize path "Music/iTunes" with full expansion
 → "/Users/jsmith/Music/iTunes"</code></pre>
 
-<p>A new path is made by performing the following operations:</p>
+<p>This command normalizes a path by performing the following clean-up tasks as needed:</p>
 
 <ul>
-<li>Expanding an initial tilde expression.</li>
+<li>expanding the initial tilde expression</li>
 
-<li>Removing an initial component of “/private/var/automount”, “/var/automount”, or “/private” from the path, if the result still indicates an existing file or folder (checked by consulting the file system).</li>
+<li>removing the initial component of “/private/var/automount”, “/var/automount”, or “/private” from the path, if the result still indicates an existing file or folder (checked by consulting the file system)</li>
 
-<li>Reducing empty components and references to the current folder (that is, the sequences “//” and “/./”) to single path separators.</li>
+<li>reducing empty components and references to the current folder (that is, the sequences “//” and “/./”) to single path separators</li>
 
-<li>Removing a trailing slash from the last component.</li>
-
-<li>For absolute paths only, resolving references to the parent folder (that is, the component “..”) to the real parent folder if possible. For relative paths, references to the parent folder are left in place.</li>
+<li>removing the trailing slash from the last component.</li>
 </ul>
 
-<p>Throws error number -1728 if the current working folder is unknown.</p> 
+<p>For absolute paths, it also resolves references to the parent folder (that is, the component “..”) to the real parent folder if possible. For relative paths, references to the parent folder are left in place.</p>
+
+<p>Note: this command will raise error number -1728 if a relative path is given and the current working directory is unknown.</p> 
 				]]></html>
 			</documentation>
 		</command>
