@@ -62,11 +62,30 @@
 			</documentation>
 		</command>
 		
-		<command name="normalize line breaks" code="Txt:NLiB" description="standardize line break characters">
+		<command name="normalize text" code="Txt:Norm" description="eliminates variations between characters">
 			<direct-parameter type="text"/>
-			<parameter name="using" code="LiBr" type="LiBr" optional="yes" description="the line break format (default: OS X line breaks)"/>
+			<parameter name="using" code="NoFo" optional="yes" description="the normalizations to apply (default: OS X line breaks)">
+				<type type="NoFo"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="text"/>
 		</command>
+		
+		
+		<enumeration name="NoFo" code="NoFo">
+			<enumerator name="normalized case" code="NoCa"/>
+			<enumerator name="normalized diacriticals" code="NoDi"/>
+			<enumerator name="normalized width" code="NoWi"/> <!-- TO DO: how useful is this option in practice? -->
+			<enumerator name="normalized white space" code="NoSp"/>
+			<enumerator name="OS X line breaks" code="LiOX"/>
+			<enumerator name="Windows line breaks" code="LiWi"/>
+			<enumerator name="classic Mac line breaks" code="LiCM"/>
+			<enumerator name="precomposed canonical form" code="No_C"/>
+			<enumerator name="decomposed canonical form" code="No_D"/>
+			<enumerator name="precomposed compatibility form" code="NoKC"/>
+			<enumerator name="decomposed compatibility form" code="NoKD"/>
+		</enumeration>
+		
 		
 		<command name="pad text" code="Txt:PadT" description="pad the text to a minimum length">
 			<direct-parameter type="text"/>

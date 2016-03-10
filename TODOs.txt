@@ -1,6 +1,8 @@
 The following TODOs are deferred/ignored/rejected:
 
 
+- always use lowercase four-char codes (note: this only applies to Apple-owned terminology)
+
 
 ----------------------------------------------------------------------
 Date
