@@ -2,6 +2,29 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
 	
+	<!--
+
+Regular Expression documentation is adapted from NSRegularExpression Class Reference documentation (https://developer.apple.com/library/mac/documentation/Foundation/Reference/NSRegularExpression_Class), which includes the following:
+
+ICU License
+
+Table 1, Table 2, Table 3, Table 4 are reproduced from the ICU User Guide, Copyright (c) 2000 - 2009 IBM and Others, which are licensed under the following terms:
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright (c) 1995-2009 International Business Machines Corporation and others. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, provided that the above copyright notice(s) and this permission notice appear in all copies of the Software and that both the above copyright notice(s) and this permission notice appear in supporting documentation.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY RIGHTS. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Software without prior written authorization of the copyright holder.
+
+All trademarks and registered trademarks mentioned herein are the property of their respective owners. 
+	
+	-->
+	
+	
 	<!-- Note that while ‘verb noun’-style command names (e.g. `split text`) are strongly discouraged in application dictionaries, their use is recommended in library dictionaries to minimize the risk of collisions with user identifiers and other imported keywords (e.g. `split list`) when SDEF-based libraries are imported via global ‘use’ statements. -->
 	
 	<suite name="Modify Text" code="****">
@@ -298,8 +321,12 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		
 		<documentation>
 			<html><![CDATA[
-			
+
+[[TO DO: also check Python's `re` module documentation for alternative wordings]]
+
 [[TO DO: note that this table is trimmed from original for length (e.g. metachars for most control codes are omitted); could probably do with trimming further if practical (), and including link to NSRegularExpression docs for any users who need the complete list]]
+
+[[TO DO: note rarely used metacharacters - e.g. ASCII control characters - are omitted for length; see NSRegularExpression docs for complete list]]
 			
 <table width="100%" style="text-align:left; margin:1em;">
 	<thead>
@@ -315,7 +342,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\b</code></td>
-			<td>Match if the current position is a word boundary. Word boundaries are found according to the definitions of word found in Unicode UAX 29, Text Boundaries. (Used outside of <code>[...]</code> groups.)</td>
+			<td>Match if the current position is a word boundary. (When used outside of <code>[...]</code> groups.) Word boundaries are found according to the definitions of word found in Unicode UAX 29, Text Boundaries.</td>
 		</tr>
 		<tr>
 			<td><code>\B</code></td>
@@ -330,32 +357,24 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match any character that is not a decimal digit.</td>
 		</tr>
 		<tr>
-			<td><code>\E</code></td>
-			<td>Terminates a <code>\Q ... \E</code> quoted sequence.</td>
-		</tr>
-		<tr>
-			<td><code>\G</code></td>
-			<td>Match if the current position is at the end of the previous match.</td>
-		</tr>
-		<tr>
 			<td><code>\n</code></td>
 			<td>Match a <code>LINE FEED</code>, <code>\u000A</code>.</td>
 		</tr>
 		<tr>
-			<td><code>\N{</code><em>UNICODE CHARACTER NAME</em><code>}</code></td>
-			<td>Match the named character.</td>
+			<td><code>\N{</code><em>CHARACTER&nbsp;NAME</em><code>}</code></td>
+			<td>Match the named Unicode Character.</td>
 		</tr>
 		<tr>
-			<td><code>\p{</code><em>UNICODE PROPERTY NAME</em><code>}</code></td>
+			<td><code>\p{</code><em>PROPERTY&nbsp;NAME</em><code>}</code></td>
 			<td>Match any character with the specified Unicode Property.</td>
 		</tr>
 		<tr>
-			<td><code>\P{</code><em>UNICODE PROPERTY NAME</em><code>}</code></td>
+			<td><code>\P{</code><em>PROPERTY&nbsp;NAME</em><code>}</code></td>
 			<td>Match any character not having the specified Unicode Property.</td>
 		</tr>
 		<tr>
-			<td><code>\Q</code></td>
-			<td>Quotes all following characters until <code>\E</code>.</td>
+			<td><code>\Q</code> … <code>\E</code></td>
+			<td>Quotes all characters between <code>\Q</code> and <code>\E</code>.</td>
 		</tr>
 		<tr>
 			<td><code>\r</code></td>
@@ -363,7 +382,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\s</code></td>
-			<td>Match a white space character. White space is defined as [\t\n\f\r\p{Z}].</td>
+			<td>Match a white space character. White space is defined as <code>[\t\n\f\r\p{Z}]</code>.</td>
 		</tr>
 		<tr>
 			<td><code>\S</code></td>
@@ -383,7 +402,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\w</code></td>
-			<td>Match a word character. Word characters are [\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}].</td>
+			<td>Match a word character. Word characters are <code>[\p{Ll}\p{Lu}\p{Lt}\p{Lo}\p{Nd}]</code>.</td>
 		</tr>
 		<tr>
 			<td><code>\W</code></td>
@@ -397,10 +416,10 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td><code>\x</code><em>hh</em></td>
 			<td>Match the character with two digit hex value <em>hh</em>.</td>
 		</tr>
-		<tr>
+		<!--tr>
 			<td><code>\X</code></td>
 			<td>Match a Grapheme Cluster.</td>
-		</tr>
+		</tr-->
 		<tr>
 			<td><code>\Z</code></td>
 			<td>Match if the current position is at the end of input, but before the final line terminator, if one exists.</td>
@@ -410,24 +429,8 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match if the current position is at the end of input.</td>
 		</tr>
 		<tr>
-			<td><code>\</code><em>n</em></td>
-			<td>Back Reference. Match whatever the <em>n</em>th capturing group matched. <em>n</em> must be a number <code>&gt; 1</code> and <code>&lt;</code> total number of capture groups in the pattern.</td>
-		</tr>
-		<tr>
-			<td><code>[</code><em>pattern</em><code>]</code></td>
-			<td>Match any one character from the pattern.</td>
-		</tr>
-		<tr>
-			<td><code>.</code></td>
-			<td>Match any character. See also the <a href="#flag-option-s"><code>s</code> flag option</a>.</td>
-		</tr>
-		<tr>
-			<td><code>^</code></td>
-			<td>Match at the beginning of a line. See also the <a href="#flag-option-m"><code>m</code> flag option</a>.</td>
-		</tr>
-		<tr>
-			<td><code>$</code></td>
-			<td>Match at the end of a line. See also the <a href="#flag-option-m"><code>m</code> flag option</a>.</td>
+			<td><code>\1</code>, <code>\2</code>, … <code>\</code><em>n</em></td>
+			<td>Back Reference. Match whatever the <em>n</em>th capturing group matched. The number must be between 1 and the total number of capture groups in the pattern.</td>
 		</tr>
 		<tr>
 			<td><code>\</code></td>
@@ -446,6 +449,8 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 
 		<documentation>
 			<html><![CDATA[
+			
+			[[TO DO: note rarely used patterns - possessive matching, lookahead/behind assertions - are omitted for length; see NSRegularExpression docs for complete list]]
 
 <table width="100%" style="text-align:left; margin:1em;">
 	<thead>
@@ -455,6 +460,26 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 	</thead>
 	<tbody>
+		<tr>
+			<td><code>.</code></td>
+			<td>Match any character. (See also: <a href="#flag-option-s"><code>s</code> flag</a>.)</td>
+		</tr>
+		<tr>
+			<td><code>[</code> … <code>]</code></td>
+			<td>Match any one character from the group. (TO DO: note about using ranges, hyphens inside brackets)</td>
+		</tr>
+		<tr>
+			<td><code>[^</code> … <code>]</code></td>
+			<td>Match any one character not from the group.</td>
+		</tr>
+		<tr>
+			<td><code>^</code></td>
+			<td>Match at the beginning of a line. (See also: <a href="#flag-option-m"><code>m</code> flag</a>.)</td>
+		</tr>
+		<tr>
+			<td><code>$</code></td>
+			<td>Match at the end of a line. (See also: <a href="#flag-option-m"><code>m</code> flag</a>.)</td>
+		</tr>
 		<tr>
 			<td><code>|</code></td>
 			<td>Alternation. <em>A</em><code>|</code><em>B</em> matches either <em>A</em> or <em>B</em>.</td>
@@ -508,63 +533,19 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match between n and m times. Match as few times as possible, but not less than n.</td>
 		</tr>
 		<tr>
-			<td><code>*+</code></td>
-			<td>Match 0 or more times. Match as many times as possible when first encountered, do not retry with fewer even if overall match fails (Possessive Match).</td>
-		</tr>
-		<tr>
-			<td><code>++</code></td>
-			<td>Match 1 or more times. Possessive match.</td>
-		</tr>
-		<tr>
-			<td><code>?+</code></td>
-			<td>Match zero or one times. Possessive match.</td>
-		</tr>
-		<tr>
-			<td><code>{</code><em>n</em><code>}+</code></td>
-			<td>Match exactly <em>n</em> times.</td>
-		</tr>
-		<tr>
-			<td><code>{</code><em>n</em><code>,}+</code></td>
-			<td>Match at least <em>n</em> times. Possessive Match.</td>
-		</tr>
-		<tr>
-			<td><code>{</code><em>n</em><code>,</code><em>m</em><code>}+</code></td>
-			<td>Match between <em>n</em> and <em>m</em> times. Possessive Match.</td>
-		</tr>
-		<tr>
-			<td><code>(</code><em>...</em><code>)</code></td>
+			<td><code>(</code></code> … <code><code>)</code></td>
 			<td>Capturing parentheses. Range of input that matched the parenthesized subexpression is available after the match.</td>
 		</tr>
 		<tr>
-			<td><code>(?:</code><em>...</em><code>)</code></td>
+			<td><code>(?:</code></code> … <code><code>)</code></td>
 			<td>Non-capturing parentheses. Groups the included pattern, but does not provide capturing of matching text. Somewhat more efficient than capturing parentheses.</td>
 		</tr>
 		<tr>
-			<td><code>(?&gt;</code><em>...</em><code>)</code></td>
-			<td>Atomic-match parentheses. First match of the parenthesized subexpression is the only one tried; if it does not lead to an overall pattern match, back up the search for a match to a position before the &quot;<code>(?&gt;</code>&quot;</td>
+			<td><code>(?#</code> … <code>)</code></td>
+			<td>Free-format comment.</td>
 		</tr>
 		<tr>
-			<td><code>(?# ... )</code></td>
-			<td>Free-format comment <code>(?# comment )</code>.</td>
-		</tr>
-		<tr>
-			<td><code>(?= ... )</code></td>
-			<td>Look-ahead assertion. True if the parenthesized pattern matches at the current input position, but does not advance the input position.</td>
-		</tr>
-		<tr>
-			<td><code>(?! ... )</code></td>
-			<td>Negative look-ahead assertion. True if the parenthesized pattern does not match at the current input position. Does not advance the input position.</td>
-		</tr>
-		<tr>
-			<td><code>(?&lt;= ... )</code></td>
-			<td>Look-behind assertion. True if the parenthesized pattern matches text preceding the current input position, with the last character of the match being the input character just before the current position. Does not alter the input position. The length of possible strings matched by the look-behind pattern must not be unbounded (no * or + operators.)</td>
-		</tr>
-		<tr>
-			<td><code>(?&lt;! ... )</code></td>
-			<td>Negative Look-behind assertion. True if the parenthesized pattern does not match text preceding the current input position, with the last character of the match being the input character just before the current position. Does not alter the input position. The length of possible strings matched by the look-behind pattern must not be unbounded (no * or + operators.)</td>
-		</tr>
-		<tr>
-			<td><code>(?ismwx-ismwx:</code><code>...</code><code>)</code></td>
+			<td><code>(?ismwx-ismwx:</code> …<code>)</code></td>
 			<td>Flag settings. Evaluate the parenthesized expression with the specified flags enabled or -disabled. The flags are defined in Flag Options.</td>
 		</tr>
 		<tr>
@@ -585,29 +566,35 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		<documentation>
 			<html><![CDATA[
 
+[TO DO: note that, for convenience, <code>(?imsw)</code> is used by default]
+
 <table width="100%" style="text-align:left; margin:1em;">
 	<thead>
 		<tr>
-			<th>Option</th>
+			<th>Flag</th>
 			<th>Description</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr>
-			<td>i</td>
-			<td>By default, matching will take place in a case-insensitive manner. Disable this option (e.g. by adding <code>(?-i)</code> to the start of the pattern text) to consider case.</td>
+			<td><code>i</code></td>
+			<td>By default, matching will take place in a case-insensitive manner. Disable this option, e.g. by adding &quot;<code>(?-i)</code>&quot; to the start of the pattern text, to consider case.</td>
 		</tr>
 		<tr>
-			<td><a id="flag-option-m"></a>m</td>
-			<td>Control the behavior of &quot;<code>^</code>&quot; and &quot;<code>$</code>&quot; in a pattern. By default, &quot;<code>^</code>&quot; and &quot;<code>$</code>&quot; will match at the start and end of each line within the input text. Disable this option (e.g. by adding <code>(?-m)</code> to the start of the pattern text) to make them match the start and end of the input text only. (Alternatively, use <code>\A</code> and <code>\Z</code>/<code>\z</code> to match the start and end of the input text.)</td>
+			<td><a id="flag-option-m"></a><code>m</code></td>
+			<td>Control the behavior of &quot;<code>^</code>&quot; and &quot;<code>$</code>&quot; in a pattern. By default, &quot;<code>^</code>&quot; and &quot;<code>$</code>&quot; will match at the start and end of each line within the input text. Disable this option to make them match the start and end of the input text only. (Alternatively, use <code>\A</code> and <code>\Z</code>/<code>\z</code> to match the start and end of the input text.)</td>
 		</tr>
 		<tr>
-			<td><a id="flag-option-s"></a>s</td>
-			<td>By default, a &quot;<code>.</code>&quot; in a pattern will match <em>any</em> character in the input text. Disable this option (e.g. by adding <code>(?-s)</code> to the start of the pattern text) to prevent it matching line terminator characters. (Also note that a <code>return</code>+<code>linefeed</code> pair representing a Windows-style line break in text is treated as a single line terminator, and will match a single &quot;<code>.</code>&quot; in a regular expression pattern.)</td>
+			<td><a id="flag-option-s"></a><code>s</code></td>
+			<td>By default, a &quot;<code>.</code>&quot; in a pattern will match any character in the input text. Disable this option to prevent it matching line terminator characters. (Also note that a <code>return</code>+<code>linefeed</code> pair representing a Windows-style line break in text is treated as a single line terminator, and will match a single &quot;<code>.</code>&quot; in a regular expression pattern.)</td>
 		</tr>
 		<tr>
-			<td>x</td>
-			<td>By default, white space characters within patterns are matched exactly. Enable this option (e.g. by adding <code>(?x)</code> to the start of the pattern text) to use white space and #comments within patterns for presentation purposes only. (White space in the input text can still be matched normally by using the corresponding metacharacters: <code>\t</code> for TAB, <code>\u0020</code> for SPACE, <code>\s</code> for any white space character, etc.)</td>
+			<td><code>w</code></td>
+			<td>By default, word boundaries are found according to the definitions of word found in Unicode UAX 29, Text Boundaries. Disable this option to identify word boundaries by means of a simple classification of characters as either “word” or “non-word”, which approximates traditional regular expression behavior. The results obtained with the two options can be quite different in runs of spaces and other non-word characters.</td>
+		</tr>
+		<tr>
+			<td><code>x</code></td>
+			<td>By default, white space characters within patterns are matched exactly. Enable this option to use white space and #comments within patterns for presentation purposes only. (White space in the input text can still be matched normally by using the corresponding metacharacters: <code>\t</code> for TAB, <code>\u0020</code> for SPACE, <code>\s</code> for any white space character, etc.)</td>
 		</tr>
 	</tbody>
 </table>
