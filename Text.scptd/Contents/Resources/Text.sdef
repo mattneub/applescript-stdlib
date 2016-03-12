@@ -70,22 +70,25 @@ All trademarks and registered trademarks mentioned herein are the property of th
 		
 		<command name="format text" code="Txt:FTxt" description="insert a list of values into a text template">
 			<direct-parameter type="text" description="the template into which to insert each item of the list"/>
-			<parameter name="using" code="Usin" description="a list of values to insert (each value must be text or coercible to text)">
+			<parameter name="using" code="Usin" optional="yes" description="a list of values to insert (default: {}), or a script object containing a ‘getItem(keyText)’ handler that returns the value for the specified key; each value must be text or coercible to text">
 				<type type="text" list="yes"/>
+				<type type="script"/>
 			</parameter>
 			<result type="text"/>
 						
 			<documentation>
 				<html><![CDATA[
-<pre><code>format text "Good $4, $1 $3." using {"Dr", "Jan", "Smith", "morning"}
-→ "Good morning, Dr Smith."</code></pre>
+<pre><code>format text "\\u00AB\\4, \\1 \\3!\\u00BB" using {"Dr", "John", "Singh", "Bonjour"}
+→ "«Bonjour, Dr Singh!»"</code></pre>
 
-<!-- TO DO: template syntax needs documented here and/or in `search text` -->
+<!-- TO DO: example using dictionary collection -->
+
+<p>See Template Text Syntax for a full list of special character sequences.</p>
 				]]></html>
 			</documentation>
 		</command>
 		
-		<command name="normalize text" code="Txt:Norm" description="eliminates variations between characters">
+		<command name="transform text" code="Txt:Norm" description="eliminate certain variations between characters">
 			<direct-parameter type="text"/>
 			<parameter name="using" code="NoFo" optional="yes" description="the normalizations to apply (default: OS X line breaks)">
 				<type type="NoFo"/>
@@ -221,24 +224,25 @@ All trademarks and registered trademarks mentioned herein are the property of th
 <ul>
 	<li>the text value to insert</li>
 
-	<li>a script object containing a <code>replaceText(foundText)</code> handler that takes the found text as its sole parameter and returns the text value to insert as its result</li>
+	<li>a script object containing a <code>replaceText(foundText)</code> handler that takes the found text as its sole parameter and returns the text value to insert as its result</li> <!-- TO DO: e.g. example script could change a bullet list to numbered list -->
 </ul>
 
 <p>When finding and replacing text patterns, the ‘replacing with’ parameter can be one of the following:</p>
 <ul>
-	<li>the text template to insert; text matched by parenthesized groups can be referred to as <code>$1</code> to <code>$9</code></li>
+	<li>the text template to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. See Template Text Syntax for a full list of special character sequences.</li>
 
 	<li>a script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result</li>
 </ul>
 
-<pre><code>script ReplaceObject
+<pre><code>script UppercaseMatchedText
   to replacePattern(theText, foundGroups)
-	return "[" &amp; (uppercase text theText) &amp; "]"
+    return uppercase text theText
   end replacePattern
 end script
 
-search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern matching
-→ "[A]bcd[E]fgh"</code></pre>
+search text "abcdefghijk" for "[aeiou]" ¬
+    replacing with UppercaseMatchedText using pattern matching
+→ "AbcdEfghIjk"</code></pre>
 				]]></html>
 			</documentation>
 
@@ -268,7 +272,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<result type="text"/>
 		</command>
 		
-		<command name="escape template" code="Txt:ETem" description="when pattern matching, escape any special characters in ‘search text’ command’s ‘replacing with’ parameter so that they are not substituted">
+		<command name="escape template" code="Txt:ETem" description="escape any backslashes in template text so that they are not treated as special character sequences">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 		</command>
@@ -358,18 +362,18 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\n</code></td>
-			<td>Match a <code>LINE FEED</code>, <code>\u000A</code>.</td>
+			<td>Match a line feed, <code>\u000A</code>.</td>
 		</tr>
 		<tr>
-			<td><code>\N{</code><em>CHARACTER&nbsp;NAME</em><code>}</code></td>
+			<td><code>\N{</code><var>CHARACTER&nbsp;NAME</var><code>}</code></td>
 			<td>Match the named Unicode Character.</td>
 		</tr>
 		<tr>
-			<td><code>\p{</code><em>PROPERTY&nbsp;NAME</em><code>}</code></td>
+			<td><code>\p{</code><var>PROPERTY&nbsp;NAME</var><code>}</code></td>
 			<td>Match any character with the specified Unicode Property.</td>
 		</tr>
 		<tr>
-			<td><code>\P{</code><em>PROPERTY&nbsp;NAME</em><code>}</code></td>
+			<td><code>\P{</code><var>PROPERTY&nbsp;NAME</var><code>}</code></td>
 			<td>Match any character not having the specified Unicode Property.</td>
 		</tr>
 		<tr>
@@ -378,7 +382,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\r</code></td>
-			<td>Match a CARRIAGE RETURN, \u000D.</td>
+			<td>Match a carriage return, \u000D.</td>
 		</tr>
 		<tr>
 			<td><code>\s</code></td>
@@ -390,15 +394,15 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>\t</code></td>
-			<td>Match a HORIZONTAL TAB, <code>\u0009</code>.</td>
+			<td>Match a horizontal tab, <code>\u0009</code>.</td>
 		</tr>
 		<tr>
-			<td><code>\u</code><em>hhhh</em></td>
-			<td>Match the character with the hex value <em>hhhh</em>.</td>
+			<td><code>\u</code><var>hhhh</var></td>
+			<td>Match the character with the hex value <var>hhhh</var>.</td>
 		</tr>
 		<tr>
-			<td><code>\U</code><em>hhhhhhhh</em></td>
-			<td>Match the character with the hex value <em>hhhhhhhh</em>. Exactly eight hex digits must be provided, even though the largest Unicode code point is <code>\U0010ffff</code>.</td>
+			<td><code>\U</code><var>hhhhhhhh</var></td>
+			<td>Match the character with the hex value <var>hhhhhhhh</var>. Exactly eight hex digits must be provided, even though the largest Unicode code point is <code>\U0010ffff</code>.</td>
 		</tr>
 		<tr>
 			<td><code>\w</code></td>
@@ -408,15 +412,15 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td><code>\W</code></td>
 			<td>Match a non-word character.</td>
 		</tr>
-		<tr>
-			<td><code>\x{</code><em>hhhh</em><code>}</code></td>
-			<td>Match the character with hex value <em>hhhh</em>. From one to six hex digits may be supplied.</td>
-		</tr>
-		<tr>
-			<td><code>\x</code><em>hh</em></td>
-			<td>Match the character with two digit hex value <em>hh</em>.</td>
-		</tr>
 		<!--tr>
+			<td><code>\x{</code><var>hhhh</var><code>}</code></td>
+			<td>Match the character with hex value <var>hhhh</var>. From one to six hex digits may be supplied.</td>
+		</tr>
+		<tr>
+			<td><code>\x</code><var>hh</var></td>
+			<td>Match the character with two digit hex value <var>hh</var>.</td>
+		</tr>
+		<tr>
 			<td><code>\X</code></td>
 			<td>Match a Grapheme Cluster.</td>
 		</tr-->
@@ -429,8 +433,8 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match if the current position is at the end of input.</td>
 		</tr>
 		<tr>
-			<td><code>\1</code>, <code>\2</code>, … <code>\</code><em>n</em></td>
-			<td>Back Reference. Match whatever the <em>n</em>th capturing group matched. The number must be between 1 and the total number of capture groups in the pattern.</td>
+			<td><code>\1</code>, <code>\2</code>, … <code>\</code><var>n</var></td>
+			<td>Back Reference. Match whatever the <var>n</var>th capturing group matched. The number must be between 1 and the total number of capture groups in the pattern.</td>
 		</tr>
 		<tr>
 			<td><code>\</code></td>
@@ -462,7 +466,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 	<tbody>
 		<tr>
 			<td><code>.</code></td>
-			<td>Match any character. (See also: <a href="#flag-option-s"><code>s</code> flag</a>.)</td>
+			<td>Match any character. (The exact matching behavior can be modified <a href="#flag-option-s">using the <code>s</code> flag</a>.)</td>
 		</tr>
 		<tr>
 			<td><code>[</code> … <code>]</code></td>
@@ -474,15 +478,15 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>^</code></td>
-			<td>Match at the beginning of a line. (See also: <a href="#flag-option-m"><code>m</code> flag</a>.)</td>
+			<td>Match at the beginning of a line. (The exact matching behavior can be modified <a href="#flag-option-m">using the <code>m</code> flag</a>.)</td>
 		</tr>
 		<tr>
 			<td><code>$</code></td>
-			<td>Match at the end of a line. (See also: <a href="#flag-option-m"><code>m</code> flag</a>.)</td>
+			<td>Match at the end of a line. (The exact matching behavior can be modified <a href="#flag-option-m">using the <code>m</code> flag</a>.)</td>
 		</tr>
 		<tr>
 			<td><code>|</code></td>
-			<td>Alternation. <em>A</em><code>|</code><em>B</em> matches either <em>A</em> or <em>B</em>.</td>
+			<td>Alternation. <var>A</var><code>|</code><var>B</var> matches either <var>A</var> or <var>B</var>.</td>
 		</tr>
 		<tr>
 			<td><code>*</code></td>
@@ -497,16 +501,16 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match zero or one times. Prefer one.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>}</code></td>
-			<td>Match exactly <em>n</em> times.</td>
+			<td><code>{</code><var>n</var><code>}</code></td>
+			<td>Match exactly <var>n</var> times.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>,}</code></td>
-			<td>Match at least <em>n</em> times. Match as many times as possible.</td>
+			<td><code>{</code><var>n</var><code>,}</code></td>
+			<td>Match at least <var>n</var> times. Match as many times as possible.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>,</code><em>m</em><code>}</code></td>
-			<td>Match between <em>n</em> and <em>m</em> times. Match as many times as possible, but not more than <em>m</em>.</td>
+			<td><code>{</code><var>n</var><code>,</code><var>m</var><code>}</code></td>
+			<td>Match between <var>n</var> and <var>m</var> times. Match as many times as possible, but not more than <var>m</var>.</td>
 		</tr>
 		<tr>
 			<td><code>*?</code></td>
@@ -521,16 +525,16 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 			<td>Match zero or one times. Prefer zero.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>}?</code></td>
-			<td>Match exactly n times.</td>
+			<td><code>{</code><var>n</var><code>}?</code></td>
+			<td>Match exactly <var>n</var> times.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>,}?</code></td>
-			<td>Match at least n times, but no more than required for an overall pattern match.</td>
+			<td><code>{</code><var>n</var><code>,}?</code></td>
+			<td>Match at least <var>n</var> times, but no more than required for an overall pattern match.</td>
 		</tr>
 		<tr>
-			<td><code>{</code><em>n</em><code>,</code><em>m</em><code>}?</code></td>
-			<td>Match between n and m times. Match as few times as possible, but not less than n.</td>
+			<td><code>{</code><var>n</var><code>,</code><var>m</var><code>}?</code></td>
+			<td>Match between <var>n</var> and <var>m</var> times. Match as few times as possible, but not less than <var>n</var>.</td>
 		</tr>
 		<tr>
 			<td><code>(</code></code> … <code><code>)</code></td>
@@ -546,11 +550,11 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 		</tr>
 		<tr>
 			<td><code>(?ismwx-ismwx:</code> …<code>)</code></td>
-			<td>Flag settings. Evaluate the parenthesized expression with the specified flags enabled or -disabled. The flags are defined in Flag Options.</td>
+			<td>Flag settings. Evaluate the parenthesized expression with the specified flags enabled or -disabled. The flags are defined in Regular Expression Flags.</td>
 		</tr>
 		<tr>
 			<td><code>(?ismwx-ismwx)</code></td>
-			<td>Flag settings. Change the flag settings. Changes apply to the portion of the pattern following the setting. For example, <code>(?i)</code> changes to a case insensitive match.The flags are defined in Flag Options.</td>
+			<td>Flag settings. Change the flag settings. Changes apply to the portion of the pattern following the setting. For example, <code>(?i)</code> changes to a case insensitive match.The flags are defined in Regular Expression Flags.</td>
 		</tr>
 	</tbody>
 </table>
@@ -561,7 +565,7 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 	
 	
 	
-	<suite name="Flag Options" code="****">
+	<suite name="Regular Expression Flags" code="****">
 
 		<documentation>
 			<html><![CDATA[
@@ -609,12 +613,54 @@ search text "abcdefgh" for "[aeiou]" replacing with ReplaceObject using pattern 
 
 		<documentation>
 			<html><![CDATA[
-
-[[TO DO: redesign template text syntax to suit `format text` command, then use modified implementation in `_replacePattern`, also updating `escape template` as appropriate ]]
+			
+<table width="100%" style="text-align:left; margin:1em;">
+	<thead>
+		<tr>
+			<th>Character</th>
+			<th>Description</th>
+		</tr>
+	</thead>
+	<tbody>
+			<tr>
+			<td><code>\n</code></td>
+			<td>Insert a line feed, <code>\u000A</code>.</td>
+		</tr>
+		<tr>
+			<td><code>\N{</code><var>CHARACTER&nbsp;NAME</var><code>}</code></td>
+			<td>Insert the named Unicode Character.</td>
+		</tr>
+		<tr>
+			<td><code>\r</code></td>
+			<td>Insert a carriage return, \u000D.</td>
+		</tr>
+		<tr>
+			<td><code>\t</code></td>
+			<td>Insert a horizontal tab, <code>\u0009</code>.</td>
+		</tr>
+		<tr>
+			<td><code>\u</code><var>hhhh</var></td>
+			<td>Insert the character with the hex value <var>hhhh</var>.</td>
+		</tr>
+		<tr>
+			<td><code>\U</code><var>hhhhhhhh</var></td>
+			<td>Insert the character with the hex value <var>hhhhhhhh</var>. Exactly eight hex digits must be provided, even though the largest Unicode code point is <code>\U0010ffff</code>.</td>
+		</tr>
+		<tr>
+			<td><code>\1</code>, <code>\2</code>, … <code>\</code><var>n</var></td>
+			<td>Simple back reference. Insert the <var>n</var>th of the given list (<code>format text</code>) or whatever the <var>n</var>th capturing group matched (<code>search text</code>). The number must be between 1 and 9 or the total number of list items/capture groups, whichever is less.</td>
+		</tr>
+		<tr>
+			<td><code>\{</code> … <code>}</code></td>
+			<td>Extended back reference. Unlike the simple back reference, this is not limited to numbers 1 to 9; e.g. <code>\{13}</code> refers to the 13th list item/capturing group. If <code>format text</code>’s <code>using</code> parameter is a dictionary-like object, the braces can contain any text-based key, e.g. <code>\{first name}</code>.</td>
+		</tr>
+	</tbody>
+</table>
 
 			]]></html>
 		</documentation>
 	</suite>
+	
 	
 </dictionary>
 
