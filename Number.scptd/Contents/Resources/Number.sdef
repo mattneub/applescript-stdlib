@@ -159,7 +159,6 @@ parse hex "0xFFFFFFFFFFFFFFFF" -- 2^64-1
 parse hex "0xFFFFFFFFFFFFFFFF" with precision loss 
 → 1.84467440737096E+19 (approximate only)</code></pre>
 
-
 				]]></html>
 			</documentation>
 		</command>
@@ -219,6 +218,12 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 				<type type="number" list="yes"/>
 			</direct-parameter>
 			<result type="number"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre>max {5, 1, 3, -8, 5, 4, -2} → 5<code>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<command name="min" code="Mth:MinN" description="find the lowest number in a list of numbers">
@@ -226,6 +231,12 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 				<type type="number" list="yes"/>
 			</direct-parameter>
 			<result type="number"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre>min {5, 1, 3, -8, 5, 4, -2} → -8<code>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
@@ -331,8 +342,77 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 			<html><![CDATA[
 	<p><a id="customizing-number-formats"></a>In addition to parsing and formatting numeric text in canonical AppleScript-style format, the <code>parse number</code> and <code>format number</code> commands allow custom formats to be specified via their optional <code>using</code> parameters. These parameters accept either a text value containing special character-based number format patterns, a predefined constant representing a commonly used format, or a <code>number format record</code> containing a predefined format constant plus additional customizations.</p>
 	
-<p>For a complete list of supported patterns, see <a href="http://www.unicode.org/reports/tr35/tr35-31/tr35-numbers.html#Number_Format_Patterns">Part 3: Numbers</a> of Unicode Technical Standard #35. Commonly used patterns are listed below for convenience.</p>
+<p>For a full explanation of pattern syntax, see <a href="http://www.unicode.org/reports/tr35/tr35-31/tr35-numbers.html#Number_Format_Patterns">Part 3: Numbers</a> of Unicode Technical Standard #35. Recognized patterns are listed below for convenience.</p>
 
+
+<table width="100%" style="text-align:left; margin:1em;">
+	<thead>
+		<tr><th>Value/Position</th><th>Format</th><th>Pattern</th><th>Notes</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>number</td>		<td>any digit</td>						<td>0</td></tr>
+		<tr><td>number</td>		<td>digit; zero is omitted</td>		<td>#</td></tr>
+		<tr><td>number</td>		<td>digit with rounding</td>		<td>1–9</td></tr>
+		<tr><td>number</td>		<td>significant digit</td>				<td>@</td><td>[1]</td></tr>
+		<tr><td>number</td>		<td>decimal separator</td>		<td>.</td></tr>
+		<tr><td>number</td>		<td>grouping separator</td>		<td>,</td></tr>
+		<tr><td>number</td>		<td>minus sign</td>					<td>-</td></tr>
+		<tr>
+			<td>number</td>		
+			<td>separates mantissa and exponent in scientific notation</td>
+			<td>E</td>
+			<td>[2]</td>
+		</tr>
+		<tr>
+			<td>exponent</td>
+			<td>prefix positive exponents with localized plus sign</td>
+			<td>+</td>
+			<td>[2]</td>
+		</tr>
+		<tr>
+			<td>prefix or suffix</td>
+			<td>multiply by 100 and show as percentage</td>
+			<td>%</td>
+		</tr>
+		<tr>
+			<td>prefix or suffix</td>
+			<td>multiply by 1000 and show as per mille</td>
+			<td>‰</td>
+			<td>(\u2030)</td>
+		</tr>
+		<tr>
+			<td>prefix or suffix</td>
+			<td>currency symbol</td>
+			<td>¤</td>
+			<td>(\u00A4) [3]</td>
+		</tr>
+		<tr>
+			<td>prefix or suffix</td>
+			<td>quote-escape special characters</td>
+			<td>'</td>
+			<td>e.g. “'#'”, “o''clock”</td>
+		</tr>
+		<tr>
+			<td>prefix or suffix boundary</td>
+			<td>precedes a pad character</td>
+			<td>*</td>
+			<td>e.g. “*&nbsp;###0”</td>
+		</tr>
+		<tr>
+			<td>subpattern boundary</td>
+			<td>separates positive and negative subpatterns</td>
+			<td>;</td>
+		</tr>
+	</tbody>
+</table>
+	
+	
+<p>[1] For example, “@@” will display a number to 2-significant digits, e.g. “12345” → “12000”. When given, the “0” and “.” patterns are not allowed.</p>
+	
+<p>[2] The “E” and “+” characters do need not be quote-escaped when they appear in a prefix or suffix.</p>
+	
+<p>[3] Use “¤” for currency symbol, “¤¤” for international currency symbol, or “¤¤¤” for the long form of the decimal symbol. If given, monetary decimal and grouping separators (if available) are used instead of the numeric ones.</p>
+	
 
 		[TO DO: include summary of template text syntax plus examples]
 				]]></html>
