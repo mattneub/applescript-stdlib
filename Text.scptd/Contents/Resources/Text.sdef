@@ -70,7 +70,7 @@ All trademarks and registered trademarks mentioned herein are the property of th
 		
 		<command name="format text" code="Txt:FTxt" description="insert a list of values into a text template">
 			<direct-parameter type="text" description="the template into which to insert each item of the list"/>
-			<parameter name="using" code="Usin" optional="yes" description="a list of values to insert (default: {}), or a script object containing a ‘getItem(keyText)’ handler that returns the value for the specified key; each value must be text or coercible to text">
+			<parameter name="using" code="Usin" optional="yes" description="a list of values to insert (default: {}), or a script object containing a ‘getItem’ handler that takes a text-based key as its sole parameter and returns the corresponding value; each value must be text or coercible to text">
 				<type type="text" list="yes"/>
 				<type type="script"/>
 			</parameter>
@@ -78,39 +78,32 @@ All trademarks and registered trademarks mentioned herein are the property of th
 						
 			<documentation>
 				<html><![CDATA[
+<p>For example, to substitute numbered placeholders (<code>\4</code>, <code>\1</code>, <code>\3</code>) using the correspondingly indexed items from a list:</p>
+
 <pre><code>format text "\\u00AB\\4, \\1 \\3!\\u00BB" using {"Dr", "John", "Singh", "Bonjour"}
 → "«Bonjour, Dr Singh!»"</code></pre>
 
-<!-- TO DO: example using dictionary collection -->
+<p>(When writing templates as literal text, remember AppleScript already uses the backslash character, “<code>\</code>”, to escape double quotes (e.g. <code>"You say \"Hello!\""</code>), so all backslash characters must themselves be backslash-escaped (e.g. “<code>\1</code>” → “<code>\\1</code>”) otherwise the script will not compile correctly.)</p>
+
+<p>The following script demonstrates how to substitute named placeholders (<code>\{greeting}</code>, <code>\{title}</code>, <code>\{last name}</code>) using identically named values from a <code>dictionary collection</code> object:</p>
+
+<pre><code>use script "Text"
+use script "Objects"
+
+set infoDict to dictionary collection
+infoDict's addItem("title", "Dr")
+infoDict's addItem("first name", "John")
+infoDict's addItem("last name", "Singh")
+infoDict's addItem("greeting", "Aloha")
+
+format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDict
+→ "«Aloha, Dr Singh!»"</code></pre>
 
 <p>See Template Text Syntax for a full list of special character sequences.</p>
+
 				]]></html>
 			</documentation>
 		</command>
-		
-		<command name="transform text" code="Txt:Norm" description="eliminate certain variations between characters">
-			<direct-parameter type="text"/>
-			<parameter name="using" code="NoFo" optional="yes" description="the normalizations to apply (default: OS X line breaks)">
-				<type type="NoFo"/>
-			</parameter>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
-			<result type="text"/>
-		</command>
-		
-		
-		<enumeration name="NoFo" code="NoFo">
-			<enumerator name="normalized case" code="NoCa"/>
-			<enumerator name="normalized diacriticals" code="NoDi"/>
-			<enumerator name="normalized width" code="NoWi"/> <!-- TO DO: how useful is this option in practice? -->
-			<enumerator name="normalized white space" code="NoSp"/>
-			<enumerator name="OS X line breaks" code="LiOX"/>
-			<enumerator name="Windows line breaks" code="LiWi"/>
-			<enumerator name="classic Mac line breaks" code="LiCM"/>
-			<enumerator name="precomposed canonical form" code="No_C"/>
-			<enumerator name="decomposed canonical form" code="No_D"/>
-			<enumerator name="precomposed compatibility form" code="NoKC"/>
-			<enumerator name="decomposed compatibility form" code="NoKD"/>
-		</enumeration>
 		
 		
 		<command name="pad text" code="Txt:PadT" description="pad the text to a minimum length">
@@ -127,6 +120,7 @@ All trademarks and registered trademarks mentioned herein are the property of th
 			<enumerator name="leading and trailing characters" code="BCha"/>
 		</enumeration>
 		
+		
 		<command name="slice text" code="Txt:SliT" description="get the section of text between the specified start and/or end indexes">
 			<direct-parameter type="text"/>
 			<parameter name="from" code="FIdx" type="integer" optional="yes" description="character index"/>
@@ -139,11 +133,97 @@ All trademarks and registered trademarks mentioned herein are the property of th
 			</documentation>
 		</command>
 		
+		
 		<command name="trim text" code="Txt:TrmT" description="trim white space characters (space, tab, return, etc.) from the start and/or end of text">
 			<direct-parameter type="text"/>
 			<parameter name="removing" code="From" type="LeTr" optional="yes" description="(default: leading and trailing characters)"/>
 			<result type="text"/>
 		</command>
+		
+		
+		<command name="transform text" code="Txt:Norm" description="convert, standardize, or remove distinctions between certain characters">
+			<direct-parameter type="text"/>
+			<parameter name="using" code="NoFo" optional="yes" description="the normalizations to apply (default: OS X line breaks)">
+				<type type="NoFo" list="yes"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
+			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example, to convert all line breaks to OS X-style linefeed characters (the default behavior):</p>
+
+<pre><code>set theText to transform text theText</code></pre>
+
+
+<p>Or to tidy up white space and prettify punctuation:</p>
+
+<pre><code>set theText to transform text theText ¬
+    using {normalized white space, smart punctuation, OS X line breaks}</code></pre>
+
+
+<p>The <code>using</code> parameter is a list of constants, containing:</p>
+
+<ol>
+	<li>
+		</p>none, some, or all of the following character conversions:</p>
+		<ul>
+			<li><code>normalized case</code> – eliminates distinction between uppercase and lowercase characters (by lowercasing all characters)</li>
+			<li><code>normalized diacriticals</code> – eliminates distinction between accented and unaccented characters (by removing all accents)</li>
+			<li><code>normalized width</code> – eliminates distinction between half-width and full-width characters (as used in some Asian character sets)</li>
+			<li><code>normalized white space</code> – eliminates variations in white space by removing white space from the start and end of text and replacing runs of white space within it with single space character. If a ‘line breaks’ option is also given, white space runs that also contain line breaks are replaced with a single line break character instead of a space.</li>
+		</ul>
+	</li>
+	<li>
+		</p>none or one of the following character conversions:</p>
+		<ul>
+			<li><code>smart punctuation</code> – converts straight quotes to typographer’s quotes, double hypens to em-dashes, etc.</li>
+			<li><code>typewriter punctuation</code> –  converts typographer’s quotes to straight quotes, em-dashes to double hypens, etc.</li>
+			<li><code>printable ASCII only</code> – converts non-ASCII characters to ASCII wherever possible, replacing any unconverted or control characters with “?”</li>
+		</ul>
+	</li>
+	<li>
+		</p>none or one of the following line break styles:</p>
+		<ul>
+			<li><code>OS X line breaks</code> – each line break is represented by a single linefeed character (LF, or ASCII 10)</li>
+			<li><code>Windows line breaks</code> – each line break is represented by a carriage return character followed by a linefeed character (CRLF, or ASCII 13+ ASCII10)</li>
+			<li><code>classic Mac line breaks</code> – each line break is represented by a single carriage return character (CR, or ASCII 13)</li>
+		</ul>
+	</li>
+	<li>
+		</p>none or one of the following Unicode normalization forms:</p>
+		<ul>
+			<li><code>precomposed canonical form</code> – (C)</li>
+			<li><code>decomposed canonical form</code> – (D)</li>
+			<li><code>precomposed compatibility form</code> – (KC)</li>
+			<li><code>decomposed compatibility form</code> – (KD)</li>
+		</ul>
+	</li>
+</ol>
+
+<p>If given, the <code>for locale</code> parameter affects character normalization. For example, for the Turkish locale, <code>normalize case</code> converts “I” to “ı” (Unicode code point U+0131, Latin Small Dotless I), not the normal “i” character.</p>
+
+<!-- TO DO: example of `normalized case` would be to implement case-insensitive dictionary object -->
+				]]></html>
+			</documentation>
+		</command>
+		
+		<enumeration name="NoFo" code="NoFo">
+			<enumerator name="normalized case" code="NoCa"/>
+			<enumerator name="normalized diacriticals" code="NoDi"/>
+			<enumerator name="normalized width" code="NoWi"/> <!-- TO DO: how useful is this option in practice? -->
+			<enumerator name="normalized white space" code="NoSp"/>
+			<enumerator name="smart punctuation" code="NoSP"/>
+			<enumerator name="typewriter punctuation" code="NoTP"/>
+			<enumerator name="printable ASCII only" code="NoAO"/>
+			<enumerator name="OS X line breaks" code="LiOX"/>
+			<enumerator name="Windows line breaks" code="LiWi"/>
+			<enumerator name="classic Mac line breaks" code="LiCM"/>
+			<enumerator name="precomposed canonical form" code="No_C"/>
+			<enumerator name="decomposed canonical form" code="No_D"/>
+			<enumerator name="precomposed compatibility form" code="NoKC"/>
+			<enumerator name="decomposed compatibility form" code="NoKD"/>
+		</enumeration>
 		
 	</suite>
 	
@@ -229,9 +309,9 @@ All trademarks and registered trademarks mentioned herein are the property of th
 
 <p>When finding and replacing text patterns, the ‘replacing with’ parameter can be one of the following:</p>
 <ul>
-	<li>the text template to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. See Template Text Syntax for a full list of special character sequences.</li>
+	<li>A text-based template describing the text to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. (Caution: if the ‘replacing with’ parameter is arbitrary text supplied by a variable, apply the <code>escape template</code> command to it first to prevent any backslashes within it being accidentally substituted.) See Template Text Syntax for a full list of special character sequences.</li>
 
-	<li>a script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result</li>
+	<li>A script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result.</li>
 </ul>
 
 <pre><code>script UppercaseMatchedText
@@ -267,12 +347,12 @@ search text "abcdefghijk" for "[aeiou]" ¬
 		</enumeration>
 		
 		
-		<command name="escape pattern" code="Txt:EPat" description="when pattern matching, escape any special characters in ‘search text’ command’s ‘for’ parameter so that they only match as literal characters">
+		<command name="escape pattern" code="Txt:EPat" description="escape any pattern matching operator characters in the text so that they only match as literal characters when used in ‘search text’s ‘for’ parameter">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 		</command>
 		
-		<command name="escape template" code="Txt:ETem" description="escape any backslashes in template text so that they are not treated as special character sequences">
+		<command name="escape template" code="Txt:ETem" description="escape any backslash characters in the text so that they are not interpreted as template substitutions by the ‘search text’s ‘replacing with’ parameter when pattern matching is used">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 		</command>
@@ -652,7 +732,7 @@ search text "abcdefghijk" for "[aeiou]" ¬
 		</tr>
 		<tr>
 			<td><code>\{</code> … <code>}</code></td>
-			<td>Extended back reference. Unlike the simple back reference, this is not limited to numbers 1 to 9; e.g. <code>\{13}</code> refers to the 13th list item/capturing group. If <code>format text</code>’s <code>using</code> parameter is a dictionary-like object, the braces can contain any text-based key, e.g. <code>\{first name}</code>.</td>
+			<td>Extended back reference. Unlike the simple back reference, this is not limited to numbers 1 to 9; e.g. <code>\{13}</code> refers to the 13th list item/capturing group. In addition, if the <code>format text</code> command’s <code>using</code> parameter is a dictionary-like object, the braces can contain any text-based key, e.g. <code>\{first name}</code>, not just a number. (The only limitation is that the key text cannot itself include brace or backslash characters.)</td>
 		</tr>
 	</tbody>
 </table>

@@ -75,6 +75,10 @@ Number
 - what else needs implemented? e.g. atan2? (note that trivial operations such as `hypotenuse`, `square` and `square root` are not implemented as those are simple to do using AS's existing `^` operator (e.g. sqrt(n)=n^0.5), while `floor`, `ceil`, etc. are already covered by `round number`
 
 
+- support `NSNumberFormatterOrdinalStyle`, `NSNumberFormatterCurrencyISOCodeStyle `, etc (10.11+) in `parse/format number`?
+
+- in `format number`, any way to include "+" sign for exponent, same as AS? (e.g. "1.0E+8" rather than "1.0E8")
+
 
 ----------------------------------------------------------------------
 Objects

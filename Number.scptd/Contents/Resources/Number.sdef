@@ -6,6 +6,40 @@
 	
 	<suite name="Number Conversion" code="****">
 		
+		<command name="format number" code="Mth:FNum" description="format a number as text">
+			<direct-parameter type="number"/>
+			<parameter name="using" code="Usin" optional="yes" description="(default: canonical number format)">
+				<type type="number format enumeration"/>
+				<type type="number format record"/>
+				<type type="text"/>
+			</parameter>
+			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
+			<result type="text"/>
+
+			<documentation>
+				<html><![CDATA[
+<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
+
+<p>For example, on a US-localized system, coercing <code>3.14</code> to text produces <code>"3.14"</code>:</p>
+
+<pre><code>3.14 as text → "3.14" (localized conversion)
+
+format number 3.14 → "3.14" (canonical conversion)</code></pre>
+
+<p>On a German system, however, the same number-to-text coercion uses a comma instead of a period as the decimal separator:</p>
+
+<pre><code>3.14 as text → <strong>"3,14"</strong> (localized conversion)
+
+format number 3.14 → "3.14" (canonical conversion)</code></pre>
+
+<p>Using the <code>format number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
+
+<p>For information on formatting numbers using custom formats, see the <a href="#customizing-number-formats">Customizing Number Formats</a> section below.</p>
+				]]></html>
+			</documentation>
+		</command>
+		
+		
 		<command name="parse number" code="Mth:PNum" description="parse text as a number">
 			<direct-parameter type="text"/>
 			<parameter name="using" code="Usin" optional="yes" description="(default: canonical number format)">
@@ -15,10 +49,9 @@
 			</parameter>
 			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
 			<result type="number"/>
+
 			<documentation>
 				<html><![CDATA[
-<h3>Basic Use</h3>
-
 <p>By default, the <code>parse number</code> command converts numeric text in canonical format to an integer/real number. Unlike coercing a text value to <code>number</code>, which parses the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
 
 <p>For example, on a US-localized system, coercing <code>"3.14"</code> to a number produces <code>3.14</code>:</p>
@@ -37,43 +70,7 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 
 <p>Using the <code>parse number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
 
-<!-- TO DO: custom formatting discussion and examples -->
-
-				]]></html>
-			</documentation>
-		</command>
-		
-		<command name="format number" code="Mth:FNum" description="format a number as text">
-			<direct-parameter type="number"/>
-			<parameter name="using" code="Usin" optional="yes" description="(default: canonical number format)">
-				<type type="number format enumeration"/>
-				<type type="number format record"/>
-				<type type="text"/>
-			</parameter>
-			<parameter name="for locale" code="Loca" type="text" optional="yes" description="a locale identifier, e.g. “en_US”, or “current” or “none” (default: “none”)"/>
-			<result type="text"/>
-			<documentation>
-				<html><![CDATA[
-<h3>Basic Use</h3>
-
-<p>By default, the <code>format number</code> command converts an integer/real number to numeric text in canonical format. Unlike coercing an integer or real value to <code>text</code>, which formats the text according to the current user’s localization settings, <code>format number</code> <em>always</em> uses the same numerical syntax as the AppleScript language, unless additional formatting and/or locale settings are explicitly given.</p>
-
-<p>For example, on a US-localized system, coercing <code>3.14</code> to text produces <code>"3.14"</code>:</p>
-
-<pre><code>3.14 as text → "3.14" (localized conversion)
-
-format number 3.14 → "3.14" (canonical conversion)</code></pre>
-
-<p>On a German system, however, the same number-to-text coercion uses a comma instead of a period as the decimal separator:</p>
-
-<pre><code>3.14 as text → <strong>"3,14"</strong> (localized conversion)
-
-format number 3.14 → "3.14" (canonical conversion)</code></pre>
-
-<p>Using the <code>format number</code> command instead of coercing the number to text ensures a consistent result, no matter where the script is run.</p>
-
-<!-- TO DO: custom formatting discussion and examples -->
-
+<p>For information on parsing numbers using custom formats, see the <a href="#customizing-number-formats">Customizing Number Formats</a> section below.</p>
 				]]></html>
 			</documentation>
 		</command>
@@ -113,6 +110,22 @@ format number 3.14 → "3.14" (canonical conversion)</code></pre>
 			<parameter name="width" code="Plac" type="integer" optional="yes" description="if greater than 0, the width of the resulting hexadecimal text, or each chunk if a list of numbers is given, not including sign or prefix (default: 0)"/>
 			<parameter name="prefix" code="Pref" type="boolean" optional="yes" description="include “0x” prefix in result? (default: false)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>format hex 526 width 4 with prefix → "0x020E"
+
+format hex {1, 11, 6, 13, 0, 8} width 2 → "010B060D0008"</code></pre>
+
+<p>If the ‘width’ parameter is given, the hexadecimal value will be padded to that number of digits (not including sign or prefix) unless the number is too large to represent within that number of hexadecimal digits, in which case an error is raised instead:</p>
+
+<pre><code>format hex 526 width 2 with prefix
+→ error: Number is too large to represent as 2-digit hexadecimal text 
+   (not between -256 and 255).</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<command name="parse hex" code="Mth:HeNu" description="convert hexadecimal text to an integer, or list of integers">
@@ -123,6 +136,32 @@ format number 3.14 → "3.14" (canonical conversion)</code></pre>
 				<type type="integer"/>
 				<type type="integer" list="yes"/>
 			</result>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>parse hex "-0x020E" → -526
+
+parse hex "010B060D0008" width 2 → {1, 11, 6, 13, 0, 8}</code></pre>
+
+<p>The <code>parse text</code> will return a non-fractional real number if a hexadecimal value is too large to represent using AppleScript’s native 30-bit integer type, normally raising an error if it can’t be accurately represented as a real number either (although this may be overridden if some loss of precision is acceptable):</p>
+
+<pre><code>parse hex "0xFFFF" -- 2^16-1
+→ 65535
+
+parse hex "0xFFFFFFFF" -- 2^32-1 
+→- 4.294967295E+9
+
+parse hex "0xFFFFFFFFFFFFFFFF" -- 2^64-1 
+→ error: Hexadecimal text is too large to convert to number without losing precision.
+
+parse hex "0xFFFFFFFFFFFFFFFF" with precision loss 
+→ 1.84467440737096E+19 (approximate only)</code></pre>
+
+
+				]]></html>
+			</documentation>
 		</command>
 	
 	</suite>
@@ -286,5 +325,19 @@ cmp {(0.7 * 0.7), 0.49} → 0 (i.e. the numbers are "equal")</code></pre>
 	</suite>
 	
 	
+	<suite name="Customizing Number Formats" code="****">
+		
+		<documentation>
+			<html><![CDATA[
+	<p><a id="customizing-number-formats"></a>In addition to parsing and formatting numeric text in canonical AppleScript-style format, the <code>parse number</code> and <code>format number</code> commands allow custom formats to be specified via their optional <code>using</code> parameters. These parameters accept either a text value containing special character-based number format patterns, a predefined constant representing a commonly used format, or a <code>number format record</code> containing a predefined format constant plus additional customizations.</p>
 	
+<p>For a complete list of supported patterns, see <a href="http://www.unicode.org/reports/tr35/tr35-31/tr35-numbers.html#Number_Format_Patterns">Part 3: Numbers</a> of Unicode Technical Standard #35. Commonly used patterns are listed below for convenience.</p>
+
+
+		[TO DO: include summary of template text syntax plus examples]
+				]]></html>
+		</documentation>
+	
+	</suite>
+
 </dictionary>

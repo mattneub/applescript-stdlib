@@ -141,7 +141,7 @@ slice list {"a", "b", "c", "d", "e"} from item 4 to item 3 → {}
             <direct-parameter>
                 <type type="list" list="yes"/>
             </direct-parameter>
-            <parameter name="while" code="Whil" type="LTrh" optional="yes" description="if lists are uneven lengths, pad the shorter lists, trim the longer lists, or treat as error? (default: treat as error)"/>
+            <parameter name="by" code="Whil" type="LTrh" optional="yes" description="if lists are uneven lengths, pad the shorter lists, trim the longer lists, or treat as error? (default: treat as error)"/>
             <parameter name="padding with" code="PadI" type="anything" optional="yes" description="when ‘padding uneven lists’, the pad value to use (default: missing value)"/>
             <result>
                 <type type="list" list="yes"/>
