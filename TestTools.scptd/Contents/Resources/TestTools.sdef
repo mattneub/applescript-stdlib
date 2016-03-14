@@ -88,7 +88,7 @@ end call_uppercaseText
 	</suite>
 	
 	
-	<suite name="Comparing Results" code="****" description="objects used to compare expected vs actual results">
+	<suite name="Result Comparators" code="****" description="customize how expected vs actual results are compared">
 	
 	
 		<command name="exact equality check" code="Ü†ë:ExEq" description="used in ‘assert test result’ to check that the expected and actual results are identical in both class and content">
@@ -152,7 +152,7 @@ end call_uppercaseText
 
 
 	
-	<suite name="Running Test Scripts" code="****" description="commands used to interact with ‘osatest’ runner">
+	<suite name="Test Runner" code="****" description="commands used to interact with ‘osatest’ runner">
 		
 		<command name="unit test runner" code="Ü†ë:TRPa" description="returns the location of the unit test runner (a command line executable embedded in the TestTools library)">
 			<result type="file"/>
@@ -174,6 +174,104 @@ end run</code></pre>
 
 		</command>
 		
+	</suite>
+
+
+	
+	<suite name="Writing Unit Tests" code="****">
+		<documentation>
+			<html><![CDATA[
+<h3>Test Script Structure</h3>
+<p>A unit test script is saved as a compiled <code><var>TESTNAME</var>.unittest.scpt</code>file and has the following basic structure:</p>
+
+<pre><code>use script "TestTools"
+
+use script "<var>FILENAME</var>" -- the script being tested
+
+script suite_<var>SUITE</var> -- a group of related tests
+
+  to test_<var>HANDLER</var>()
+    -- assertions to test a command
+  end
+
+  to call_<var>HANDLER</var>(<var>PARAM</var>)
+    -- the command being tested (error checking only)
+  end
+
+end</code></pre>
+
+<p>A test script must contain one or more <code>suite_<var>NAME</var></code> script objects, each of which contains one or more <code>test_<var>NAME</var></code> handlers. As a rule of thumb, each test handler should thoroughly test a single command, asserting it returns the correct result/error responses for one or more sets of good/bad inputs.</p>
+
+<p>Each suite object’s name must have a <code>suite_</code> prefix; each test handler’s name must have a <code>test_</code> prefix. The rest of each name can be anything: short descriptions of the purpose of the suite and the command being tested are strongly recommended as these will appear in the generated test report. When the <code>osatest</code> test runner loads the script, it searches for these <code>suite_</code> and <code>test_</code> prefixes and will invoke each test handler automatically; the script should not call test handlers itself.</p>
+
+<p>To minimize the risk of unintended interactions between tests, prior to calling each test handler, <code>osatest</code> creates a new component instance and loads a fresh copy of the test script into it. This ensures text item delimiters, loaded libraries, etc. are not shared between tests. If the code being tested (or the tests themselves) also interact with external data – shared files, scriptable applications, etc. — it is the test script’s responsibility to ensure that these external data sources are put into a known state prior to running each test.</p>
+
+<h3>Additional Suite Handlers</h3>
+
+<p>In addition to <code>test_<var>NAME</var></code> handlers, a suite object may also contain zero or more of the following <em>optional</em> handlers:</p>
+
+<dl>
+<dt><code>call_<var>HANDLER</var>(...)</code></dt>
+<dd><p>Used by <code>assert test error</code> commands to invoke the code being tested and capture the error raised. See the Writing Test Handlers section below.</p></dd>
+
+<dt><code>configure_setUp()</code></dt>
+<dd><p>Called by TestTools before it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any pre-test preparation of common test data; for example, to create AppleScript objects, temporary files, database connections, etc. that will be used by each test in that suite. If a set-up handler throws an error (e.g. if a permissions error prevents a temp file being written) the rest of the test is aborted, including any post-test cleanup, in which case the set-up handler should perform its own cleanup of any partially created test resources.</p></dd>
+
+<dt><code>configure_tearDown()</code></dt>
+<dd><p>Called by TestTools after it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any post-test cleanup; for example, to delete temporary files, close database connections, etc. This handler is called regardless of whether the test handler succeeds or fails, so should be designed to clean up any partially consumed or unused test data left by a failed test, as well as to clean up after a successful test.</p></dd>
+
+<dt><code>configure_skipTests()</code></dt>
+<dd><p>Called before running each suite. Use this handler to temporarily disable selected test handlers (e.g. if a test should only run on newer OS versions), or even the entire suite:</p>
+	<ul>
+		<li>If the handler returns <code>missing value</code>, all tests are run.</li>
+		<li>If the handler returns a text value, no tests are run. The text should explain why the tests were skipped; this will appear in the test report.</li>
+		<li>If the handler contains a record of form <code>{test_<var>NAME</var>: text or missing value, ...}</code>, the named handlers will either be skipped or run according to the property value. Test handlers not named in the record will run as normal.</p></li>
+	</ul>
+	
+	<p>For example, to skip the test handler named <code>test_Foo</code> if the OS version is older than 10.9 while allowing all other tests in the suite to run normally:</p>
+
+	<pre><code>use scripting additions
+
+to configure_skipTests()
+  considering numeric strings
+    return {test_Foo:(system info)'s system version < "10.9"}
+  end considering
+end configure_doTest</code></pre>
+</dd>
+
+<dt><code>configure_doTest(testObject)</code></dt>
+<dd><p>By default, TestTools calls each <code>test_<var>NAME</var></code> directly, as soon as the <code>configure_setUp()</handler> (if any) returns. Some configuration options – for example, <code>considering/ignoring</code> blocks – cannot be applied by set-up and tear-down handlers, but must instead be applied directly to the <code>test_<var>NAME</code> call itself. To do this, add a <code>configure_doTest</code> handler to the suite that takes a script object as its sole parameter. The script object contains a <code>doTest</code> handler, which takes no parameter and returns no result. The <code>configure_doTest</code> handler should perform any additional configuration, then send the script object a <code>doTest</code> command to run the test itself. For example, to run each test in a suite using custom considering/ignoring options:</p>
+
+	<pre><code>to configure_doTest(testObject)
+  considering case, diacriticals and numeric strings ¬
+        but ignoring hyphens, punctuation and white space
+    testObject's doTest()
+  end considering
+end configure_doTest</code></pre>
+
+<p>When the <code>doTest</code> command returns, the <code>configure_doTest</code> handler may perform any related clean up and/or additional assertion checks. If the <code>doTest</code> command raises an error, the <code>configure_doTest</code> may temporaily handle it if necessary, but must re-throw that original error when done:</p>
+
+	<pre><code>to configure_doTest(testObject)
+  -- do normal preparation here
+  try
+    testObject's doTest()
+  on error eText number eNumber from eValue to eType
+    -- do essential clean up here
+    error eText number eNumber from eValue to eType -- rethrow original error
+  end try
+  -- do normal clean up here
+end configure_doTest</code></pre>
+</dd>
+</dl>
+
+<h3>Writing Test Handlers</h3>
+
+[TO DO: finish]
+
+If the <code>assert test error</code> command includes a <code>for</code> parameter, the value is passed to the <code>call_<var>HANDLER</var>(<var>PARAM</var>)</code> handler as its sole parameter; if no <code>for</code> parameter is given then the <code>call_<var>HANDLER</var>(<var>PARAM</var>)</code> handler receives no parameters.
+
+			]]></html>
+		</documentation>
 	</suite>
 		
 </dictionary>

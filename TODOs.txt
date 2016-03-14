@@ -142,3 +142,18 @@ Text
 - `insert into text`, `delete from text` for inserting/replacing/deleting ranges of characters (c.f. `insert into list`, `delete from list` in List library)
 
 
+
+----------------------------------------------------------------------
+Other libraries
+----------------------------------------------------------------------
+
+
+- Logging -- commands for logging messages and info at various levels (debug, info, warning, error, fatal), plus configurable, composable objects for filtering+writing logged messages to various destinations (file, email, screen, etc), c.f. Python's `logging` module. 
+
+   Note: Big problem with this is that it really needs to be stateful, with a Logging module instance being configured and shared across main script and all its libraries. However, AS's library loader doesn't respect separation between unrelated scripts (it requires applications to instantiate new CIs for every unrelated user script, even though apps - and even NSAppleScript - have spent the last 20 years happily sharing the same CI). Thus while a Logging library would be usable within standalone AS applets and ASOC apps, or with apps that use NSUserAppleScriptTask to run scripts, it would be a usability disaster used within scripts run within attachable apps that run OSA scripts in-process. This alone rules it out for stdlib inclusion, though it might still be of use as a third-party module with its limitations clearly described.
+   
+- Defaults -- commands for interacting with NSUserDefaults. Very problematic for stdlib as retaining ASOC objects between commands breaks script serialization and SE autosave. Plus NSUserDefaults' native API is fairly low level and not very AS-friendly. Plus all data needs to be converted to and from ASOC, with all the quirks, limitations, and silent corruptions that involves (e.g. records lose keyword-based properties, app object specifiers lose target app identifier, etc). Plus live changes to defaults data structures won't be stored automatically. One alternative would be to add simple `read preferences` and `write preferences` to File module that uses StdAdditions read/write commands to read and write records of prefs data explicitly; crude, but might be adequate for AS users' needs.
+
+
+
+
