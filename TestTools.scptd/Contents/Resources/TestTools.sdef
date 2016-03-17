@@ -182,6 +182,7 @@ end run</code></pre>
 		<documentation>
 			<html><![CDATA[
 <h3>Test Script Structure</h3>
+
 <p>A unit test script is saved as a compiled <code><var>TESTNAME</var>.unittest.scpt</code>file and has the following basic structure:</p>
 
 <pre><code>use script "TestTools"
@@ -206,69 +207,148 @@ end</code></pre>
 
 <p>To minimize the risk of unintended interactions between tests, prior to calling each test handler, <code>osatest</code> creates a new component instance and loads a fresh copy of the test script into it. This ensures text item delimiters, loaded libraries, etc. are not shared between tests. If the code being tested (or the tests themselves) also interact with external data – shared files, scriptable applications, etc. — it is the test script’s responsibility to ensure that these external data sources are put into a known state prior to running each test.</p>
 
-<h3>Additional Suite Handlers</h3>
+
+
+<h3>Optional Suite Handlers</h3>
 
 <p>In addition to <code>test_<var>NAME</var></code> handlers, a suite object may also contain zero or more of the following <em>optional</em> handlers:</p>
 
-<dl>
-<dt><code>call_<var>HANDLER</var>(...)</code></dt>
-<dd><p>Used by <code>assert test error</code> commands to invoke the code being tested and capture the error raised. See the Writing Test Handlers section below.</p></dd>
+<h4><code>call_<var>HANDLER</var>(...)</code></h4>
 
-<dt><code>configure_setUp()</code></dt>
-<dd><p>Called by TestTools before it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any pre-test preparation of common test data; for example, to create AppleScript objects, temporary files, database connections, etc. that will be used by each test in that suite. If a set-up handler throws an error (e.g. if a permissions error prevents a temp file being written) the rest of the test is aborted, including any post-test cleanup, in which case the set-up handler should perform its own cleanup of any partially created test resources.</p></dd>
+<p>Used by <code>assert test error</code> commands to invoke the code being tested and capture the error raised. See the Writing Test Handlers section below.</p>
 
-<dt><code>configure_tearDown()</code></dt>
-<dd><p>Called by TestTools after it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any post-test cleanup; for example, to delete temporary files, close database connections, etc. This handler is called regardless of whether the test handler succeeds or fails, so should be designed to clean up any partially consumed or unused test data left by a failed test, as well as to clean up after a successful test.</p></dd>
 
-<dt><code>configure_skipTests()</code></dt>
-<dd><p>Called before running each suite. Use this handler to temporarily disable selected test handlers (e.g. if a test should only run on newer OS versions), or even the entire suite:</p>
-	<ul>
-		<li>If the handler returns <code>missing value</code>, all tests are run.</li>
-		<li>If the handler returns a text value, no tests are run. The text should explain why the tests were skipped; this will appear in the test report.</li>
-		<li>If the handler contains a record of form <code>{test_<var>NAME</var>: text or missing value, ...}</code>, the named handlers will either be skipped or run according to the property value. Test handlers not named in the record will run as normal.</p></li>
-	</ul>
+<h4><code>configure_setUp()</code></h4>
+
+<p>Called by TestTools before it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any pre-test preparation of common test data; for example, to create AppleScript objects, temporary files, database connections, etc. that will be used by each test in that suite. If a set-up handler throws an error (e.g. if a permissions error prevents a temp file being written) the rest of the test is aborted, including any post-test cleanup, in which case the set-up handler should perform its own cleanup of any partially created test resources.</p>
+
+
+<h4><code>configure_tearDown()</code></h4>
+
+<p>Called by TestTools after it calls a <code>test_<var>NAME</var></code> handler in a suite. Use this handler to perform any post-test cleanup; for example, to delete temporary files, close database connections, etc. This handler is called regardless of whether the test handler succeeds or fails, so should be designed to clean up any partially consumed or unused test data left by a failed test, as well as to clean up after a successful test.</p>
+
+
+<h4><code>configure_skipTests()</code></h4>
+
+<p>Called before running each suite. Use this handler to temporarily disable selected test handlers (e.g. if a test should only run on newer OS versions), or even the entire suite:</p>
+
+<ul>
+	<li>If the handler returns <code>missing value</code>, all tests are run.</li>
+	<li>If the handler returns a text value, no tests are run. The text should explain why the tests were skipped; this will appear in the test report.</li>
+	<li>If the handler contains a record of form <code>{test_<var>NAME</var>: text or missing value, ...}</code>, the named handlers will either be skipped or run according to the property value. Test handlers not named in the record will run as normal.</p></li>
+</ul>
 	
-	<p>For example, to skip the test handler named <code>test_Foo</code> if the OS version is older than 10.9 while allowing all other tests in the suite to run normally:</p>
+<p>For example, to skip the test handler named <code>test_Foo</code> if the OS version is older than 10.9 while allowing all other tests in the suite to run normally:</p>
 
-	<pre><code>use scripting additions
+<pre><code>use scripting additions
 
 to configure_skipTests()
   considering numeric strings
     return {test_Foo:(system info)'s system version < "10.9"}
   end considering
 end configure_doTest</code></pre>
-</dd>
 
-<dt><code>configure_doTest(testObject)</code></dt>
-<dd><p>By default, TestTools calls each <code>test_<var>NAME</var></code> directly, as soon as the <code>configure_setUp()</handler> (if any) returns. Some configuration options – for example, <code>considering/ignoring</code> blocks – cannot be applied by set-up and tear-down handlers, but must instead be applied directly to the <code>test_<var>NAME</code> call itself. To do this, add a <code>configure_doTest</code> handler to the suite that takes a script object as its sole parameter. The script object contains a <code>doTest</code> handler, which takes no parameter and returns no result. The <code>configure_doTest</code> handler should perform any additional configuration, then send the script object a <code>doTest</code> command to run the test itself. For example, to run each test in a suite using custom considering/ignoring options:</p>
 
-	<pre><code>to configure_doTest(testObject)
+<h4><code>configure_doTest(testObject)</code></h4>
+
+<p>By default, TestTools calls each <code>test_<var>NAME</var></code> directly, as soon as the <code>configure_setUp()</code> (if any) returns. Some configuration options – for example, <code>considering/ignoring</code> blocks – cannot be applied by set-up and tear-down handlers, but must instead be applied directly to the <code>test_<var>NAME</code> call itself. To do this, add a <code>configure_doTest</code> handler to the suite that takes a script object as its sole parameter. The script object contains a <code>doTest</code> handler, which takes no parameter and returns no result. The <code>configure_doTest</code> handler should perform any additional configuration, then send the script object a <code>doTest</code> command to run the test itself. For example, to run each test in a suite using custom considering/ignoring options:</p>
+
+<pre><code>to configure_doTest(testObject)
   considering case, diacriticals and numeric strings ¬
-        but ignoring hyphens, punctuation and white space
-    testObject's doTest()
+      but ignoring hyphens, punctuation and white space
+    testObject's doTest() -- perform the test
   end considering
 end configure_doTest</code></pre>
 
 <p>When the <code>doTest</code> command returns, the <code>configure_doTest</code> handler may perform any related clean up and/or additional assertion checks. If the <code>doTest</code> command raises an error, the <code>configure_doTest</code> may temporaily handle it if necessary, but must re-throw that original error when done:</p>
 
-	<pre><code>to configure_doTest(testObject)
+<pre><code>to configure_doTest(testObject)
   -- do normal preparation here
   try
     testObject's doTest()
   on error eText number eNumber from eValue to eType
-    -- do essential clean up here
-    error eText number eNumber from eValue to eType -- rethrow original error
+    -- do essential clean up here...
+    error eText number eNumber from eValue to eType -- ...then rethrow original error
   end try
   -- do normal clean up here
 end configure_doTest</code></pre>
-</dd>
-</dl>
+
+
 
 <h3>Writing Test Handlers</h3>
 
+<p>The goal of unit testing is to confirm that each handler in your own script returns the correct results and error responses for a representative range of normal and abnormal inputs, covering both general and corner cases. (For example, in addition to testing what happens when correct values are given, it's essential to check that failures are dealt with appropriately too: for instance, what if a handler expects a list of values to process but receives an empty list instead, or needs to access a data file but the file is missing or has the wrong permissions?)</p>
+
+<p>Testing for a correct result is done using TestTools’ <code>assert test result</code> command, while testing for an expected error is done using its <code>assert test error</code> command. Each <code>test_<var>NAME</var></code> handler can contain any number of <code>assert...</code> commands. For example, to check that a <code>squareNumber</code> handler’s actual result exactly matches the expected return value:</p>
+
+<pre><code>to test_squareNumber()
+  assert test result for (squareNumber(4)) is (16)
+  assert test result for (squareNumber(0)) is (0)
+  assert test result for (squareNumber(1.0)) is (1.0)
+  assert test result for (squareNumber(-12345)) is (152399025)
+  ...
+end test_squareNumber</code></pre>
+
+<p>(Note that you may have to parenthesize the code being tested to avoid AppleScript misreading the assert command’s <code>is</code> parameter as an <code><strong>is</strong></code> operator.)</p>
+
+<p>Similarly, testing for an expected error is done using the <code>assert test error</code> command:</p>
+
+<pre><code>to test_squareRoot()
+  assert test result for (squareRoot(64)) is (8.0)
+  assert test result for (squareRoot(0)) is (0.0)
+  ...
+  assert test error for ({a:1}) is ¬
+      {errorNumber:-1700, errorMessage:"Bad parameter: not a number."}
+  assert test error for (-1) is ¬
+      {errorNumber:-1703, errorMessage:"Bad parameter: negative numbers not allowed."}
+end test_squareRoot</code></pre>
+
+<p>This time, however, the <code>assert test error</code> command’s <code>for</code> parameter should contain only data needed to perform the test. Since the goal is to generate a deliberate error, the command being tested must be wrapped in a separate <code>call_<var>NAME</var></code > handler which <code>assert test error</code> then calls automatically:</p>
+
+<pre><code>to call_squareRoot(aValue)
+  squareRoot(aValue)
+end call_squareRoot</code></pre>
+
+<p>If the <code>assert test error</code> command includes a <code>for</code> parameter, the value is passed to the <code>call_<var>HANDLER</var></code> handler as its sole parameter, otherwise the handler receives no parameters. To pass multiple parameters, use a record or list:</p>
+
+<pre><code>assert test error for {param1, param2, param3} is ...
+
+to call_foo({param1, param2, param3})
+  ...
+end call_foo</code></pre>
+
+<p>TestTools catches the error thrown in the <code>call_<var>NAME</var></code> handler and compares it against the <code>assert test error</code> command’s <code>is</code> record parameter. This <code>expected error information</code> record must contain an <code>errorNumber</code> property, plus any additional properties to be checked – <code>errorMessage</code>, <code>fromValue</code>, <code>toType</code> and/or <code>partialResult</code> — corresponding to an AppleScript error’s <code>number</code>, message, <code>from</code>, <code>to</code> and/or <code>partial result</code> attributes.</p>
+
+<p>If all assertions within a test handler succeed, TestTools will report that test as passed once the handler returns:</p>
+
+<pre>1.5 ModifyText's normalizeText: OK (performed 34 assertions)</pre>
+
+<p>However, if the code being tested returns an incorrect result or throws an unexpected or incorrect error, TestTools will report that test as failed, along with a description of the problem:</p> 
+
+<pre>1.1 JoinSplitDate's joinDate: FAILED on assertion 32 in ‘assert test result’ received incorrect result:
+    • actual result: date "Thursday, 30 April 1959 at 18:11:01"
+    • expected result: date "Thursday, 30 April 1959 at 14:11:01"</pre>
+    
+<p>Once the cause of the problem is identified in the code being tested (assuming it’s not a bug in the test script itself), it can be corrected and the test script re-run — and the cycle repeated until all tests finally pass.</p>
+
+
+<h3>Customizing Assertions</h3>
+
+<p>By default, <code>assert test result</code> compares values exactly, including text case and object type (e.g. if <code>3</code> is expected then <code>3.0</code> will be reported as incorrect). This can be sometimes be <em>too</em> precise; for example, when comparing two real numbers, a small amount of leeway may be necessary to allow for tiny rounding errors that are an unavoidable consequence of the limited precision of floating-point CPU math. For instance, <code>0.7 * 0.7</code> returns a real number that displays as 0.49 but is actually fractionally less:</p>
+
+<pre><code>0.7 * 0.7 = 0.49 → false(!)</code></pre>
+
+
+
+<pre><code>assert test result for (squareNumber(0.7)) is (0.49)</code></pre>
+
+<p><code>assert test passed</code> and <code>assert test failed</code> commands are also available for occasional use where extra flexibility is needed, but for most testing tasks the standard asserts are simple, reliable, and produce the most helpful test results.</p>
+
+<p>Test handlers may also contain related code (e.g. to create test data), though this should be kept to a minimum for reliability and to avoid bugs in the test script being confused for errors in code being tested. For example, rather than writing code to connect to a live database to obtain test data, it is often simpler to hardcode a mockup object of known values within the test script, and to use a <code>configure_setUp</code> handler to prepare this test data and store it in a script object prior to the test itself being run.</p>
+
 [TO DO: finish]
 
-If the <code>assert test error</code> command includes a <code>for</code> parameter, the value is passed to the <code>call_<var>HANDLER</var>(<var>PARAM</var>)</code> handler as its sole parameter; if no <code>for</code> parameter is given then the <code>call_<var>HANDLER</var>(<var>PARAM</var>)</code> handler receives no parameters.
+
 
 			]]></html>
 		</documentation>
