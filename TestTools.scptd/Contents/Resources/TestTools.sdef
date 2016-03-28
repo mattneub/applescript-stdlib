@@ -181,6 +181,8 @@ end run</code></pre>
 	<suite name="Writing Unit Tests" code="****">
 		<documentation>
 			<html><![CDATA[
+
+
 <h3>Test Script Structure</h3>
 
 <p>A unit test script is saved as a compiled <code><var>TESTNAME</var>.unittest.scpt</code>file and has the following basic structure:</p>
@@ -209,14 +211,69 @@ end</code></pre>
 
 
 
+<h3>Writing Test Handlers</h3>
+
+<p>The goal of unit testing is to confirm that each handler in your own script returns the correct results and error responses for a representative range of normal and abnormal inputs, covering both general and corner cases. (For example, in addition to testing what happens when correct values are given, it's essential to check that failures are dealt with appropriately too: for instance, what if a handler expects a list of values to process but receives an empty list instead, or needs to access a data file but the file is missing or has the wrong permissions?)</p>
+
+<p>Testing for a correct result is done using TestTools’ <code>assert test result</code> command, while testing for an expected error is done using its <code>assert test error</code> command. Each <code>test_<var>NAME</var></code> handler can contain any number of <code>assert...</code> commands. For example, to check that a <code>squareNumber</code> handler’s actual result exactly matches the expected return value:</p>
+
+<pre><code>to test_squareNumber()
+  assert test result for (squareNumber(4)) is (16)
+  assert test result for (squareNumber(0)) is (0)
+  assert test result for (squareNumber(1.0)) is (1.0)
+  assert test result for (squareNumber(-12345)) is (152399025)
+  ...
+end test_squareNumber</code></pre>
+
+<p>(Note that you may have to parenthesize the code being tested to avoid AppleScript misreading the assert command’s <code>is</code> parameter as an <code><strong>is</strong></code> operator.)</p>
+
+<p>Similarly, testing for an expected error is done using the <code>assert test error</code> command:</p>
+
+<pre><code>to test_squareRoot()
+  assert test result for (squareRoot(64)) is (8.0)
+  assert test result for (squareRoot(0)) is (0.0)
+  ...
+  assert test error for ({a:1}) is ¬
+      {errorNumber:-1700, errorMessage:"Bad parameter: not a number."}
+  assert test error for (-1) is ¬
+      {errorNumber:-1703, errorMessage:"Bad parameter: negative numbers not allowed."}
+end test_squareRoot</code></pre>
+
+<p>This time, however, the <code>assert test error</code> command’s <code>for</code> parameter should contain only data needed to perform the test. Since the goal is to generate a deliberate error, the command being tested must be wrapped in a separate <code>call_<var>NAME</var></code > handler which <code>assert test error</code> then calls automatically:</p>
+
+<pre><code>to call_squareRoot(aValue)
+  squareRoot(aValue)
+end call_squareRoot</code></pre>
+
+<p>If the <code>assert test error</code> command includes a <code>for</code> parameter, the value is passed to the <code>call_<var>HANDLER</var></code> handler as its sole parameter, otherwise the handler receives no parameters. To pass multiple parameters, use a record or list:</p>
+
+<pre><code>assert test error for {param1, param2, param3} is ...
+
+to call_foo({param1, param2, param3})
+  ...
+end call_foo</code></pre>
+
+<p>TestTools catches the error thrown in the <code>call_<var>NAME</var></code> handler and compares it against the <code>assert test error</code> command’s <code>is</code> record parameter. This <code>expected error information</code> record must contain an <code>errorNumber</code> property, plus any additional properties to be checked – <code>errorMessage</code>, <code>fromValue</code>, <code>toType</code> and/or <code>partialResult</code> — corresponding to an AppleScript error’s <code>number</code>, message, <code>from</code>, <code>to</code> and/or <code>partial result</code> attributes.</p>
+
+<p>If all assertions within a test handler succeed, TestTools will report that test as passed once the handler returns:</p>
+
+<pre>    ModifyText's normalizeText: OK (performed 34 assertions)</pre>
+
+<p>However, if the code being tested returns an incorrect result or throws an unexpected or incorrect error, TestTools will report that test as failed, along with a description of the problem:</p> 
+
+<pre>    JoinSplitDate's joinDate: FAILED on assertion 32 in ‘assert test result’ received incorrect result:
+    • actual result: date "Thursday, 30 April 1959 at 18:11:01"
+    • expected result: date "Thursday, 30 April 1959 at 14:11:01"</pre>
+    
+<p>Once the cause of the problem is identified in the code being tested (assuming it’s not a bug in the test script itself), it can be corrected and the test script re-run — and the cycle repeated until all tests finally pass.</p>
+
+
+<p>While test handlers can include any code, not just assert commands, it’s a good idea to keep such code to a minimum so that any bugs in the test script are not confused for defects in code being tested. For example, rather than writing code to connect to a live database to obtain test data, it is often simpler to hardcode a mockup object of known values within the test script, and to use that. In addition, rather than preparing all this test data within the test handler itself, it is possible to use a separate set-up handler to prepare this test data and store it in a property of the suite object, prior to the test handler being called. The next section describes the additional support handlers that may be included in suite objects.</p>
+
+
 <h3>Optional Suite Handlers</h3>
 
-<p>In addition to <code>test_<var>NAME</var></code> handlers, a suite object may also contain zero or more of the following <em>optional</em> handlers:</p>
-
-<h4><code>call_<var>HANDLER</var>(...)</code></h4>
-
-<p>Used by <code>assert test error</code> commands to invoke the code being tested and capture the error raised. See the Writing Test Handlers section below.</p>
-
+<p>In addition to <code>test_<var>NAME</var></code> and associated <code>call_<var>NAME</var></code> handlers, a suite object may also contain zero or more of the following optional handlers:</p>
 
 <h4><code>configure_setUp()</code></h4>
 
@@ -275,80 +332,26 @@ end configure_doTest</code></pre>
 
 
 
-<h3>Writing Test Handlers</h3>
-
-<p>The goal of unit testing is to confirm that each handler in your own script returns the correct results and error responses for a representative range of normal and abnormal inputs, covering both general and corner cases. (For example, in addition to testing what happens when correct values are given, it's essential to check that failures are dealt with appropriately too: for instance, what if a handler expects a list of values to process but receives an empty list instead, or needs to access a data file but the file is missing or has the wrong permissions?)</p>
-
-<p>Testing for a correct result is done using TestTools’ <code>assert test result</code> command, while testing for an expected error is done using its <code>assert test error</code> command. Each <code>test_<var>NAME</var></code> handler can contain any number of <code>assert...</code> commands. For example, to check that a <code>squareNumber</code> handler’s actual result exactly matches the expected return value:</p>
-
-<pre><code>to test_squareNumber()
-  assert test result for (squareNumber(4)) is (16)
-  assert test result for (squareNumber(0)) is (0)
-  assert test result for (squareNumber(1.0)) is (1.0)
-  assert test result for (squareNumber(-12345)) is (152399025)
-  ...
-end test_squareNumber</code></pre>
-
-<p>(Note that you may have to parenthesize the code being tested to avoid AppleScript misreading the assert command’s <code>is</code> parameter as an <code><strong>is</strong></code> operator.)</p>
-
-<p>Similarly, testing for an expected error is done using the <code>assert test error</code> command:</p>
-
-<pre><code>to test_squareRoot()
-  assert test result for (squareRoot(64)) is (8.0)
-  assert test result for (squareRoot(0)) is (0.0)
-  ...
-  assert test error for ({a:1}) is ¬
-      {errorNumber:-1700, errorMessage:"Bad parameter: not a number."}
-  assert test error for (-1) is ¬
-      {errorNumber:-1703, errorMessage:"Bad parameter: negative numbers not allowed."}
-end test_squareRoot</code></pre>
-
-<p>This time, however, the <code>assert test error</code> command’s <code>for</code> parameter should contain only data needed to perform the test. Since the goal is to generate a deliberate error, the command being tested must be wrapped in a separate <code>call_<var>NAME</var></code > handler which <code>assert test error</code> then calls automatically:</p>
-
-<pre><code>to call_squareRoot(aValue)
-  squareRoot(aValue)
-end call_squareRoot</code></pre>
-
-<p>If the <code>assert test error</code> command includes a <code>for</code> parameter, the value is passed to the <code>call_<var>HANDLER</var></code> handler as its sole parameter, otherwise the handler receives no parameters. To pass multiple parameters, use a record or list:</p>
-
-<pre><code>assert test error for {param1, param2, param3} is ...
-
-to call_foo({param1, param2, param3})
-  ...
-end call_foo</code></pre>
-
-<p>TestTools catches the error thrown in the <code>call_<var>NAME</var></code> handler and compares it against the <code>assert test error</code> command’s <code>is</code> record parameter. This <code>expected error information</code> record must contain an <code>errorNumber</code> property, plus any additional properties to be checked – <code>errorMessage</code>, <code>fromValue</code>, <code>toType</code> and/or <code>partialResult</code> — corresponding to an AppleScript error’s <code>number</code>, message, <code>from</code>, <code>to</code> and/or <code>partial result</code> attributes.</p>
-
-<p>If all assertions within a test handler succeed, TestTools will report that test as passed once the handler returns:</p>
-
-<pre>1.5 ModifyText's normalizeText: OK (performed 34 assertions)</pre>
-
-<p>However, if the code being tested returns an incorrect result or throws an unexpected or incorrect error, TestTools will report that test as failed, along with a description of the problem:</p> 
-
-<pre>1.1 JoinSplitDate's joinDate: FAILED on assertion 32 in ‘assert test result’ received incorrect result:
-    • actual result: date "Thursday, 30 April 1959 at 18:11:01"
-    • expected result: date "Thursday, 30 April 1959 at 14:11:01"</pre>
-    
-<p>Once the cause of the problem is identified in the code being tested (assuming it’s not a bug in the test script itself), it can be corrected and the test script re-run — and the cycle repeated until all tests finally pass.</p>
-
-
 <h3>Customizing Assertions</h3>
 
 <p>By default, <code>assert test result</code> compares values exactly, including text case and object type (e.g. if <code>3</code> is expected then <code>3.0</code> will be reported as incorrect). This can be sometimes be <em>too</em> precise; for example, when comparing two real numbers, a small amount of leeway may be necessary to allow for tiny rounding errors that are an unavoidable consequence of the limited precision of floating-point CPU math. For instance, <code>0.7 * 0.7</code> returns a real number that displays as 0.49 but is actually fractionally less:</p>
 
-<pre><code>0.7 * 0.7 = 0.49 → false(!)</code></pre>
+<pre><code>to squareNumber(n)
+  return n ^ 2
+end squareNumber
 
+squareNumber(0.7) -- i.e. '0.7 * 0.7'
+result = 0.49 → false(!)</code></pre>
 
+<pre><code>assert test result for (squareNumber(0.7)) is (0.49) -- assertion fails!</code></pre>
 
-<pre><code>assert test result for (squareNumber(0.7)) is (0.49)</code></pre>
+<p>To modify the way in which <code>assert test result</code> compares expected vs actual results, pass a custom ‘result comparator’ script object as its <code>using</code> parameter. Several custom comparators are included as standard in TestTools. For example, to allow for a small amount of imprecision when comparing reals, use a <code>NumericEqualityCheck</code> object:</p>
 
-<p><code>assert test passed</code> and <code>assert test failed</code> commands are also available for occasional use where extra flexibility is needed, but for most testing tasks the standard asserts are simple, reliable, and produce the most helpful test results.</p>
+<pre><code>assert test result for (squareNumber(0.7)) is (0.49) using (numeric equality check) -- passes</code></pre>
 
-<p>Test handlers may also contain related code (e.g. to create test data), though this should be kept to a minimum for reliability and to avoid bugs in the test script being confused for errors in code being tested. For example, rather than writing code to connect to a live database to obtain test data, it is often simpler to hardcode a mockup object of known values within the test script, and to use a <code>configure_setUp</code> handler to prepare this test data and store it in a script object prior to the test itself being run.</p>
+<p>TestTools also provides basic <code>assert test passed</code> and <code>assert test failed</code> commands for use in situations where even greater flexibility is needed, but for most testing tasks the standard assert commands are simple, reliable, and produce the most detailed test results.</p>
 
-[TO DO: finish]
-
-
+[TO DO: the interface for test comparator objects has yet to be finalized (currently it only returns true or false, but really needs a way to return detailed failure information as well for inclusion in test reports); once that's done, might be an idea to document here, or perhaps in TestTools.scptd code comments, how to implement additional comparator objects as the included comparators are still not comprehensive]
 
 			]]></html>
 		</documentation>

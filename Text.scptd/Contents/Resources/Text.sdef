@@ -311,18 +311,20 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 <ul>
 	<li>A text-based template describing the text to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. (Caution: if the ‘replacing with’ parameter is arbitrary text supplied by a variable, apply the <code>escape template</code> command to it first to prevent any backslashes within it being accidentally substituted.) See Template Text Syntax for a full list of special character sequences.</li>
 
-	<li>A script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of ‘unmatched text’ and ‘matched group’ records as its parameters and returns the text value to insert as its result.</li>
+	<li>A script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of text values matched by parenthesized groups as its parameters and returns the text value to insert as its result.</li>
 </ul>
 
 <pre><code>script UppercaseMatchedText
-  to replacePattern(theText, foundGroups)
-    return uppercase text theText
+  to replacePattern(foundText, foundGroups)
+    return uppercase text foundText
   end replacePattern
 end script
 
 search text "abcdefghijk" for "[aeiou]" ¬
     replacing with UppercaseMatchedText using pattern matching
 → "AbcdEfghIjk"</code></pre>
+
+<!-- TO DO: need an example using foundGroups -->
 				]]></html>
 			</documentation>
 

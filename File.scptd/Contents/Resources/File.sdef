@@ -55,23 +55,34 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 
 		<command name="normalize path" code="Fil:NorP" description="">
 			<direct-parameter type="text"/>
-			<parameter name="full expansion" code="ExpR" type="boolean" optional="yes" description="if true, relative paths will also be expanded to absolute paths within the current folder (default: false)"/>
+			<parameter name="tilde expansion" code="ExpT" type="boolean" optional="yes" description="if true, shell-style tilde expressions at the start of paths are automatically expanded (default: false)"/>
+			<parameter name="absolute expansion" code="ExpR" type="boolean" optional="yes" description="if true, relative paths are automatically expanded to absolute paths relative to the current working directory (default: false)"/>
+			<parameter name="link expansion" code="ExpA" type="boolean" optional="yes" description="if true, symbolic links within existing paths
+			 are automatically expanded (default: false)"/>
 			<result type="text"/>
 			
 			<documentation>
 				<html><![CDATA[
 <p>Examples:</p>
 
-<pre><code>normalize path "~/Pictures/Camera Roll/../../Movies/"
+<pre><code>normalize path "/Users/jsmith/Pictures//./../Movies/"
 → "/Users/jsmith/Movies"
 
-normalize path "Music/iTunes" with full expansion
-→ "/Users/jsmith/Music/iTunes"</code></pre>
+normalize path "~/Movies/" with tilde expansion
+→ "/Users/jsmith/Movies"
 
-<p>This command normalizes a path by performing the following clean-up tasks as needed:</p>
+normalize path "Applications" with absolute expansion
+→ "/Applications" (the exact result depends on the current working directory)
+
+normalize path "./Music/iTunes/"
+→ "Music/iTunes"</code></pre>
+
+<p>This command normalizes a path by performing the following steps as needed:</p>
 
 <ul>
-<li>expanding the initial tilde expression</li>
+<li>expanding the initial tilde expression, if <code>tilde expansion</code> is true</li>
+
+<li>expanding a relative path to an absolute path relative to the current working directory, if <code>absolute expansion</code> is true</li>
 
 <li>removing the initial component of “/private/var/automount”, “/var/automount”, or “/private” from the path, if the result still indicates an existing file or folder (checked by consulting the file system)</li>
 
@@ -82,7 +93,7 @@ normalize path "Music/iTunes" with full expansion
 
 <p>For absolute paths, it also resolves references to the parent folder (that is, the component “..”) to the real parent folder if possible. For relative paths, references to the parent folder are left in place.</p>
 
-<p>Note: this command will raise error number -1728 if a relative path is given and the current working directory is unknown.</p> 
+<p>If a relative path is given and <code>absolute expansion</code> is true but the current working directory is unknown, an error (-1728) will occur.</p> 
 				]]></html>
 			</documentation>
 		</command>
@@ -229,12 +240,13 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 
 <pre><code>#!/usr/bin/osascript
 
-use script "FileLib"
+use script "File"
 
 to run pathsList
   if pathsList is {} then set pathsList to {(current working directory)'s POSIX path}
   repeat with pathRef in pathsList
-    set aFile to (normalize path pathRef's contents with full expansion) as POSIX file
+    set aFile to (normalize path pathRef's contents with ¬
+        tilde expansion, absolute expansion and link expansion) as POSIX file
     -- process the file...
   end repeat
 end run</code></pre>
@@ -303,53 +315,34 @@ end if</code></pre>
 			<parameter name="arguments" code="OpsA" optional="yes" description="a list of ‘command line argument definition’ records (default: {{propertyName:&quot;argumentsList&quot;,valueType:text, isList:true}})">
 				<type type="command line argument definition" list="yes"/>
 			</parameter>
-			<result type="record" description="a custom record containing all of the properties specified by the ‘options’ and ‘arguments’ parameters"/>
 			<parameter name="default options" code="DefO" type="boolean" optional="yes" description="if true, default ‘-h’ (‘--help’) and ‘-v’ (‘--version’) options will be added automatically if not already defined (default: true)"/>
-			<documentation>
+			<result type="record" description="a custom record containing all of the properties specified by the ‘options’ and ‘arguments’ parameters"/>
+			
+						<documentation>
 				<html><![CDATA[
-<p>An AppleScript-based shell script is saved as an uncompiled text file and has the following general form:</p>
+<p>The following basic example demonstrates how <code>parse command line arguments</code> works:</p>
 
-<pre><code>#!/usr/bin/osascript
+<pre><code>set argv to {"-f", "plain", "-r", "/Users/jsmith/file1.rtf", "~/file2.rtf"}
 
-use script "FileLib"
-<!--
-property _name : "" -- this script’s name
--->
-property _version : "" -- this script’s version (e.g. "1.2.0")
+parse command line arguments argv ¬
+    options {¬
+      {propertyName:"fileFormat", shortName:"f"}, ¬
+      {propertyName:"outputFolder", shortName:"o", valueType:file, defaultValue:missing value}, ¬
+      {propertyName:"replacesExistingFiles", shortName:"r", valueType:boolean}} ¬
+    arguments {¬
+      {propertyName:"fileList", valueType:file, isList:true}}</code></pre>
 
--- a short, single-line description of the shell command’s purpose:
-property _summary : "" 
+<p>Given a list of shell command arguments (<code>argv</code>), <code>parse command line arguments</code> reads each item in the list, initially checking it against a list of supported options (in this case <code>-f</code>, <code>-o</code>, and <code>-r</code>), then against a list of supported arguments once all of the given options have been processed. On completion, the result is a record of all supported options and arguments, with the supplied values converted to the correct types and default values provided when optional options/arguments are omitted:</p>
 
--- a list of zero or more ‘command line option definition’ records:
-property _optionDefinitions : {} 
-
--- a list of zero or more ‘command line argument definition’ records:
-property _argumentDefinitions : {} 
-
--- a multi-paragraph description of the shell command’s use:
-property _description : "" 
-
-on run argv
-  set parameterRecord to (parse command line arguments argv ¬
-      options _optionDefinitions arguments _argumentDefinitions)
-  if parameterRecord's help then -- return help and exit
-    return format command line help options _optionDefinitions ¬
-        arguments _argumentDefinitions summary _summary description _description
-  else if parameterRecord's |version| then -- return version and exit
-    return _version
-  else -- do stuff (if a value is returned, it is written to stdout)
-    return doShellCommand(parameterRecord)
-  end if
-end run
-
-to doShellCommand(params)
-  <em>-- your code goes here…</em>
-end doShellCommand</code></pre>
-
-<p><em>TO DO: finish documentation and include examples of use (e.g. see Python's argparse documentation for comparison); these (plus the above template and following explanations of option and argument record properties) should go in separate HTML documentation within the script bundle which can then be linked here</em></p>
+<pre><code>{ fileFormat:"plain", 
+  outputFolder:missing value,
+  replacesExistingFiles:true, 
+  fileList:{file "Macintosh HD:Users:jsmith:file1.rtf",
+            file "Macintosh HD:Users:jsmith:file2.rtf"}, 
+  |help|:false, 
+  |version|:false}</code></pre>
 				]]></html>
 			</documentation>
-				
 		</command>
 		
 		
@@ -396,7 +389,7 @@ end doShellCommand</code></pre>
 <dt><code>longName</code></dt>
 <dd>A single word to be used as the option’s long name (camelCase words and hypenated-words are also acceptable). Do not include leading hyphens as these will be added automatically. Long names must be unique.</dd>
 <dt><code>valueType</code></dt>
-<dd>If the option is given, the type of its value (default: text). This should be one of: <code>boolean</code>, <code>integer</code>, <code>real</code>, <code>number</code>, <code>text</code>, <code>alias</code>, [<code>POSIX</code>] <code>file</code>. If <code>boolean</code> is used, the option does not take a value but instead changes the option’s value from false to true (or the opposite of <code>defaultValue</code>, if given).</dd>
+<dd>If the option is given, the type of its value (default: text). This should be one of: <code>boolean</code>, <code>integer</code>, <code>real</code>, <code>number</code>, <code>text</code>, <code>alias</code>, <code>file</code>. If <code>boolean</code> is used, the option does not take a value but instead changes the option’s value from false to true (or the opposite of <code>defaultValue</code>, if given).</dd>
 <dt><code>isList</code></dt>
 <dd>If true, the option may appear any number of times and will appear in the options record as a list of the specified type. If false, a user error will be reported if the same option appears more than once. (default: false)</dd>
 <dt><code>defaultValue</code></dt>
@@ -431,6 +424,58 @@ end doShellCommand</code></pre>
 		</record-type>
 		
 	
+	</suite>
+	
+	
+	
+	<suite name="Writing an AppleScript-based Shell Script" code="****">
+		<documentation>
+			<html><![CDATA[
+<p>An AppleScript-based shell script is normally saved as an uncompiled plain text file without an <code>.applescript</code> extension, made executable by running a <code>chmod +x <var>SCRIPT</var></code> on it, and placed into a directory that appears on the user’s <code>$PATH</code> (e.g. <code>/usr/local/bin</code>) so that it can be executed as a shell command directly from Terminal.</p>
+
+<p>:</p>
+
+<pre><code>#!/usr/bin/osascript
+
+use script "File"
+
+property _version : "<var>xx.xx.xx</var>" -- the script’s version (e.g. "1.2.0")
+property _summary : "<var>a one-line summary of the command’s purpose</var>"
+property _description : "<var>detailed instructions for use, examples, etc.</var>"
+
+property _optionDefinitions : { ... }
+
+property _argumentDefinitions : { ... }
+
+on run argv
+  set parameterRecord to parse command line arguments argv ¬
+      options _optionDefinitions arguments _argumentDefinitions
+  if parameterRecord's help then -- output help text
+    return format command line help ¬
+        summary _summary description _description ¬
+        options _optionDefinitions arguments _argumentDefinitions 
+  else if parameterRecord's |version| then -- output version text
+    return _version
+  else -- perform the command and output its result, if any
+    return doCommand(parameterRecord)
+  end if
+end run
+
+to doCommand(params)
+  -- <em>your code goes here...</em>
+end doCommand</code></pre>
+
+
+
+<ul>
+	<li>a list of zero or more ‘command line option definition’ records</li>
+	<li>a list of zero or more ‘command line argument definition’ records</li>
+</ul>
+
+
+<p><em>TO DO: finish documentation and include examples of use (e.g. see Python's argparse documentation for comparison); these (plus the above template and following explanations of option and argument record properties) should go in separate HTML documentation within the script bundle which can then be linked here</em></p>
+			]]></html>
+		</documentation>
 	</suite>
 			
 </dictionary>
