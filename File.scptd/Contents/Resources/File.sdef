@@ -2,9 +2,9 @@
 <!DOCTYPE dictionary SYSTEM "file://localhost/System/Library/DTDs/sdef.dtd">
 <dictionary>
 	
-	<suite name="Path Manipulation" code="****">
+	<suite name="Path Manipulation" code="****" description="Split, join, expand, and convert POSIX path strings">
 		
-		<command name="convert path" code="Fil:ConP" description="convert file identifiers between various path formats and object types">
+		<command name="convert path" code="Fil:ConP" description="Convert file identifiers between various path formats and object types">
 			<direct-parameter documentation="the file path or object to convert">
 				<type type="text"/>
 				<type type="file"/>
@@ -53,7 +53,7 @@ convert path theFile to file URL format <i>-- (a ‘from’ parameter isn't need
 		</enumeration>
 		
 
-		<command name="normalize path" code="Fil:NorP" description="">
+		<command name="normalize path" code="Fil:NorP" description="Expand and/or tidy a POSIX path">
 			<direct-parameter type="text"/>
 			<parameter name="tilde expansion" code="ExpT" type="boolean" optional="yes" description="if true, shell-style tilde expressions at the start of paths are automatically expanded (default: false)"/>
 			<parameter name="absolute expansion" code="ExpR" type="boolean" optional="yes" description="if true, relative paths are automatically expanded to absolute paths relative to the current working directory (default: false)"/>
@@ -99,7 +99,7 @@ normalize path "./Music/iTunes/"
 		</command>
 		
 		
-		<command name="join path" code="Fil:JoiP" description="given a list of path components (and/or a file name extension), joins them together to form a POSIX path">
+		<command name="join path" code="Fil:JoiP" description="Given a list of path components (and/or a file name extension), joins them together to form a POSIX path">
 			<direct-parameter description="the POSIX path components to join">
 				<type type="text" list="yes"/>
 			</direct-parameter>
@@ -159,40 +159,79 @@ split path "/Users/jsmith/Documents/ReadMe.txt" at file extension
 	</suite>
 	
 	
-	<suite name="Read/Write File" code="****">
-	
-		<!--TO DO: documentation should indicate legacy encodings are discouraged, especially primary encoding which is localized choice of legacy encoding so is different from user to user -->
-		
-		<!-- TO DO: worth noting in documentation that POSIX path strings are also accepted as direct parameter? -->
-	
-		<command name="read from file" code="Fil:Read" description="read a file as plain text or an AppleScript value">
+	<suite name="Read/Write File" code="****" description="Convenience commands for reading/writing plain text and AppleScript data files">
+
+		<command name="read from file" code="Fil:Read" description="Read a file as plain text or an AppleScript value">
 			<direct-parameter type="file"/>
 			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
-			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when reading a plain text file, the encoding to use (default: UTF8 encoding)"/>
+			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when reading a plain text file, the encoding to use (default: UTF8 encoding); ignored if the file's BOM or metadata already specifies an encoding"/>
 			<result type="anything"/>
 			
 			<documentation>
 				<html><![CDATA[
-<pre><code></code></pre>
+<p>For example, to read a UTF8-encoded plain text file:</p>
+
+<pre><code>read from file (alias "Macintosh HD:Users:jsmith:Documents:welcome.txt")
+→ "Hello!"</code></pre>
+
+<p>For convenience, the <code>read from file</code> command also accepts a POSIX path string as its direct parameter:</p>
+
+<pre><code>read from file "/Users/jsmith/Documents/welcome.txt"</code></pre>
+
+<p>While nowadays UTF8 is the preferred encoding for plain text files, the <code>read from file</code> command can also read plain text files written in a variety of older legacy encodings. For example, to read a plain text file that was written in the legacy MacOSRoman encoding:</p>
+
+<pre><code>read from file myFile using MacOSRoman encoding</code></pre>
+
+<p>Or to read the file using the host machine's default legacy encoding (equivalent to Standard Additions' <code>read myFile as string</code>):
+
+<pre><code>read from file myFile using primary encoding</code></pre>
+
+<p>The <code>read from file</code> command can also be used to read AppleScript values previously written to file using <code>write to file</code> or Standard Additions' <code>write</code> command. For example, to read a data file containing an AppleScript record:</p>
+
+<pre><code>read from file "/Users/jsmith/script.data" as record
+→ {name: "Bob", age:42}</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 	
-		<command name="write to file" code="Fil:Writ" description="write plain text or an AppleScript value to a file">
+		<command name="write to file" code="Fil:Writ" description="Write plain text or an AppleScript value to a file">
 			<direct-parameter type="file"/>
 			<parameter name="data" code="Data" type="anything"/>
 			<parameter name="as" code="Type" type="type" optional="yes" description="(default: text)"/>
 			<parameter name="using" code="Enco" type="FEnc" optional="yes" description="when writing a plain text file, the encoding to use (default: UTF8 encoding)"/>
 			<result type="anything"/>
 			
-			<!-- note that when `as` is `text` and `using` is UTF16/32 encoding, a BOM is automatically included [by NSString's write method] -->
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example, to write a UTF8-encoded plain text file:</p>
+
+<pre><code>write to file (alias "Macintosh HD:Users:jsmith:Documents:welcome.txt") data "Hello!"</code></pre>
+
+<p>For convenience, the <code>write to file</code> command also accepts a POSIX path string as its direct parameter:</p>
+
+<pre><code>write to file "/Users/jsmith/Documents/welcome.txt" data "Hello!"</code></pre>
+
+<p>The <code>read from file</code> command can also write plain text files in a variety of legacy text encodings. For example, to write a plain text file in the legacy MacOSRoman encoding:</p>
+
+<pre><code>write file myFile data theText using MacOSRoman encoding</code></pre>
+
+<p>Or to write the file using the host machine's default legacy encoding (equivalent to Standard Additions' <code>write theText to myFile as string</code>):
+
+<pre><code>write to file myFile data theText using primary encoding</code></pre>
+
+<p>The <code>write to file</code> command can also be used as a convenient shortcut for Standard Additions' <code>write</code> command to write AppleScript values to file. For example, to write a data file containing an AppleScript record:</p>
+
+<pre><code>write to file "/Users/jsmith/script.data" data {name: "Bob", age:42} as record</code></pre>
+
+				]]></html>
+			</documentation>
 		</command>
 		
 				
 		<!-- note: when defining enumerations, it is better to use a generic single-word parameter name and specific multi-word enumerator names, e.g. `using [UTF8 encoding]` rather than `using encoding [UTF8]`; since the parameter name is already scoped to the command it doesn't need to be particularly distinctive or unique, but enumerator names will be visible throughout the code so need to minimize risk of clashing with any other terminology -->
 		
 		<enumeration name="FEnc" code="FEnc">
-			<!-- TO DO: option to determine UTF encoding from BOM, if found? (check Cocoa docs, as it may use various heuristics to determine encoding automatically) -->
 			
 			<!-- Unicode encodings -->
 			<enumerator name="UTF8 encoding" code="FE01"/>
@@ -433,7 +472,7 @@ parse command line arguments argv ¬
 			<html><![CDATA[
 <p>An AppleScript-based shell script is normally saved as an uncompiled plain text file without an <code>.applescript</code> extension, made executable by running a <code>chmod +x <var>SCRIPT</var></code> on it, and placed into a directory that appears on the user’s <code>$PATH</code> (e.g. <code>/usr/local/bin</code>) so that it can be executed as a shell command directly from Terminal.</p>
 
-<p>:</p>
+<p>For convenience, here is a standard template for creating AppleScript-based shell scripts:</p>
 
 <pre><code>#!/usr/bin/osascript
 
@@ -465,15 +504,15 @@ to doCommand(params)
   -- <em>your code goes here...</em>
 end doCommand</code></pre>
 
+<p>The <code>_version</code> property should contain a text value representing the script's current version, typically written as <code>"<var>majorVersion</var>.<var>minorVersion</var>.<var>bugFix</var>"</code>. (Version numbers written this way are easily compared using a <code>considering punctuation and numeric strings ... end considering</code> block.) The version number is automatically written to standard output when the shell script is executed with the <code>-v</code> (<code>--version</code>) flag.</p>
 
+<p>The <code>_summary</code> property contains a one-line summary that appears at the top of the help text generated when the <code>-h</code> (<code>--help</code>) option is given, which the <code>_description</code> property can contain any additional information to append to the help text.</p>
 
-<ul>
-	<li>a list of zero or more ‘command line option definition’ records</li>
-	<li>a list of zero or more ‘command line argument definition’ records</li>
-</ul>
+<p>The <code>_optionDefinitions</code> and <code>_argumentDefinitions</code> properties describe any options and/or arguments that can be passed to the command, and are used both to convert the values passed by the shell to their AppleScript equivalents (text, numbers, booleans, etc) and to generate the corresponding help text when the <code>-h</code> (<code>--help</code>) option is used. [[ TO DO: simple example of each type of record, taken from complete example (see TODO below) ]]</p>
 
+<p>The <code>run</code> handler requires no modification, as all it does is receive the list of raw arguments supplied by the shell command, converts it into a record of ready-to-use AppleScript objects, then deals with it automatically if a <code>-h</code> (<code>--help</code>) option or the <code>-v</code> (<code>--version</code>) option was given or else passes it to the <code>doCommand</code> handler for your own code to process normally.</p>
 
-<p><em>TO DO: finish documentation and include examples of use (e.g. see Python's argparse documentation for comparison); these (plus the above template and following explanations of option and argument record properties) should go in separate HTML documentation within the script bundle which can then be linked here</em></p>
+[[ TO DO: complete working example script (ideas?) ]]
 			]]></html>
 		</documentation>
 	</suite>
