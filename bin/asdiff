@@ -30,7 +30,7 @@ on run {arg1, arg2}
 end run
 
 to exportAppleScript(scptFilePath, aLabel, tempFolder)
-	set scptFilePath to normalize path scptFilePath with full expansion
+	set scptFilePath to normalize path scptFilePath with tilde expansion and absolute expansion
 	set tempFilePath to join path {tempFolder, last item of (split path scptFilePath) & aLabel & ".applescript"}
 	do shell script "osadecompile " & quoted form of scptFilePath & " >" & quoted form of tempFilePath
 	return tempFilePath
