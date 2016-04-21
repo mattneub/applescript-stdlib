@@ -4,11 +4,11 @@
 
 	
 	
-	<suite name="URL Manipulation" code="****">
+	<suite name="Manipulate URLs" code="****">
 		
 		<command name="split URL" code="Web:SplU" description="">
 			<direct-parameter type="text"/>
-			<parameter name="network location record" code="NeLo" type="boolean" optional="yes" description="if true, the ‘networkLocation’ property will contain a network location record; if false, the network location is given as a single text value (default: false)"/>
+			<parameter name="network location record" code="NeLo" type="boolean" optional="yes" description="if true, the result’s ‘networkLocation’ property will contain a network location record; if false, the network location is given as a single text value (default: false)"/>
 			<result type="URL component record"/>
 			
 			<documentation>
@@ -54,7 +54,7 @@
 		</record-type>
 		
 		
-		<command name="escape URL characters" code="Web:EscU" description="replaces “non-safe” characters with the corresponding “%XX” escapes">
+		<command name="escape URL characters" code="Web:EscU" description="Replace “non-safe” characters in a text value with the corresponding “%XX” escapes suitable for use in a URL">
 			<direct-parameter type="text"/>
 			<parameter name="preserving" code="Safe" type="text" description="any additional ASCII characters that should not be escaped (default: &quot;&quot;)"/>
 			<result type="text"/>
@@ -68,7 +68,7 @@
 		</command>
 		
 		
-		<command name="unescape URL characters" code="Web:UneU" description="">
+		<command name="unescape URL characters" code="Web:UneU" description="Replace “%XX” escapes in a text value with the corresponding characters">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 			<documentation>
@@ -81,7 +81,7 @@
 		</command>
 
 		
-		<command name="split URL query string" code="Web:SplQ" description="splits a URL query string into a list of key-value pairs">
+		<command name="split URL query string" code="Web:SplQ" description="Split a URL query string into a list of key-value pairs">
 			<direct-parameter type="text" description="a query string of form &quot;key1=value1&amp;key2=value2&amp;…&quot;"/>
 			<result type="list" description="a list of form {{key1,value1}, {key2,value2}, …}"/>
 			<documentation>
@@ -93,12 +93,12 @@
 			</documentation>
 		</command>
 
-		<command name="join URL query string" code="Web:JoiQ" description="joins a list of key-value pairs into a URL query string">
+		<command name="join URL query string" code="Web:JoiQ" description="Join a list of key-value pairs into a URL query string">
 			<direct-parameter type="list" description="a list of form {{key1,value1}, {key2,value2}, …}"/>
 			<result type="text" description="a query string of form &quot;key1=value1&amp;key2=value2&amp;…&quot;"/>
 			<documentation>
 				<html><![CDATA[
-<p>Keys and values must be text or integer values (e.g. real numbers should be converted to numeric text using Number library's `format number` command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes.</p>
+<p>Keys and values must be text values (e.g. numbers should be converted to numeric text using Number library's ‘format number’ command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes.</p>
 
 <pre><code></code></pre>
 				]]></html>
@@ -109,15 +109,15 @@
 	
 	
 	
-	<suite name="JSON Encoding" code="****">
+	<suite name="Convert Data" code="****">
 		
-		<command name="parse JSON" code="Web:PJSN" description="parse JSON text as an AppleScript value">
+		<command name="parse JSON" code="Web:PJSN" description="Parse JSON text as an AppleScript value">
 			<direct-parameter type="text"/>
 			<parameter name="fragments allowed" code="Frag" type="boolean" optional="yes" description="(default: false)"/>
 			<result type="any"/>
 		</command>
 		
-		<command name="format JSON" code="Web:FJSN" description="format an AppleScript value as JSON text">
+		<command name="format JSON" code="Web:FJSN" description="Format an AppleScript value as JSON text">
 			<direct-parameter type="any"/>
 			<parameter name="extra white space" code="EWSp" type="boolean" optional="yes" description="(default: false)"/>
 			<result type="text"/>
@@ -127,49 +127,62 @@
 	
 	
 	
-	<suite name="Sending HTTP Requests" code="****">
+	<suite name="Web Access" code="****">
 		
-		<command name="send HTTP request" code="Web:ReqH" description="">
+		<command name="send HTTP request" code="Web:ReqH" description="Send an HTTP request to a web server and return its response">
 			<parameter name="to" code="Dest" type="text" description="the destination URL"/>
 			<parameter name="method" code="Meth" type="text" optional="yes" description="the HTTP method name: “GET”, “POST”, “PUT”, “DELETE”, “OPTIONS”, etc. (default: &quot;GET&quot;)"/>
-			<parameter name="headers" code="Head" optional="yes" description="zero or more Header lines to include in the request">
-				<type type="text" list="yes"/>
+			<parameter name="headers" code="Head" optional="yes" description="zero or more header lines to include in the request">
+				<type type="HTTP header record" list="yes"/>
 			</parameter>
-			<parameter name="body" code="Body" optional="yes" description="the body data for a POST/PUT request; if given, the ‘headers’ parameter should include the appropriate “Content-Type:…” line">
+			<parameter name="body" code="Body" optional="yes" description="the body data for a POST/PUT request; if any (default: missing value)">
 				<type type="text"/>
-				<type type="data"/>
+				<type type="NSData"/>
+				<type type="missing value"/>
 			</parameter>
-			<parameter name="returning" code="Type" type="type" optional="yes" description="the type of data returned by a GET/POST request; this should either be ‘text’ if the returned data is known to be UTF-8 encoded text, or ‘data’ for anything else (default: text)"/>
-			
-			<!-- TO DO: need optional `timeout` parameter (default: 60sec?) -->
-			
-			<result type="HTTP response data"/>
+			<parameter name="timeout" code="TimO" type="integer" optional="yes" description="the number of seconds to wait for a response before timing out (default: 60)"/>
+			<parameter name="returning" code="Type" type="type" optional="yes" description="the type of data returned by a GET/POST request; this should either be ‘text’ if the returned data is known to be UTF-8 encoded text, or ‘data’ for anything else, or ‘missing value’ (default: text)"/> <!-- TO DO: can/should this be defined as an enumeration? -->
+			<result type="HTTP response record"/>
 			
 			<documentation>
 				<html><![CDATA[
 <p>For example:</p>
 
-<pre><code></code></pre>
+<pre><code>send HTTP request to "http://apple.com"</code></pre>
+
+[TO DO: finish documentation]
+
 				]]></html>
 			</documentation>
-			
 		</command>
 		
 		
-		<record-type name="HTTP response data" code="WebR" description="">
+		<record-type name="HTTP header record" code="WebH" description="A record describing a single header line in an HTTP request or response">
 			<documentation>
 				<html><![CDATA[
-<pre><code>{
- reponseCode:<var>integer</var>,
- responseHeaders:<var>list of text</var>,
- responseBody:<var>text or data</var>
-}</code></pre>
+<pre><code>{ headerName:<var>text</var>,
+  headerValue:<var>text</var> }</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>
-	
+		
+		
+		<record-type name="HTTP response record" code="WebR" description="A record describing an HTTP response">
+			<documentation>
+				<html><![CDATA[
+<pre><code>{ statusCode:<var>integer</var>,
+  responseHeaders:<var>list of HTTP header record</var>,
+  responseBody:<var>text, NSData, or missing value</var> }</code></pre>
+				]]></html>
+			</documentation>
+		</record-type>
+		
+			
+		<command name="describe HTTP status code" code="Web:DStC" description="Get a short description of the given HTTP status code (e.g. 404 → “not found”)">
+			<direct-parameter type="integer"/>
+			<result type="text"/>
+		</command>
 		
 	</suite>
-	
 	
 </dictionary>

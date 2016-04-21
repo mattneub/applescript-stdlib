@@ -154,6 +154,7 @@ Other libraries
    
 - Defaults -- commands for interacting with NSUserDefaults. Very problematic for stdlib as retaining ASOC objects between commands breaks script serialization and SE autosave. Plus NSUserDefaults' native API is fairly low level and not very AS-friendly. Plus all data needs to be converted to and from ASOC, with all the quirks, limitations, and silent corruptions that involves (e.g. records lose keyword-based properties, app object specifiers lose target app identifier, etc). Plus live changes to defaults data structures won't be stored automatically. One alternative would be to add simple `read preferences` and `write preferences` to File module that uses StdAdditions read/write commands to read and write records of prefs data explicitly; crude, but might be adequate for AS users' needs.
 
+- Errors -- get descriptions of Carbon/Cocoa/etc error codes
 
 
 
