@@ -20,6 +20,8 @@ File
 ----------------------------------------------------------------------
 
 
+- add support for enumeration type in `parse command line arguments`, where valueType is a list of allowed text values, e.g. {"yes", "no", "maybe"}; allowed chars would be same as for long option names (Q. should it be case sensitive?)
+
 - Standard Additions' `read` and `write` commands don't always provide good explanatory error messages (e.g. passing wrong `as` parameter just gives 'Parameter error.' -50); Cocoa error messages often aren't very helpful either. Not sure there's anything can be done about this.
 
 - is there any benefit to adding `with UTF8 byte order mark` option to `write to file`? (NSString automatically adds UTF16/32 BOMs, but doesn't add UTF8 BOM for compatibility's sake; however, users might want to add UTF8 BOM to improve portability of files they intend to distribute)
@@ -144,7 +146,22 @@ Text
 
 
 ----------------------------------------------------------------------
-Other libraries
+Web
+----------------------------------------------------------------------
+
+
+- in `send HTTP request`:
+
+	-how to support authentication, e.g. tie into keychain? (might be best to leave that for now)
+
+	- requestBodyData/responseBodyType could also be file object/`file`, in which case upload/download tasks could be used (Q. will NSSession supply Content-Length automatically when a file is given? also, will it supply Content-Type automatically, or is there a way to get file's MIME type via Cocoa APIs?)
+
+	- if responseBodyType is `text` and requestHeaders doesn't include "Accept*" headers, add appropriate content negotiation header (e.g. "Accept: text/*") automatically? (what about common application/… headers, e.g. application/json, application/xml? TBH, it'd be a shot in the dark; probably best to leave it entirely to user)
+
+
+
+----------------------------------------------------------------------
+Additional libraries
 ----------------------------------------------------------------------
 
 
@@ -155,6 +172,19 @@ Other libraries
 - Defaults -- commands for interacting with NSUserDefaults. Very problematic for stdlib as retaining ASOC objects between commands breaks script serialization and SE autosave. Plus NSUserDefaults' native API is fairly low level and not very AS-friendly. Plus all data needs to be converted to and from ASOC, with all the quirks, limitations, and silent corruptions that involves (e.g. records lose keyword-based properties, app object specifiers lose target app identifier, etc). Plus live changes to defaults data structures won't be stored automatically. One alternative would be to add simple `read preferences` and `write preferences` to File module that uses StdAdditions read/write commands to read and write records of prefs data explicitly; crude, but might be adequate for AS users' needs.
 
 - Errors -- get descriptions of Carbon/Cocoa/etc error codes
+
+
+
+----------------------------------------------------------------------
+Other issues
+----------------------------------------------------------------------
+
+
+- Should (and can?) ALL ObjC class, method, enum, etc names always be enclosed in pipes? e.g. The File library was accidentally recompiled and resaved after AS converted 'NSURL' identifiers to 'nsurl', causing handlers that used it to break as ASOC, unlike AS, is case-sensitive. 
+
+	Normalizing identifier case in not just current script but all imported scripts too is a fundamental AS flaw that will continue to break users' ASOC code until fixed at source, but these libraries need to be as robust as possible, even if that means crudding up the ASOC parts with pipes. 
+	
+	The big annoyance is that unless identical names but with different case are also defined without pipes, AS will remove the pipes from names that do have them on compilation, whereupon the library code is right back where it started, at risk of breaking in future use.
 
 
 

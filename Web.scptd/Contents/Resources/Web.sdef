@@ -54,7 +54,7 @@
 		</record-type>
 		
 		
-		<command name="escape URL characters" code="Web:EscU" description="Replace “non-safe” characters in a text value with the corresponding “%XX” escapes suitable for use in a URL">
+		<command name="encode URL characters" code="Web:EscU" description="Replace “non-safe” characters in a text value with the corresponding “%XX” escapes suitable for use in a URL">
 			<direct-parameter type="text"/>
 			<parameter name="preserving" code="Safe" type="text" description="any additional ASCII characters that should not be escaped (default: &quot;&quot;)"/>
 			<result type="text"/>
@@ -62,20 +62,20 @@
 				<html><![CDATA[
 <p>By default, this converts all characters except <code>A-Za-z0-9_.-</code> to UTF8-based <code>%<var>XX</var></code> escape codes. For example, to escape a resource path, preserving path separators:</p>
 
-<pre><code>escape URL characters "/foo bar/ø.txt" preserving "/" → "/foo%20bar/%C3%B8.txt"</code></pre>
+<pre><code>encode URL characters "/foo bar/ø.txt" preserving "/" → "/foo%20bar/%C3%B8.txt"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
 		
 		
-		<command name="unescape URL characters" code="Web:UneU" description="Replace “%XX” escapes in a text value with the corresponding characters">
+		<command name="decode URL characters" code="Web:UneU" description="Replace “%XX” escapes in a text value with the corresponding characters">
 			<direct-parameter type="text"/>
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
 <p>All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters. If an escape sequence does not represent a valid UTF8 codepoint, an error is raised instead.</p>
 
-<pre><code></code></pre>
+<pre><code>decode URL characters "/foo%20bar/%C3%B8.txt" → "/foo bar/ø.txt"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -111,17 +111,29 @@
 	
 	<suite name="Convert Data" code="****">
 		
-		<command name="parse JSON" code="Web:PJSN" description="Parse JSON text as an AppleScript value">
+		<command name="decode Base64" code="Web:PB64" description="Convert text from Base64 encoding">
+			<direct-parameter type="text"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="encode Base64" code="Web:FB64" description="Convert text to Base64 encoding">
+			<direct-parameter type="text"/>
+			<result type="text"/>
+		</command>
+		
+		<command name="decode JSON" code="Web:PJSN" description="Convert JSON text to an AppleScript value">
 			<direct-parameter type="text"/>
 			<parameter name="fragments allowed" code="Frag" type="boolean" optional="yes" description="(default: false)"/>
 			<result type="any"/>
 		</command>
 		
-		<command name="format JSON" code="Web:FJSN" description="Format an AppleScript value as JSON text">
+		<command name="encode JSON" code="Web:FJSN" description="Convert an AppleScript value to JSON text">
 			<direct-parameter type="any"/>
 			<parameter name="extra white space" code="EWSp" type="boolean" optional="yes" description="(default: false)"/>
 			<result type="text"/>
 		</command>
+		
+		<!-- TO DO: what else? e.g. HTML entitites? -->
 		
 	</suite>
 	
@@ -162,6 +174,10 @@
 				<html><![CDATA[
 <pre><code>{ headerName:<var>text</var>,
   headerValue:<var>text</var> }</code></pre>
+
+<p>For example:</p>
+
+<pre><code>{headerName:"Content-Type", headerValue:"application/json; charset=utf-8"}</code></pre>
 				]]></html>
 			</documentation>
 		</record-type>
@@ -178,9 +194,16 @@
 		</record-type>
 		
 			
-		<command name="describe HTTP status code" code="Web:DStC" description="Get a short description of the given HTTP status code (e.g. 404 → “not found”)">
+		<command name="HTTP status name" code="Web:DStC" description="Get a short description of the given HTTP status code">
 			<direct-parameter type="integer"/>
 			<result type="text"/>
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>HTTP status name 404 → “not found”</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 	</suite>

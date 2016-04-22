@@ -11,7 +11,7 @@
 			<documentation>
 				<html><![CDATA[
 
-<p>Unlike AppleScript records, which are predefined groups of properties whose values are identified by keyword or identifier, dictionary objects are dynamic collections of key-value pairs that can be added and removed at any time. Dictionary keys are typically text values, though numbers, dates, and type and constant symbols can also be used.</p>
+<p>Unlike AppleScript records, which are predefined groups of properties whose values are identified by keyword or identifier, dictionary objects are dynamic collections of key-value pairs that can be added and removed at any time. Dictionary keys can be text, numbers, dates, and/or type and constant symbols.</p>
 
 
 <h3>Examples</h3>
@@ -55,7 +55,7 @@ log obj's getItem("banana") -- Error -1728: "Item not found."</code></pre>
 <dt><code>containsItem(<var>theKey</var>)</code></dt>
 <dd><p>Does the collection contain a key-value pair with the specified key?</p>
 <ul>
-	<li><var>theKey</var> : <tt>text</tt></li>
+	<li><var>theKey</var> : <tt>text, number, date, type or constant</tt></li>
 	<li>Result: <tt>boolean</tt></li>
 </ul>
 </dd>
@@ -63,7 +63,7 @@ log obj's getItem("banana") -- Error -1728: "Item not found."</code></pre>
 <dt><code>addItem(<var>theKey</var>, <var>theValue</var>)</code></dt>
 <dd><p>Add a key-value pair to the collection</p>
 <ul>
-	<li><var>theKey</var> : <tt>text</tt></li>
+	<li><var>theKey</var> : <tt>text, number, date, type or constant</tt></li>
 	<li><var>theValue</var> : <tt>anything</tt></li>
 </ul>
 </dd>
@@ -71,7 +71,7 @@ log obj's getItem("banana") -- Error -1728: "Item not found."</code></pre>
 <dt><code>removeItem(<var>theKey</var>)</code></dt>
 <dd><p>Remove a key-value pair from the collection</p>
 <ul>
-	<li><var>theKey</var> : <tt>text</tt></li>
+	<li><var>theKey</var> : <tt>text, number, date, type or constant</tt></li>
 	<li>Result: <tt>anything</tt> – the removed value</li>
 </ul>
 </dd>
@@ -79,7 +79,7 @@ log obj's getItem("banana") -- Error -1728: "Item not found."</code></pre>
 <dt><code>getItem(<var>theKey</var>)</code></dt>
 <dd><p>Get the value for the given key from the collection</p>
 <ul>
-	<li><var>theKey</var> : <tt>text</tt></li>
+	<li><var>theKey</var> : <tt>text, number, date, type or constant</tt></li>
 	<li>Result: <tt>anything</tt> – the removed value</li>
 </ul>
 </dd>
