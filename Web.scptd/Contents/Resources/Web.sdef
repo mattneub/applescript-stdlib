@@ -15,7 +15,13 @@
 				<html><![CDATA[
 <p>For example:</p>
 
-<pre><code></code></pre>
+<pre><code>split url "http://jsmith@example.com/some/path?x=1&y=2"
+
+→ { urlScheme:"http", 
+    networkLocation:"jsmith@example.com", 
+    resourcePath:"/some/path", 
+    parameterString:"", 
+    queryString:"x=1&y=2", fragmentIdentifier:"" }</code></pre>
 				]]></html>
 			</documentation>
 			
@@ -25,6 +31,19 @@
 			<direct-parameter type="URL component record"/>
 			<parameter name="using base URL" code="Base" type="text" optional="yes" description=""/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>join url { urlScheme:"http", ¬
+    networkLocation:"jsmith@example.com", ¬
+    resourcePath:"/some/path", ¬
+    queryString:"x=1&y=2" }
+
+→ "http://jsmith@example.com/some/path?x=1&y=2"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
@@ -88,7 +107,8 @@
 				<html><![CDATA[
 <p>Keys and values will be text values. All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters.</p>
 
-<pre><code></code></pre>
+<pre><code>split URL query string "age=23&name=Jan+M%C3%BCller"
+→ {{"age", "23"}, {"name", "Jan Müller"}}</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -100,7 +120,8 @@
 				<html><![CDATA[
 <p>Keys and values must be text values (e.g. numbers should be converted to numeric text using Number library's ‘format number’ command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes.</p>
 
-<pre><code></code></pre>
+<pre><code>join URL query string {{"age", "23"}, {"name", "Jan Müller"}}
+→ "age=23&name=Jan+M%C3%BCller"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -133,8 +154,6 @@
 			<result type="text"/>
 		</command>
 		
-		<!-- TO DO: what else? e.g. HTML entitites? -->
-		
 	</suite>
 	
 	
@@ -153,16 +172,52 @@
 				<type type="missing value"/>
 			</parameter>
 			<parameter name="timeout" code="TimO" type="integer" optional="yes" description="the number of seconds to wait for a response before timing out (default: 60)"/>
-			<parameter name="returning" code="Type" type="type" optional="yes" description="the type of data returned by a GET/POST request; this should either be ‘text’ if the returned data is known to be UTF-8 encoded text, or ‘data’ for anything else, or ‘missing value’ (default: text)"/> <!-- TO DO: can/should this be defined as an enumeration? -->
+			<parameter name="returning" code="Type" type="type" optional="yes" description="use ‘text’ to decode the HTTP response’s body as text (assuming its ‘Content-Type’ header specifies a supported charset: “utf-8”, “iso-8859-1”, etc); use ‘data’ to return the response’s body as an NSData object; use ‘missing value’ to ignore the response’s body, if any (default: text)"/>
 			<result type="HTTP response record"/>
 			
 			<documentation>
 				<html><![CDATA[
-<p>For example:</p>
+<p>For example, to request a document and automatically decode it to text (assuming the HTTP response contains a recognized <code>Content-Type</code> header):</p>
 
-<pre><code>send HTTP request to "http://apple.com"</code></pre>
+<pre><code>send HTTP request to "http://apple.com/index.html"</code></pre>
 
-[TO DO: finish documentation]
+<p>To download the document to file without any automatic decoding:</p>
+
+<pre><code>set filePath to "<var>/path/to/file.html</var>"
+
+set httpResponse to send HTTP request to "http://apple.com/index.html" returning data
+
+-- on success, the returned record's `responseBody` property contains an NSData object
+if httpResponse's statusCode div 100 = 2 then -- 2xx status indicates success (e.g. 200)
+  set {didSucceed, asocError} to httpResponse's responseBody's writeToFile:filePath ¬
+      options:(current application's NSDataWritingAtomic) |error|:(specifier)
+  -- confirm file was written successfully
+  if not didSucceed then error (asocError's localizedDescription()) number (asocError's code())
+else
+  -- deal with other status codes (e.g. 3xx, 4xx, 5xx) here...
+end if</code></pre>
+
+<p>HTTP headers can be added to the HTTP request via the <code>send HTTP request</code> command's <code>headers</code> parameter. For example, the following list of HTTP header records tells the web server that your script wants either HTML (preferred) or plain text, encoded as UTF8 (preferred) or Latin1, in response:</p>
+
+<pre>{{headerName:"Accept", headerValue:"text/html, text/plain;q=0.5"}, 
+ {headerName:"Accept-Charset", headerValue:"utf-8, iso-8859-1;q=0.5"}}</pre>
+ 
+<p>By default, <code>send HTTP request</code> sends a <code>GET</code> request to the web server. Other HTTP methods (<code>POST</code>, <code>PUT</code>, <code>DELETE</code> etc.) can be specified via the <code>method</code> parameter. For example, to send a <code>POST</code> request with UTF8-encoded JSON data as the request body and ask for UTF8-encoded JSON data in response:</p>
+
+<pre><code>set requestData to {someKey:101, anotherKey:"hello"}
+
+set httpResponse to send HTTP request to "http://example.org/some-path" ¬
+    method "POST" ¬
+    headers {{headerName:"Accept", headerValue:"application/json"}, ¬
+             {headerName:"Accept-Charset", headerValue:"utf-8"}, ¬
+             {headerName:"Content-Type", headerValue:"application/json;charset=utf-8"}} ¬
+    body (encode JSON requestData)
+
+if (httpResponse's statusCode) div 100 ≠ 2 then -- non-2xx status = failure (e.g. 403)
+  error (HTTP status name httpResponse's statusCode) number httpResponse's statusCode
+end if
+
+set responseData to decode JSON httpResponse's responseBody</code></pre>
 
 				]]></html>
 			</documentation>
