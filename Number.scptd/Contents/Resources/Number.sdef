@@ -77,17 +77,24 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 		
 		
 		<record-type name="number format record" code="MthR">
-			<property name="based on format" code="MthA">
-				<type type="number format enumeration"/>
-				<type type="text"/>
-			</property>
-			<property name="minimum decimal places" code="MthB" type="integer"/>
-			<property name="maximum decimal places" code="MthC" type="integer"/>
-			<property name="minimum significant digits" code="MthD" type="integer"/>
-			<property name="maximum significant digits" code="MthE" type="integer"/>
-			<property name="decimal separator" code="MthF" type="text"/>
-			<property name="grouping separator" code="MthG" type="text"/>
-			<property name="rounding behavior" code="MthH" type="MRnd"/>
+			<documentation>
+				<html><![CDATA[
+<pre><code>{ class : number format record,
+  basedOnFormat : <var>constant or text</var>,
+  minimumDecimalPlaces : <var>integer</var>,
+  maximumDecimalPlaces : <var>integer</var>,
+  minimumSignificantDigits : <var>integer</var>,
+  maximumSignificantDigits : <var>integer</var>,
+  decimalSeparator : <var>text</var>,
+  groupingSeparator : <var>text</var>,
+  roundingBehavior : <var>constant</var> }</code></pre>
+
+<p>The <code>basedOnFormat</code> property is required and should be one of the format constants accepted by the <code>format number</code> and <code>parse number</code> commands (<code>canonical number format</code>, <code>integer format</code>, etc) or format text. All other properties are optional. The <code>roundingBehavior</code> property accepts the same rounding constants used in the <code>round number</code> command (<code>rounding up</code>, <code>rounding down</code>, etc).</p>
+
+[TO DO: examples?]
+
+				]]></html>
+			</documentation>
 		</record-type>
 		
 		

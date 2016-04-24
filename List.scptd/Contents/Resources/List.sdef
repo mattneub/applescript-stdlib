@@ -265,19 +265,52 @@ find in list {12, 23, 17, 22, 14} using IsOverEighteen returning last occurrence
         <command name="unsort list" code="Lst:LiUS" description="randomly rearrange the items in a list, returning a new list as result">
             <direct-parameter type="list"/>
             <result type="list"/>
+            <documentation>
+                <html><![CDATA[
+<p>For example, to create a list containing numbers 1 to 100 in random order:</p>
+
+<pre><code>use script "List"
+
+set orderedList to {}
+repeat with i from 1 to 100
+  set end of orderedList to i
+end repeat
+
+set unorderedList to unsort list orderedList</code></pre>
+                ]]></html>
+            </documentation>
         </command>
         
     
         <command name="default comparator" code="Lst:DeSo" description="returns a ‘DefaultComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list containing only numbers OR text OR dates">
             <result type="script"/>
+            <documentation>
+                <html><![CDATA[
+[TO DO: document behavior: default comparator used by `sort list` and usually sufficient for simple sorting ops; given a list of all number/all text/all date items, it sorts them using standard < and > operators: text will be ordered according to standard Unicode ordering rules, subject to current considering/ignoring options; numbers and dates from lowest to highest; mixed type lists are rejected (as there's no way to know e.g. if a number and a text value should both be compared as numbers or as sequences of characters) - to sort those as a specific type, use one of the others]
+
+<p>When creating a default comparator in your own code, avoid reusing it across multiple sorts, as once it is used to sort a list of one type (e.g. list of text), it cannot be used to sort a list of another (e.g. list of number).</p>
+                ]]></html>
+            </documentation>
         </command>
     
         <command name="date comparator" code="Lst:DaSo" description="returns a ‘DateComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of date items">
             <result type="script"/>
+            <documentation>
+                <html><![CDATA[
+<p>Sort a list that contains date objects.</p>
+
+[TO DO: finish]
+                ]]></html>
+            </documentation>
         </command>
     
         <command name="number comparator" code="Lst:NuSo" description="returns a ‘NumberComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of numbers (integers and/or reals) or values that can be coerced to numbers">
             <result type="script"/>
+            <documentation>
+                <html><![CDATA[
+[TO DO: note that text items are coerced to numbers, which is locale sensitive]
+                ]]></html>
+            </documentation>
         </command>
     
         <command name="text comparator" code="Lst:TeSo" description="returns a ‘TextComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of text items, or values that can be coerced to text">
@@ -291,7 +324,7 @@ find in list {12, 23, 17, 22, 14} using IsOverEighteen returning last occurrence
 <li>It compares a pair of text keys to determine which item should come first, and rearranges the items in the original list as needed.</li>
 </ol>
 
-<p>This command can customize text comparators as follows:</p>
+<p>The optional <code>for</code> parameter can customize text comparison behavior as follows:</p>
 <ul>
 <li><code>exact match</code> – Case, diacriticals, hyphens, punctuation, and white space are all considered, while <code>numeric strings</code> are ignored. (Considering numeric strings treats e.g. <code>"7"</code> and <code>"007"</code> as equal; ignoring numeric strings matches them character for character.)</li>
 <li><code>case sensitivity</code> – Only diacriticals are ignored, while all other settings, including <code>case</code> and <code>numeric strings</code> are considered. (Be aware that AppleScript orders characters according to Unicode, not ASCII, rules, so "a" comes before "A", and "A" comes before "b", and so on.)</li>
@@ -301,7 +334,25 @@ find in list {12, 23, 17, 22, 14} using IsOverEighteen returning last occurrence
 
 <p>For example:</p>
 
-<pre><code>sort list {"foo", "Foo", "bar"} using (text comparator for case sensitivity)</code></pre>
+<pre><code>sort list {"Fu", "Foo", "FOO", "foo", "fOO", "fu", "FU"} using (text comparator for case sensitivity)
+→ {"foo", "fOO", "Foo", "FOO", "fu", "Fu", "FU"}</code></pre>
+
+<p>(Be aware that text values are ordered intelligently according to standard Unicode rules; thus text items that are identical except for case are grouped together, with lowercase characters coming first.)</p>
+
+<p>Be aware that when AppleScript coerces numbers and dates to text, the results can vary according to the current user’s localization settings; coercing lists to text likewise produces different results depending on AppleScript’s current text item delimiters. This may affect sorting order when sorting lists of mixed types, e.g. <code>sort list {"3.1.4", 3.2} using text comparator</code> will return {3.2, "3.1.4"} on systems that use commas as decimal separators, as <code>3.2</code> coerces to <code>"3,2"</code>, and comma characters are ordered before periods. If this is a concern, define a custom comparator object whose <code>makeKey</code> handler converts non-text values to text in a consistent format, for example:</p>
+
+<pre><code>script MixedTextAndNumberComparator
+  property parent : text comparator
+  
+  to makeKey(anItem)
+    if anItem's class is real then
+      -- use Number library to format real numbers consistently
+      return format number anItem using decimal format
+    else
+      return continue makeKey(anItem)
+    end if
+  end makeKey
+end script</code></pre>
 
                 ]]></html>
             </documentation>
@@ -319,9 +370,9 @@ find in list {12, 23, 17, 22, 14} using IsOverEighteen returning last occurrence
         
             
         <command name="list comparator" code="Lst:LiSo" description="returns a ‘ListComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of lists">
-            <parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of ‘item comparator’ records for comparing specific items in each list (default: default comparator)">
+            <parameter name="for" code="Comp" optional="yes" description="a single comparator for comparing all items of an arbitrary-length list, or a list of ‘item comparator record’ records for comparing specific items in each list (default: default comparator)">
                 <type type="script"/>
-                <type type="item comparator" list="yes"/>
+                <type type="item comparator record" list="yes"/>
             </parameter>
             <result type="script"/>
             <documentation>
@@ -381,7 +432,7 @@ sort list myList using PersonRecordComparator
         </command>
         
         
-        <record-type name="item comparator" code="LstC" description="used by ‘list comparator’ to sort a list of sublists on a particular sublist item">
+        <record-type name="item comparator record" code="LstC" description="used by ‘list comparator’ to sort a list of sublists on a particular sublist item">
             <documentation>
                 <html><![CDATA[
 <pre><code>{ itemIndex : <var>integer</var>,

@@ -1,7 +1,31 @@
+TO DO:
+
+
+- would it be better if `insert into list` supported virtual 0 index only for both `before item` (-ve indexes only; would insert item last) and `after item` (+ve indexes only; would insert item first) parameters? (might be less confusing to explain; one might also argue that if some out-of-range indexes are allowed at opposing end, e.g. `before item 4` in a 3-item list then all out-of-range indexes should be allowed, c.f. `slice list`)
+
+
+- Text and List define same enum for text comparisons (`search text`, `text comparator`), so AS compiler will (stupidly) complain about conflicting terms when both are imported and used, even though they don't cause any problem (AS really only ought to reject duplicate terms if there's a mismatch between their respective keywords/four-char codes, e.g. 'foobar'/«FooB» vs 'foobar'/«FBar»; or if AS also relies on the term's origin to determine where to dispatch to, e.g. command names). Need to decide whether to leave as-is (in which case users will need to use `tell script "..."` blocks to disambiguate these terms until such time as Apple deigns to sort the issue in AS itself), or to change the enumerator names and codes defined in List.sdef so that they don't overlap with those in Text.sdef (though using different names to mean the same thing is also a design smell, so isn't ideal either).
+
+	(Incidentally, wonder what happens if library sdefs start defining record values that use standard property names like `class` and `name` - if AS chokes on those too then that's definitely a bug.)
+
+
+- TestTools contains various TODOs, mostly enhancements, but since that library is currently somewhat hamstrung by AS compiler bug those should be tabled for now
+
+- TypeSupport contains various TODOs - enhancements, safety improvements, etc; need to see which can be tabled for now and which should be addressed before v1.0
+
+
+- various TODOs in Web
+
+
+- finish tests, documentation
+
+
+======================================================================
+
 The following TODOs are deferred/ignored/rejected:
 
 
-- always use lowercase four-char codes (note: this only applies to Apple-owned terminology)
+- ideally, these libraries would be owned by Apple and always use all-lowercase four-char codes to avoid any conflicts with 3rd-party (mixed-case) codes; however, changing their dictionaries this way would only be practical if Apple took over these libraries before they were widely distributed, as once they're in the wild it'll be a giant PITA to change their current four-char codes without breaking users' existing scripts)
 
 
 ----------------------------------------------------------------------
@@ -12,6 +36,8 @@ Date
 - what about NSDateComponentsFormatter, NSDateIntervalFormatter? (e.g. handy for formatting time intervals, although it is possible to kludge that already using date arithmetic)
 
 - see also NSFormattingContext... constants in NSFormatter.h for fine-tuning capitalization for standalone/start-of-sentence/in-sentence use (TBH, any user who needs this level of control would be better using Cocoa classes directly)
+
+- what additional info should appear in `locale info` record? (see NSLocale Component Key constants)
 
 
 
@@ -129,6 +155,20 @@ Text
 ----------------------------------------------------------------------
 
 
+- extended backreference syntax should really allow backslash-escaped “}” and “\” characters to appear within braces (currently these two characters are disallowed by _tokens pattern)
+
+
+- fix inconsistency: `search text`'s `for` parameter doesn't allow list of text but `split text`'s `using` parameter does, even though both commands are supposed to support same matching options for consistency
+
+
+- should line break normalization (in `normalize text` and `join paragraphs`) also recognize `Unicode line break`, `Unicode paragraph break` constants?
+
+	- need to decide exactly what constitutes a line break in `transform text`, and make sure both paragraph element and pattern based splitting are consistent (e.g. what about form feeds and Unicode line/paragraph breaks?)
+
+
+- 10.11 provides -[NSString stringByApplyingTransform:reverse:]; currently this is only used to convert Unicode codepoint escapes (e.g. "\u1234"), but in future could be expanded on, e.g. `transform text` could add `smart punctuation` and `ASCII punctuation` options, options to convert text between Asian and Latin representations, etc.
+
+
 - add `matching first item only` boolean option to `search text` (this allows users to perform incremental matching fairly efficiently without having to use an Iterator API)? Currently inclined to reject this, as `search text` command is already fairly complex so am reluctant to add any more parameters unless a convincing use case is identified first.
 
 
@@ -157,6 +197,20 @@ Web
 	- requestBodyData/responseBodyType could also be file object/`file`, in which case upload/download tasks could be used (Q. will NSSession supply Content-Length automatically when a file is given? also, will it supply Content-Type automatically, or is there a way to get file's MIME type via Cocoa APIs?)
 
 	- if responseBodyType is `text` and requestHeaders doesn't include "Accept*" headers, add appropriate content negotiation header (e.g. "Accept: text/*") automatically? (what about common application/… headers, e.g. application/json, application/xml? TBH, it'd be a shot in the dark; probably best to leave it entirely to user)
+
+
+
+- add `normalize URL` handler? see NSURL's standardizedURL(); need to decide if it's worth putting in for users to call directly (note that `split URL` and anything else that uses TypeSupport's asNSURLParameter() already normalizes URLs automatically; OTOH, `join URL` does not)
+
+
+- what about `split/join URL parameter string`? (see also below)
+
+
+- commands for converting HTML entities? (&amp;/&lt;/&gt;/&quot;); what about &apos;? what about non-ASCII entities? (decode command would need to handle all entities; encode command could probably just do required entities which is sufficient for use in Unicode [UTF8] encoded documents, possibly providing a Boolean option to encode all non-ASCII entities should users have to produce non-Unicode documents [though this shouldn't be encouraged])
+
+	- OTOH, one might argue that if users are dealing with HTML content they should use a proper library that understands and processes all HTML data correctly, and providing commands here for encoding/decoding HTML entities is just encouraging them to hack it (something a stdlib really shouldn't do); given what a mess of complexity it is, might be wisest to leave HTML processing for other libraries to deal with
+
+	- for numeric entities only, see NSString's stringByApplyingTransform:reverse:, using "Any-Hex/XML;Any-Hex/XML10" to convert "&#x10FFFF;" and "&#1114111;" (Q. what about HTML entity names? Cocoa's existing ICU transforms aren't much use if they can't convert those too)
 
 
 

@@ -504,7 +504,7 @@ to doCommand(params)
   -- <em>your code goes here...</em>
 end doCommand</code></pre>
 
-<p>The <code>_version</code> property should contain a text value representing the script's current version, typically written as <code>"<var>majorVersion</var>.<var>minorVersion</var>.<var>bugFix</var>"</code>. (Version numbers written this way are easily compared using a <code>considering punctuation and numeric strings ... end considering</code> block.) The version number is automatically written to standard output when the shell script is executed with the <code>-v</code> (<code>--version</code>) flag.</p>
+<p>The <code>_version</code> property should contain a text value representing the script's current version, typically written as <code>"<var>majorUpdate</var>.<var>minorUpdate</var>.<var>bugFix</var>"</code>. (Version numbers written this way are easily compared using a <code>considering punctuation and numeric strings ... end considering</code> block.) The version number is automatically written to standard output when the shell script is executed with the <code>-v</code> (<code>--version</code>) flag.</p>
 
 <p>The <code>_summary</code> property contains a one-line summary that appears at the top of the help text generated when the <code>-h</code> (<code>--help</code>) option is given, which the <code>_description</code> property can contain any additional information to append to the help text.</p>
 

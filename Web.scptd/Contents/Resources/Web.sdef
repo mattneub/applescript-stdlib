@@ -92,7 +92,7 @@
 			<result type="text"/>
 			<documentation>
 				<html><![CDATA[
-<p>All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters. If an escape sequence does not represent a valid UTF8 codepoint, an error is raised instead.</p>
+<p>All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters. If an escape sequence does not represent a valid UTF8 codepoint, an error is raised instead. For example:</p>
 
 <pre><code>decode URL characters "/foo%20bar/%C3%B8.txt" → "/foo bar/ø.txt"</code></pre>
 				]]></html>
@@ -105,7 +105,7 @@
 			<result type="list" description="a list of form {{key1,value1}, {key2,value2}, …}"/>
 			<documentation>
 				<html><![CDATA[
-<p>Keys and values will be text values. All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters.</p>
+<p>Keys and values will be text values. All UTF8-based <code>%<var>XX</var></code> escape codes will be automatically replaced with the corresponding characters. For example:</p>
 
 <pre><code>split URL query string "age=23&name=Jan+M%C3%BCller"
 → {{"age", "23"}, {"name", "Jan Müller"}}</code></pre>
@@ -118,7 +118,7 @@
 			<result type="text" description="a query string of form &quot;key1=value1&amp;key2=value2&amp;…&quot;"/>
 			<documentation>
 				<html><![CDATA[
-<p>Keys and values must be text values (e.g. numbers should be converted to numeric text using Number library's ‘format number’ command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes.</p>
+<p>Keys and values must be text values (e.g. numbers should be converted to numeric text using Number library's ‘format number’ command to avoid localization issues). All characters except <code>A-Za-z0-9_.-</code> will be automatically replaced with UTF8-based <code>%<var>XX</var></code> escape codes. For example:</p>
 
 <pre><code>join URL query string {{"age", "23"}, {"name", "Jan Müller"}}
 → "age=23&name=Jan+M%C3%BCller"</code></pre>
