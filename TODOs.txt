@@ -1,14 +1,5 @@
 TO DO:
 
-
-- would it be better if `insert into list` supported virtual 0 index only for both `before item` (-ve indexes only; would insert item last) and `after item` (+ve indexes only; would insert item first) parameters? (might be less confusing to explain; one might also argue that if some out-of-range indexes are allowed at opposing end, e.g. `before item 4` in a 3-item list then all out-of-range indexes should be allowed, c.f. `slice list`)
-
-
-- Text and List define same enum for text comparisons (`search text`, `text comparator`), so AS compiler will (stupidly) complain about conflicting terms when both are imported and used, even though they don't cause any problem (AS really only ought to reject duplicate terms if there's a mismatch between their respective keywords/four-char codes, e.g. 'foobar'/«FooB» vs 'foobar'/«FBar»; or if AS also relies on the term's origin to determine where to dispatch to, e.g. command names). Need to decide whether to leave as-is (in which case users will need to use `tell script "..."` blocks to disambiguate these terms until such time as Apple deigns to sort the issue in AS itself), or to change the enumerator names and codes defined in List.sdef so that they don't overlap with those in Text.sdef (though using different names to mean the same thing is also a design smell, so isn't ideal either).
-
-	(Incidentally, wonder what happens if library sdefs start defining record values that use standard property names like `class` and `name` - if AS chokes on those too then that's definitely a bug.)
-
-
 - TestTools contains various TODOs, mostly enhancements, but since that library is currently somewhat hamstrung by AS compiler bug those should be tabled for now
 
 - TypeSupport contains various TODOs - enhancements, safety improvements, etc; need to see which can be tabled for now and which should be addressed before v1.0
