@@ -181,6 +181,33 @@ Web
 ----------------------------------------------------------------------
 
 
+- how to split path components from parameter strings? RFC2396 allows parameters on all path portions (NSURL only allows parameters after final path portion), so probably also need to rework/rewrite `split/join URL` handlers to support this newer form as standard; see also Python's urllib.parse.urlsplit(), which unlike its older NSURL-like urlparse() function doesn't split parameters from path (although Python doesn't provide a parse function for such paths either, presumably leaving it to users to deal with themselves as needed).
+
+   3.3. Path Component
+
+   The path component contains data, specific to the authority (or the
+   scheme if there is no authority component), identifying the resource
+   within the scope of that scheme and authority.
+
+      --path          = [ abs_path | opaque_part ]
+
+      --path_segments = segment *( "/" segment )
+      --segment       = *pchar *( ";" param )
+      --param         = *pchar
+
+      --pchar         = unreserved | escaped | ":" | "@" | "&" | "=" | "+" | "$" | ","
+
+   The path may consist of a sequence of path segments separated by a
+   single slash "/" character.  Within a path segment, the characters
+   "/", ";", "=", and "?" are reserved.  Each path segment may include a
+   sequence of parameters, indicated by the semicolon ";" character.
+   The parameters are not significant to the parsing of relative
+   references.
+
+
+- NSURL's component properties don't appear to support generic resource locators, e.g. given "mailto:foo@example.org", NSURL.path returns nil; may be the case that a vanilla parser implemented according to RFC3986 would be a better solution than using NSURL
+
+
 - in `send HTTP request`:
 
 	-how to support authentication, e.g. tie into keychain? (might be best to leave that for now)

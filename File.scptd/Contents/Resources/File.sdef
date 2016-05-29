@@ -412,7 +412,7 @@ parse command line arguments argv ¬
 <pre><code>{ propertyName : <var>text</var>,
   shortName : <var>text</var>,
   longName : <var>text</var>,
-  valueType : <var>type</var>,
+  valueType : <var>type or list of text</var>,
   isList : <var>boolean</var>,
   defaultValue : <var>any</var>,
   valuePlaceholder : <var>type</var>,
@@ -428,7 +428,7 @@ parse command line arguments argv ¬
 <dt><code>longName</code></dt>
 <dd>A single word to be used as the option’s long name (camelCase words and hypenated-words are also acceptable). Do not include leading hyphens as these will be added automatically. Long names must be unique.</dd>
 <dt><code>valueType</code></dt>
-<dd>If the option is given, the type of its value (default: text). This should be one of: <code>boolean</code>, <code>integer</code>, <code>real</code>, <code>number</code>, <code>text</code>, <code>alias</code>, <code>file</code>. If <code>boolean</code> is used, the option does not take a value but instead changes the option’s value from false to true (or the opposite of <code>defaultValue</code>, if given).</dd>
+<dd>If the option is given, the type of its value (default: text). This should be one of: <code>boolean</code>, <code>integer</code>, <code>real</code>, <code>number</code>, <code>text</code>, <code>alias</code>, <code>file</code>. If <code>boolean</code> is used, the option does not take a value but instead changes the option’s value from false to true (or the opposite of <code>defaultValue</code>, if given). Alternatively, if a list of text values is given (e.g. <code>{&quot;play&quot;, &quot;pause&quot;, &quot;skip&quot;}</code>), this is treated as an enumeration of allowed values, in which case the given option must be one of the values in this list.</dd>
 <dt><code>isList</code></dt>
 <dd>If true, the option may appear any number of times and will appear in the options record as a list of the specified type. If false, a user error will be reported if the same option appears more than once. (default: false)</dd>
 <dt><code>defaultValue</code></dt>
@@ -451,7 +451,7 @@ parse command line arguments argv ¬
 <p>Each argument definition consists of one or more of the following record properties:</p>
 
 <pre><code>{ propertyName : <var>text</var>,
-  valueType : <var>type</var>,
+  valueType : <var>type or list of text</var>,
   isList : <var>boolean</var>,
   defaultValue : <var>any</var>,
   valuePlaceholder : <var>type</var>,
@@ -470,6 +470,9 @@ parse command line arguments argv ¬
 	<suite name="Writing an AppleScript-based Shell Script" code="****">
 		<documentation>
 			<html><![CDATA[
+
+<h3>How an AppleScript-based shell script works</h3>
+
 <p>An AppleScript-based shell script is normally saved as an uncompiled plain text file without an <code>.applescript</code> extension, made executable by running a <code>chmod +x <var>SCRIPT</var></code> on it, and placed into a directory that appears on the user’s <code>$PATH</code> (e.g. <code>/usr/local/bin</code>) so that it can be executed as a shell command directly from Terminal.</p>
 
 <p>For convenience, here is a standard template for creating AppleScript-based shell scripts:</p>
@@ -508,11 +511,109 @@ end doCommand</code></pre>
 
 <p>The <code>_summary</code> property contains a one-line summary that appears at the top of the help text generated when the <code>-h</code> (<code>--help</code>) option is given, which the <code>_description</code> property can contain any additional information to append to the help text.</p>
 
-<p>The <code>_optionDefinitions</code> and <code>_argumentDefinitions</code> properties describe any options and/or arguments that can be passed to the command, and are used both to convert the values passed by the shell to their AppleScript equivalents (text, numbers, booleans, etc) and to generate the corresponding help text when the <code>-h</code> (<code>--help</code>) option is used. [[ TO DO: simple example of each type of record, taken from complete example (see TODO below) ]]</p>
+<p>The <code>_optionDefinitions</code> and <code>_argumentDefinitions</code> properties describe any options and/or arguments that can be passed to the command, and are used both to convert the values passed by the shell to their AppleScript equivalents (text, numbers, booleans, etc) and to generate the corresponding help text when the <code>-h</code> (<code>--help</code>) option is used.</p>
 
 <p>The <code>run</code> handler requires no modification, as all it does is receive the list of raw arguments supplied by the shell command, converts it into a record of ready-to-use AppleScript objects, then deals with it automatically if a <code>-h</code> (<code>--help</code>) option or the <code>-v</code> (<code>--version</code>) option was given or else passes it to the <code>doCommand</code> handler for your own code to process normally.</p>
 
-[[ TO DO: complete working example script (ideas?) ]]
+
+<h3>Example shell script: <code>itunes-remote</code></h3>
+
+<p>The following AppleScript-based shell script allows basic control of the iTunes application from Terminal:</p>
+
+<pre><code>#!/usr/bin/osascript
+
+use script "File"
+use script "Text"
+
+property _version : "1.0"
+property _summary : "Control iTunes from the command line."
+property _description : "Examples of use:
+
+  $ itunes-remote -v
+  1.0
+  
+  $ itunes-remote --add 'some file.mp3' --add 'another file.mp3'
+  
+  $ itunes-remote play
+  
+  $ itunes-remote -i
+  &gt;&gt; skip
+  &gt;&gt; pause
+  &gt;&gt; info
+  Not playing.
+  
+Interactive mode recognizes the same actions as non-interactive mode (“play”, “pause”, etc), plus “exit” to terminate itunes-remote."
+
+property _optionDefinitions : {¬
+  {propertyName:"filesToAdd", shortName:"a", longName:"add", ¬
+    valueType:alias, isList:true, defaultValue:{}, ¬
+    valueDescription:"Import a media file into iTunes."}, ¬
+  {propertyName:"isInteractive", shortName:"i", valueType:boolean, ¬
+    valueDescription:"Run in interactive mode."} ¬
+}
+
+property _argumentDefinitions : {¬
+  {propertyName:"actionToPerform", ¬
+    valueType:{"play", "pause", "skip", "info"}, defaultValue:"info", ¬
+    valuePlaceholder:"ACTION", valueDescription:"The operation to perform."} ¬
+}
+
+on run argv
+  set parameterRecord to parse command line arguments argv ¬
+    options _optionDefinitions arguments _argumentDefinitions
+  if parameterRecord's help then -- output help text
+    return ¬
+      format command line help summary _summary description _description ¬
+        options _optionDefinitions arguments _argumentDefinitions
+  else if parameterRecord's |version| then -- output version text
+    return _version
+  else -- perform the command and output its result, if any
+    return doCommand(parameterRecord)
+  end if
+end run
+
+--
+
+to doCommand(params)
+  if (length of filesToAdd of params) &gt; 0 then
+    tell application "iTunes" to add (filesToAdd of params)
+  end if
+  performAction(actionToPerform of params)
+  if isInteractive of params then
+    set willExit to false
+    repeat until willExit
+      set actionToPerform to read from standard input with user interaction
+      set willExit to performAction(actionToPerform)
+    end repeat
+  end if
+end doCommand
+
+to performAction(theAction)
+  if theAction is "exit" then
+    return true
+  else if theAction is "play" then
+    tell application "iTunes" to play
+  else if theAction is "pause" then
+    tell application "iTunes" to pause
+  else if theAction is "skip" then
+    tell application "iTunes" to next track
+  else if theAction is "info" then
+    tell application "iTunes"
+      if player state is playing then
+        set trackInfo to {name, artist, time} of current track
+        write to standard output ¬
+          (format text "Now playing “\\1” by \\2 (\\3)." using trackInfo)
+      else
+        write to standard output "Not playing."
+      end if
+    end tell
+  else
+    write to standard output "Unknown action."
+  end if
+  return false
+end performAction</code></pre>
+
+<p>To use this script, save it as an uncompiled text file named <code>itunes-remote</code>, make it executable (<code>chmod +x itunes-remote</code>), and place it into a directory on the shell's search path (e.g. <code>/usr/local/bin</code>.</p>
 			]]></html>
 		</documentation>
 	</suite>
