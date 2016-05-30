@@ -177,6 +177,27 @@ Text
 
 
 ----------------------------------------------------------------------
+TypeSupport
+----------------------------------------------------------------------
+
+
+- should asPOSIXPath[Parameter] include options for expanding/normalizing path when a text value is given rather than an alias/file/POSIX file? given that AS isn't too clever when passed relative paths, this might be wise (although there is the question of what to do about tildes, as those should only be expanded automatically when processing shell script arguments; Cocoa's stringByStandardizingPaths is excessively aggressive here)
+
+
+- add `isValueListOfType` for checking if value is a *list* of the specified type
+
+	(Note that checking if value is a record of specific form, e.g. `{name:text, isDone:boolean}`, is impractical due to the lack of AS introspection and the inability of ASOC's record-to-NSDictionary conversion to preserve keyword based names, therefore it's not worth trying to implement that.)
+	
+	(Be aware that while the `count` command's `each` parameter claims to accept a list of type classes, this is no good for actually determining if all list items are one of those types. It looks like when a list is given it actually counts all the values that can be _coerced_ one of specified types (as per `as` operator enhancement in 10.10), not whether the value is actually one of those types. Thus when checking a list for multiple types, it's necessary to check each item against each type O(nm), as it's possible for two type names to match the same item (e.g. counting each `integer`, then each `real`, then each `text` and summing the result should be ok, but counting each `integer`, then each `number`, then each `real` would result in all integer and real items being counted twice), resulting in an incorrect count when the subtotals for each time are finally added up. While AS's collection type names is quite stable, making it tempting to hack in special-case checks to prevent such overcounts, it's impossible to guarantee new names won't be added in future, so that isn't a safe solution.)
+
+
+- add `canValueCoerceToType` handler that checks if value can [safely?] be coerced to the specified type (Q. does `count {theValue} each {theType}` work same as `theValue as {theType}` by first testing for exact type then testing for coercibility?)
+
+
+- add `isValueOfObjCClass` handler that checks if value is ocid specifier and its class name is specified string? (note: it'd be better to use standard Cocoa methods to check it's a [sub]class of a specific class - checking string-based class names is hardly robust)
+
+
+----------------------------------------------------------------------
 Web
 ----------------------------------------------------------------------
 
