@@ -2,7 +2,18 @@ TO DO:
 
 - TestTools contains various TODOs, mostly enhancements, but since that library is currently somewhat hamstrung by AS compiler bug those should be tabled for now
 
-- TypeSupport contains various TODOs - enhancements, safety improvements, etc; need to see which can be tabled for now and which should be addressed before v1.0
+
+- TypeSupport contains various TODOs - enhancements, safety improvements, etc:
+
+	- coercing a record to `any[thing]` throws error -1700(!) due to AS stupidity; need to go through handlers below and check they coerce to `any` where appropriate (i.e. to ensure ASOC objects are converted to their AS equivalents before use), with workarounds as necessary (e.g. in `asList`, to handle the case where the item is a record or specifier)
+
+	- note: make sure `asTYPEParameter` handlers will always accept ASOC objects, coercing to corresponding AS type (i.e. don't add any checks that'd cause them to reject 'ocid' specifiers), e.g. `asNumberParameter` will probably currently fail on ASOC object as it doesn't first coerce to `any`; might be best if all `asTYPEParameter` handlers first coerce to `any` before coercing to actual required type (the only exception would be an `asReferenceParameter` handler, as that needs to typecheck only, as coercing a specifier dereferences it) -- OTOH, coercing a specifier to list is semantically ambiguous (should it dereference in hope of receiving a list?), while AS fails when coercing a record to any
+
+	- should asTextParameter() always throw an error if value is a list? (i.e. avoids inconsistent concatenation results due to TIDs); another option would be to whitelist some or all known 'safe' types (integer/real, text, date, alias/file/furl, etc) and reject everything else; this should ensure stable predictable behavior - even where additional custom coercion handlers are installed (users can still use other types of values, of course; they just have to explicitly coerce them first using `as` operator)
+
+	- `missing value` and other type/constant symbols are currently accepted by asTextParameter, though may coerce to either keyword name text or raw chevron text, which may be a reason for `asTextParameter` to disallow them
+
+	- add more AS-to-ASOC handlers? also include error checking, and provide both `asNSCLASS` and `asNSCLASSParameter` variants
 
 
 - various TODOs in Web
