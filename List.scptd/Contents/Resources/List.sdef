@@ -438,7 +438,7 @@ sort list {"3,14", "99", "4,2", "-0,01"} using my makeNumericalTextComparator(",
         </command>
     
         <command name="text comparator" code="Lst:TeSo" description="returns a ‘TextComparator’ object, suitable for use in ‘sort list’s ‘using’ parameter when sorting a list of text items, or values that can be coerced to text">
-            <parameter name="for" code="Cons" type="SrtE" optional="yes" description="(default: case insensitivity)"/>
+            <parameter name="for" code="Cons" type="SrtE" optional="yes" description="(default: case insensitive ordering)"/>
             <result type="script"/>
             <documentation>
                 <html><![CDATA[
@@ -450,16 +450,15 @@ sort list {"3,14", "99", "4,2", "-0,01"} using my makeNumericalTextComparator(",
 
 <p>The optional <code>for</code> parameter can customize text comparison behavior as follows:</p>
 <ul>
-<li><code>exact match</code> – Case, diacriticals, hyphens, punctuation, and white space are all considered, while <code>numeric strings</code> are ignored. (Considering numeric strings treats e.g. <code>"7"</code> and <code>"007"</code> as equal; ignoring numeric strings matches them character for character.)</li>
-<li><code>case sensitivity</code> – Only diacriticals are ignored, while all other settings, including <code>case</code> and <code>numeric strings</code> are considered. (Be aware that AppleScript orders characters according to Unicode, not ASCII, rules, so "a" comes before "A", and "A" comes before "b", and so on.)</li>
-<li><code>case insensitivity</code> – Case and diacriticals are ignored, while all other settings, including <code>numeric strings</code> are considered.</li>
-<li><code>current considerations</code> – Text is sorted using whatever considering/ignoring settings are currently applied when <code>sort list</code> is called. (By default, AppleScript ignores case and numeric strings, and considers diacriticals, hyphens, punctuation, and white space. To alter these settings – or to guarantee predictable sorting at all times – wrap your <code>sort list</code> command in the appropriate <code>considering</code> and/or <code>ignoring</code> block.)</li>
+<li><code>exact ordering</code> – Case, diacriticals, hyphens, punctuation, and white space are all considered, while numeric strings are ignored (i.e. matched character for character).</li>
+<li><code>case insensitive ordering</code> – Case and numeric strings are ignored, while all other attributes are  considered.</li>
+<li><code>current ordering</code> – Text is sorted using whatever considering/ignoring settings are currently applied when <code>sort list</code> is called. (By default, AppleScript ignores case and numeric strings, and considers diacriticals, hyphens, punctuation, and white space. To alter these settings – or to guarantee predictable sorting at all times – wrap your <code>sort list</code> command in the appropriate <code>considering</code> and/or <code>ignoring</code> block.)</li>
 </ul>
 
 <p>For example:</p>
 
 <pre><code>sort list {"Fu", "Foo", "FOO", "foo", "fOO", "fu", "FU"} ¬
-    using (text comparator for ordering by case sensitivity)
+    using (text comparator for exact ordering)
 → {"foo", "fOO", "Foo", "FOO", "fu", "Fu", "FU"}</code></pre>
 
 <p>(Be aware that text values are ordered intelligently according to standard Unicode rules; thus text items that are identical except for case are grouped together, with lowercase characters coming first.)</p>
@@ -486,10 +485,9 @@ end script</code></pre>
         
         <enumeration name="SrtE" code="SrtE">
             <!-- caution: Text library defines the same enums for use in its `search text` command, so names and codes must match exactly to avoid terminology conflicts -->
-			<enumerator name="ordering by exact match" code="SrtM"/> <!-- consider everything except numeric strings -->
-			<enumerator name="ordering by case sensitivity" code="SrtC"/> <!-- consider everything, including case and numeric strings -->
-			<enumerator name="ordering by case insensitivity" code="SrtI"/> <!-- ignore case and consider everything else, including numeric strings -->
-			<enumerator name="ordering by current considerations" code="SrtD"/> <!-- use whatever considering/ignoring settings are in effect when `search text`/`sort list` is called -->
+			<enumerator name="exact ordering" code="SrtM"/> <!-- consider everything except numeric strings -->
+			<enumerator name="case insensitive ordering" code="SrtI"/> <!-- ignore case and numeric strings, and consider everything else -->
+			<enumerator name="current ordering" code="SrtD"/> <!-- use whatever considering/ignoring settings are in effect when `search text`/`sort list` is called -->
         </enumeration>
         
             
