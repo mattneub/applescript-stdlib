@@ -80,7 +80,7 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
 			<documentation>
 				<html><![CDATA[
 <pre><code>{ class : number format record,
-  basedOnFormat : <var>constant or text</var>,
+  basicFormat : <var>constant or text</var>,
   minimumDecimalPlaces : <var>integer</var>,
   maximumDecimalPlaces : <var>integer</var>,
   minimumSignificantDigits : <var>integer</var>,
@@ -89,7 +89,7 @@ parse number "3.14" → 3.14 (canonical conversion)</code></pre>
   groupingSeparator : <var>text</var>,
   roundingBehavior : <var>constant</var> }</code></pre>
 
-<p>The <code>basedOnFormat</code> property is required and should be one of the format constants accepted by the <code>format number</code> and <code>parse number</code> commands (<code>canonical number format</code>, <code>integer format</code>, etc) or format text. All other properties are optional. The <code>roundingBehavior</code> property accepts the same rounding constants used in the <code>round number</code> command (<code>rounding up</code>, <code>rounding down</code>, etc).</p>
+<p>The <code>basicFormat</code> property is required and should be one of the format constants accepted by the <code>format number</code> and <code>parse number</code> commands (<code>canonical number format</code>, <code>integer format</code>, etc) or format text. All other properties are optional. The <code>roundingBehavior</code> property accepts the same rounding constants used in the <code>round number</code> command (<code>rounding up</code>, <code>rounding down</code>, etc).</p>
 
 [TO DO: examples?]
 

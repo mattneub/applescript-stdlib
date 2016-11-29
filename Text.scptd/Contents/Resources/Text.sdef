@@ -108,10 +108,27 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 		
 		<command name="pad text" code="Txt:PadT" description="pad the text to a minimum length">
 			<direct-parameter type="text"/>
-			<parameter name="to places" code="toPl" type="integer"/>
-			<parameter name="using" code="Char" type="text" optional="yes" description="(default: space)"/>
+			<parameter name="to places" code="toPl" type="integer" description="the minimum number of characters that will appear in the returned text"/>
+			<parameter name="using" code="Char" type="text" optional="yes" description="the character(s) with which to pad (default: space)"/>
 			<parameter name="adding" code="From" type="LeTr" optional="yes" description="(default: leading characters only)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<p>For example:</p>
+
+<pre><code>pad text "Bob" to places 8
+→ "     Bob"
+
+pad text "Mary Smith" to places 60 using ". " adding leading and trailing characters
+→ ". . . . . . . . . . . . .Mary Smith . . . . . . . . . . . . "</code></pre>
+
+<p>If the text is longer than the number of places, no padding is added:</p>
+
+<pre><code>pad text "Robert Smith" to places 8
+→ "Robert Smith"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<enumeration name="LeTr" code="LeTr">
@@ -126,9 +143,27 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			<parameter name="from" code="FIdx" type="integer" optional="yes" description="character index"/>
 			<parameter name="to" code="TIdx" type="integer" optional="yes" description="character index"/>
 			<result type="text"/>
+			
 			<documentation>
 				<html><![CDATA[
-<p><code>slice text theText from i to j</code> is similar to <code>get text i thru j of theText</code>, except that it returns an empty text value if the end index is before the start index, and doesn’t throw an error if an index is out of range.</p>
+<p>For example:</p>
+
+<pre><code>slice text "Once upon a time" from 8
+→ "on a time"
+
+slice text "Once upon a time" from 5 to 15
+→ " upon a tim"
+
+slice text "Once upon a time" from -9 to -2
+→ "on a tim"</code></pre>
+
+<p>A <code>slice text <var>someText</var> from <var>i</var> to <var>j</var></code> command works much like getting a <code>text <var>i</var> thru <var>j</var> of <var>someText</var></code> specifier, except that it returns an empty text value if the end index is before the start index, and doesn’t throw an error if an index is out of range:</p>
+
+<pre><code>slice text "Once upon a time" from 10 to 2
+→ ""
+
+slice text "Once upon a time" to 25
+→ "Once upon a time"</code></pre>
 				]]></html>
 			</documentation>
 		</command>
@@ -138,6 +173,16 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			<direct-parameter type="text"/>
 			<parameter name="removing" code="From" type="LeTr" optional="yes" description="(default: leading and trailing characters)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>trim text "\tWho, What, and Why? \n\n"
+→ "Who, what, and why?"
+
+trim text "\tWho, What, and Why? \n\n" removing trailing characters only
+→ "\tWho, what, and why?"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		
@@ -242,6 +287,16 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			<result>
 				<type type="text" list="yes"/>
 			</result>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>split text "Bob,Joe,Mary,Sue" at ","
+→ {"Bob", "Joe", "Mary", "Sue"}
+
+split text "Bob, Joe;Mary:  Sue" at "[.,;:]\\s*" using pattern matching
+→ {"Bob", "Joe", "Mary", "Sue"}</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<command name="join text" code="Txt:JoiT" description="join list of text using the specified separator">
@@ -250,6 +305,16 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			</direct-parameter>
 			<parameter name="using" code="Sepa" type="text" optional="yes" description="the separator(s) upon which to split (default: &quot;&quot;)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>join text {"Bob", "Joe", "Mary", "Sue"}
+→ "BobJoeMarySue"
+
+join text {"Bob", "Joe", "Mary", "Sue"} using ", "
+→ "Bob, Joe, Mary, Sue"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 
 		<command name="split paragraphs" code="Txt:SplP" description="split text into a list of paragraphs">
@@ -257,6 +322,13 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			<result>
 				<type type="text" list="yes"/>
 			</result>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>split paragraphs "Bob\nJoe\rMary\r\nSue"
+→ {"Bob", "Joe", "Mary", "Sue"}</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 
 		<command name="join paragraphs" code="Txt:JoiP" description="join list of paragraphs">
@@ -265,6 +337,16 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			</direct-parameter>
 			<parameter name="using" code="LiBr" type="LiBr" optional="yes" description="the line break format (default: OS X line breaks)"/>
 			<result type="text"/>
+			
+			<documentation>
+				<html><![CDATA[
+<pre><code>join paragraphs {"Bob", "Joe", "Mary", "Sue"}
+→ "Bob\nJoe\nMary\nSue"
+
+join paragraphs {"Bob", "Joe", "Mary", "Sue"} using Windows line breaks
+→ "Bob\r\nJoe\r\nMary\r\nSue"</code></pre>
+				]]></html>
+			</documentation>
 		</command>
 		
 		<enumeration name="LiBr" code="LiBr">
@@ -300,19 +382,67 @@ format text "\\u00AB\\{greeting}, \\{title} \\{last name}!\\u00BB" using infoDic
 			
 			<documentation>
 				<html><![CDATA[
+<p>The <code>search text</code> command can be used to find the position(s) at which a given piece of text appears:</p>
+
+<pre><code>search text "Hello Elegant" for "el"
+→ {{class:matched text, startIndex:2, endIndex:3, foundText:"el", foundGroups:{}}, 
+   {class:matched text, startIndex:7, endIndex:8, foundText:"El", foundGroups:{}}}</code></pre>
+
+<p>or to replace one piece of text with another:</p>
+
+<pre><code>search text "Hello Elegant" for "el" replacing with "*"
+→ "H*lo *egant"</code></pre>
+
+
+<h3>Customizing how text is matched</h3>
+
+<p>By default, text is matched exactly except for differences in case, thus searching for “el” matches both “el” and “El” in the above example. To consider case as well, use <code>exact matching</code> as the command’s <code>using</code> parameter:</p>
+
+<pre><code>search text "Hello Elegant" for "el" using exact matching
+→ {{class:matched text, startIndex:2, endIndex:3, foundText:"el", foundGroups:{}}}
+
+search text "Hello Elegant" for "el" using exact matching replacing with "*"
+→ "H*lo Elegant"</code></pre>
+
+
+
+[[TO DO: pattern matching with template text and groups, e.g. format phone numbers]]
+
+
+set theText to "Some line.
+
+Another line.
+  Yet another line."
+
+search text theText for "\\n(?:s\\s*)+" using pattern matching replacing with "\\n"
+
+
+search text theText for "^\\s*(.+)\\s*$" using pattern matching replacing with "•\\t\\1"
+
+
+<h3>Customizing how text is replaced</h3>
+				
 <p>When finding and replacing plain text, the ‘replacing with’ parameter can be one of the following:</p>
 <ul>
-	<li>the text value to insert</li>
+	<li>a replacement text value to be inserted as-is</li>
 
-	<li>a script object containing a <code>replaceText(foundText)</code> handler that takes the found text as its sole parameter and returns the text value to insert as its result</li> <!-- TO DO: e.g. example script could change a bullet list to numbered list -->
+	<li>a script object containing a <code>replaceText(foundText)</code> handler that takes a single parameter – the found text – and returns the text value to insert as its result.</li> 
 </ul>
+
+<!-- TO DO: e.g. example script could change a bullet list to numbered list -->
+
 
 <p>When finding and replacing text patterns, the ‘replacing with’ parameter can be one of the following:</p>
 <ul>
-	<li>A text-based template describing the text to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. (Caution: if the ‘replacing with’ parameter is arbitrary text supplied by a variable, apply the <code>escape template</code> command to it first to prevent any backslashes within it being accidentally substituted.) See Template Text Syntax for a full list of special character sequences.</li>
+	<li>a text-based template describing the text to insert; text matched by parenthesized groups can be referred to as <code>\1</code>, <code>\2</code>, etc. </li>
 
-	<li>A script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes the found text and a list of text values matched by parenthesized groups as its parameters and returns the text value to insert as its result.</li>
+	<li>a script object containing a <code>replacePattern(foundText, foundGroups)</code>handler that takes two parameters – the found text and a list of text values matched by parenthesized groups, if any – and returns the text value to insert as its result.</li>
 </ul>
+
+
+(Caution: if the ‘replacing with’ parameter is arbitrary text supplied by a variable, apply the <code>escape template</code> command to it first to prevent any backslashes within it being accidentally substituted.) See Template Text Syntax for a full list of special character sequences.)
+
+
 
 <pre><code>script UppercaseMatchedText
   to replacePattern(foundText, foundGroups)
@@ -333,9 +463,8 @@ search text "abcdefghijk" for "[aeiou]" ¬
 		
 		<enumeration name="SerE" code="SerE">
 			<!-- caution: List library defines the same enums for use in its `text comparator` command, so names and codes must match exactly to avoid terminology conflicts -->
-			<enumerator name="exact match" code="CmpE"/> <!-- consider everything except numeric strings -->
-			<enumerator name="case sensitivity" code="CmpC"/> <!-- consider everything, including case and numeric strings -->
-			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and consider everything else, including numeric strings -->
+			<enumerator name="exact matching" code="CmpE"/> <!-- consider everything except numeric strings (numeric strings are matched exactly) -->
+			<enumerator name="case insensitivity" code="CmpI"/> <!-- ignore case and numeric strings and consider everything else -->
 			<enumerator name="current considerations" code="CmpD"/> <!-- use whatever considering/ignoring settings are in effect when `search text`/`sort list` is called -->
 			
 			<!-- Text library also defines an enum for pattern matching -->
